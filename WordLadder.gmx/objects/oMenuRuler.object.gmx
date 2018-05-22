@@ -25,31 +25,52 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//CONFIG R/W:
-/*
-if file_exists("config.cfg")
+            <string>//Header string to Draw
+Header = 'RENAME THIS GAME'
+//Buttons init
+bNewGame = instance_create(800,280,oButton)
+bNewGame.content = 'PLAY'
+bProfile = instance_create(800,440,oButton)
+bProfile.content = 'PROFILE'
+bOptions = instance_create(800,600,oButton)
+bOptions.content = 'OPTIONS'
+bAuthors = instance_create(800,760,oButton)
+bAuthors.content = 'CREDITS'
+bExit = instance_create(800,920,oButton)
+bExit.content = 'EXIT'
+//TODO Offset processor + anim
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="56">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//check buttons pressed
+//
+//
+//
+//
+if bExit.clicked
   {
+  //TODO cfg save
+  action_end_game()
   }
-else
-  {
-  }
-*/
-//WINDOW SETTINGS:
-//TODO: get w,h, full grom cfg
-//global.WIN_WIDTH = display_get_width()
-//global.WIN_HEIGHT = display_get_height()
-global.WIN_WIDTH = 800
-global.WIN_HEIGHT = 600
-if global.WIN_HEIGHT / global.WIN_WIDTH &gt;=0.75
-  global.DRAW_SCALE = global.WIN_WIDTH / 1600
-else
-  global.DRAW_SCALE = global.WIN_HEIGHT / 1600
-window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
-//window_set_fullscreen(true)
-//LOGO Code:
-
-//IF LOGO SKIPPED:
-action_another_room(rMenu)
 </string>
           </argument>
         </arguments>

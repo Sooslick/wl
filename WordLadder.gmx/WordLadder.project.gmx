@@ -5,14 +5,22 @@
   </Configs>
   <NewExtensions/>
   <sounds name="sound"/>
-  <sprites name="sprites"/>
+  <sprites name="sprites">
+    <sprite>sprites\sButton</sprite>
+  </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
+  <fonts name="fonts">
+    <font>fonts\fImpact96</font>
+  </fonts>
   <objects name="objects">
     <object>objects\oLogo</object>
+    <object>objects\oMenuRuler</object>
+    <object>objects\oButton</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>
+    <room>rooms\rMenu</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>
