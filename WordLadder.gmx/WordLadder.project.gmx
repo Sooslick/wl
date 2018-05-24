@@ -3,10 +3,33 @@
   <Configs name="configs">
     <Config>Configs\Default</Config>
   </Configs>
+  <datafiles number="1" name="datafiles">
+    <datafiles number="1" name="res">
+      <datafile>
+        <name>MAINTABLE.dat</name>
+        <exists>-1</exists>
+        <size>1024</size>
+        <exportAction>2</exportAction>
+        <exportDir></exportDir>
+        <overwrite>0</overwrite>
+        <freeData>-1</freeData>
+        <removeEnd>0</removeEnd>
+        <store>0</store>
+        <ConfigOptions>
+          <Config name="Default">
+            <CopyToMask>9223372036854775807</CopyToMask>
+          </Config>
+        </ConfigOptions>
+        <filename>MAINTABLE.dat</filename>
+      </datafile>
+    </datafiles>
+  </datafiles>
   <NewExtensions/>
   <sounds name="sound"/>
   <sprites name="sprites">
     <sprite>sprites\sButton</sprite>
+    <sprite>sprites\sSquare</sprite>
+    <sprite>sprites\sEnglish</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -17,6 +40,8 @@
     <object>objects\oLogo</object>
     <object>objects\oMenuRuler</object>
     <object>objects\oButton</object>
+    <object>objects\oSquareRuler</object>
+    <object>objects\oSquare</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>
