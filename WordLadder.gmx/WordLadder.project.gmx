@@ -33,6 +33,9 @@
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
+  <scripts name="scripts">
+    <script>scripts\funcTickOffset.gml</script>
+  </scripts>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
   </fonts>

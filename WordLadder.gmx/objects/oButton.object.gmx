@@ -31,7 +31,8 @@ content = ''    //draw string; set after create call
 active = true   //clickable
 clicked = false
 
-sc = global.DRAW_SCALE
+dsc = global.DRAW_SCALE     //draw scale
+csc = global.DRAW_SCALE     //coord scale
 </string>
           </argument>
         </arguments>
@@ -54,10 +55,10 @@ sc = global.DRAW_SCALE
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (window_mouse_get_x() &lt; (x + 256)*sc) &amp;&amp;
-   (window_mouse_get_x() &gt; (x - 256)*sc) &amp;&amp;
-   (window_mouse_get_y() &lt; (y + 64)*sc)  &amp;&amp;
-   (window_mouse_get_y() &gt; (y - 64)*sc)
+            <string>if (window_mouse_get_x() &lt; (x + 256*dsc) *csc) &amp;&amp;     //TODO
+   (window_mouse_get_x() &gt; (x - 256*dsc) *csc) &amp;&amp;     //TODO
+   (window_mouse_get_y() &lt; (y +  64*dsc) *csc) &amp;&amp;     //TOTO
+   (window_mouse_get_y() &gt; (y -  64*dsc) *csc)         //TODO  deadzone by 16:9 ratio
         {
         hover = 1            //check cursor pos
         a = 1                //not by mouse enter/leave event
@@ -123,14 +124,14 @@ draw_set_valign(fa_center)
 if x != xprevious           
   {
   draw_set_alpha(0.5)
-  draw_sprite_ext(sButton,hover,xprevious*sc,y*sc,sc,sc,0,c_white,1)
-  draw_text_transformed(xprevious*sc,y*sc,content,sc,sc,0)
+  draw_sprite_ext(sButton,hover,xprevious*csc,yprevious*csc,dsc,dsc,0,c_white,1)
+  draw_text_transformed(xprevious*csc,yprevious*csc,content,dsc,dsc,0)
   }
 //MAIN DRAW BUTTON  
 draw_set_alpha(1)
-draw_sprite_ext(sButton,hover,x*sc,y*sc,sc,sc,0,c_white,1)
+draw_sprite_ext(sButton,hover,x*csc,y*csc,dsc,dsc,0,c_white,1)
 draw_set_alpha(a)
-draw_text_transformed(x*sc,y*sc,content,sc,sc,0)
+draw_text_transformed(x*csc,y*csc,content,dsc,dsc,0)
 </string>
           </argument>
         </arguments>

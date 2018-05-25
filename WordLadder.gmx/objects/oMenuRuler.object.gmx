@@ -25,23 +25,37 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//Header string to Draw
+            <string>//Tech strings
 Header = 'RENAME THIS GAME'
+Cheat = ''                      //typde by squares
+//Offset processor + anim
+bActive = true
+bOffInner = 1200        //offset coordinates min-max
+bOffOuter = 1860
+b2Active = false
+b2OffInner = 1050
+b2OffOuter = 1150
+bTick = 0           //animation frame
 //Buttons init
-bNewGame = instance_create(800,280,oButton)
+bNewGame = instance_create(bOffInner,280,oButton)
 bNewGame.content = 'PLAY'
-bProfile = instance_create(800,440,oButton)
+bProfile = instance_create(bOffInner,440,oButton)
 bProfile.content = 'PROFILE'
-bOptions = instance_create(800,600,oButton)
+bOptions = instance_create(bOffInner,600,oButton)
 bOptions.content = 'OPTIONS'
-bAuthors = instance_create(800,760,oButton)
+bAuthors = instance_create(bOffInner,760,oButton)
 bAuthors.content = 'CREDITS'
-bExit = instance_create(800,920,oButton)
+bExit = instance_create(bOffInner,920,oButton)
 bExit.content = 'EXIT'
 //TODO B2 INIT
+b2Hide = instance_create(300,b2OffOuter,oButton)
+b2Hide.content = 'SWITCH'
+b2Hide.dsc*= 0.66
+b2Accept = instance_create(300,b2OffOuter+100,oButton)
+b2Accept.content = 'ACCEPT'
+b2Accept.dsc*= 0.66
 //Background processor
 bg = instance_create(0,0,oSquareRuler)
-//TODO Offset processor + anim
 </string>
           </argument>
         </arguments>
@@ -65,15 +79,17 @@ bg = instance_create(0,0,oSquareRuler)
           <argument>
             <kind>1</kind>
             <string>//check buttons pressed
-//
-//
-//
-//
+//game
+//profile
+//settings
+//credits
 if bExit.clicked
   {
   //TODO cfg save
   action_end_game()
   }
+//b2hide
+//b2accept
 </string>
           </argument>
         </arguments>
