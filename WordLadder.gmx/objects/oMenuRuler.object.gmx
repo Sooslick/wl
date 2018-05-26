@@ -32,7 +32,7 @@ Cheat = ''                      //typde by squares
 bActive = true
 bOffInner = 1200        //offset coordinates min-max
 bOffOuter = 1860
-b2Active = false
+//b2Active = false      //currently useless
 b2OffInner = 1050
 b2OffOuter = 1150
 bTick = 0           //animation frame
@@ -56,6 +56,71 @@ b2Accept.content = 'ACCEPT'
 b2Accept.dsc*= 0.66
 //Background processor
 bg = instance_create(0,0,oSquareRuler)
+bg.parent = id
+bg.b21 = b2Hide     //pointers to overlapping buttons
+bg.b22 = b2Accept
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if bTick&gt;0
+  {
+  if bActive    //main out;
+    {
+    tmp_x = funcTickOffset(bTick, bOffInner,  bOffOuter,  true)
+    tmp_y = funcTickOffset(bTick, b2OffInner, b2OffOuter, false)
+    bNewGame.x = tmp_x
+    bProfile.x = tmp_x
+    bOptions.x = tmp_x
+    bAuthors.x = tmp_x
+    bExit.x    = tmp_x
+    b2Hide.y   = tmp_y
+    b2Accept.y = tmp_y + 100
+    if bTick==10
+      {
+      bActive = false
+      bg.active = true
+      bTick = -1
+      }
+    }
+  else          //main in
+    {
+    tmp_x = funcTickOffset(bTick, bOffInner,  bOffOuter,  false)
+    tmp_y = funcTickOffset(bTick, b2OffInner, b2OffOuter, true)
+    bNewGame.x = tmp_x
+    bProfile.x = tmp_x
+    bOptions.x = tmp_x
+    bAuthors.x = tmp_x
+    bExit.x    = tmp_x
+    b2Hide.y   = tmp_y
+    b2Accept.y = tmp_y + 100
+    if bTick==10
+      {
+      bActive = true
+      bg.active = false
+      bTick = -1
+      }
+    }
+  bTick++
+  }
 </string>
           </argument>
         </arguments>
@@ -88,7 +153,11 @@ if bExit.clicked
   //TODO cfg save
   action_end_game()
   }
-//b2hide
+if b2Hide.clicked
+  {
+  bTick = 1          //button animation start
+  b2Hide.clicked = false
+  }
 //b2accept
 </string>
           </argument>

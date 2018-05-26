@@ -104,7 +104,7 @@ parent = 0          //SquareRuler
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if parent.active
+            <string>if parent.active &amp;&amp; parent.b21.hover!=1 &amp;&amp; parent.b22.hover!=1
   {
   clr = irandom_range(6097152,16777215)     //change color
   spr = 1
