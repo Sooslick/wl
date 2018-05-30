@@ -27,7 +27,7 @@
             <kind>1</kind>
             <string>//Tech strings
 Header = 'RENAME THIS GAME'
-Cheat = ''                      //typde by squares
+//Cheat = ''                      //typed by squares //removed to SquarRuler
 //Offset processor + anim
 bActive = true
 bOffInner = 1200        //offset coordinates min-max
@@ -158,7 +158,12 @@ if b2Hide.clicked
   bTick = 1          //button animation start
   b2Hide.clicked = false
   }
-//b2accept
+if b2Accept.clicked
+  {
+  b2Accept.clicked = false
+  //bg.cheat.process TODO!
+  bg.cheat = ''
+  }
 </string>
           </argument>
         </arguments>

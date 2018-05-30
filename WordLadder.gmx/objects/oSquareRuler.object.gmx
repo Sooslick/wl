@@ -41,6 +41,7 @@ isReverse = false       //upside-down drawing
 revState = 3            //0 wait; 1 op++; 2 op--; 3 begin; 4 ticker;
 animType = 0            //0 line; 1 diag;
 active = false          //is squares clickable?
+cheat = ''
 
 f = file_bin_open('res/MAINTABLE.dat',0)
 for (i=0; i&lt;ARRMAX; i++)
@@ -48,11 +49,7 @@ for (i=0; i&lt;ARRMAX; i++)
     {
     sqArr[i,j] = instance_create(i*64,j*64,oSquare)
     chrCon = file_bin_read_byte(f)
-    if chrCon&lt;64
-      chrCon-= 22   //digits
-    else
-      chrCon-= 65   //letters
-    sqArr[i,j].content = chrCon
+    sqArr[i,j].content = funcChrEncode(chrCon)
     sqArr[i,j].opSq = 0
     sqArr[i,j].opCon = 0
     sqArr[i,j].revState = 0
@@ -216,6 +213,29 @@ if (rot == 80) || (rot == 260)
   revState = 2
   animType = irandom_range(0,1)
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//draw_text(25,25,cheat) //debug
 </string>
           </argument>
         </arguments>

@@ -35,6 +35,8 @@
   <paths name="paths"/>
   <scripts name="scripts">
     <script>scripts\funcTickOffset.gml</script>
+    <script>scripts\funcChrEncode.gml</script>
+    <script>scripts\funcChrDecode.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>

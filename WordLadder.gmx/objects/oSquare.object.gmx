@@ -108,6 +108,7 @@ parent = 0          //SquareRuler
   {
   clr = irandom_range(6097152,16777215)     //change color
   spr = 1
+  parent.cheat+= chr(funcChrDecode(content))
   }
 </string>
           </argument>
