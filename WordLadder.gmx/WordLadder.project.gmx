@@ -30,6 +30,7 @@
     <sprite>sprites\sButton</sprite>
     <sprite>sprites\sSquare</sprite>
     <sprite>sprites\sEnglish</sprite>
+    <sprite>sprites\sPixel</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -47,6 +48,11 @@
     <object>objects\oButton</object>
     <object>objects\oSquareRuler</object>
     <object>objects\oSquare</object>
+    <object>objects\oNewGameRuler</object>
+    <object>objects\oProfileRuler</object>
+    <object>objects\oOptionsRuler</object>
+    <object>objects\oAuthorsRuler</object>
+    <object>objects\oEasterEggRuler</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>
