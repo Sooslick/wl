@@ -31,8 +31,9 @@ content = ''    //draw string; set after create call
 active = true   //clickable
 clicked = false
 
-dsc = global.DRAW_SCALE     //draw scale
+ssc = 1                     //size scale
 csc = global.DRAW_SCALE     //coord scale
+dsc = csc*ssc               //draw scale
 </string>
           </argument>
         </arguments>
@@ -55,10 +56,10 @@ csc = global.DRAW_SCALE     //coord scale
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (window_mouse_get_x() &lt; (x + 256*dsc) *csc) &amp;&amp;     //TODO
-   (window_mouse_get_x() &gt; (x - 256*dsc) *csc) &amp;&amp;     //TODO
-   (window_mouse_get_y() &lt; (y +  64*dsc) *csc) &amp;&amp;     //TOTO
-   (window_mouse_get_y() &gt; (y -  64*dsc) *csc)         //TODO  deadzone by 16:9 ratio
+            <string>if (window_mouse_get_x() &lt; (x + 256*ssc) *csc +global.DRAW_HOFF) &amp;&amp;    
+   (window_mouse_get_x() &gt; (x - 256*ssc) *csc +global.DRAW_HOFF) &amp;&amp;   
+   (window_mouse_get_y() &lt; (y +  64*ssc) *csc +global.DRAW_VOFF) &amp;&amp;     
+   (window_mouse_get_y() &gt; (y -  64*ssc) *csc +global.DRAW_VOFF)      
         {
         hover = 1            //check cursor pos
         a = 1                //not by mouse enter/leave event

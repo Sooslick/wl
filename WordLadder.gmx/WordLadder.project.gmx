@@ -41,6 +41,7 @@
   </scripts>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
+    <font>fonts\fDebug</font>
   </fonts>
   <objects name="objects">
     <object>objects\oLogo</object>

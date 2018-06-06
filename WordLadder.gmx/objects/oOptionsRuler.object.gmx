@@ -25,7 +25,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_text(25,25,'press ESC')
+            <string>draw_text(50,50,'esc')
 </string>
           </argument>
         </arguments>

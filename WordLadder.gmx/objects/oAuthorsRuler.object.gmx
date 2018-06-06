@@ -8,6 +8,55 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
+    <event eventtype="0" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>bBack = instance_create(800,1050,oButton)
+bBack.content = 'BACK'
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="56">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//check buttons pressed
+if bBack.clicked
+  action_another_room(rMenu)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -25,7 +74,21 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_text(25,25,'press ESC')
+            <string>draw_set_font(fImpact96)
+draw_set_color(c_white)
+draw_set_halign(fa_center)
+draw_set_valign(fa_center)
+draw_set_alpha(1)
+draw_text_transformed(800*global.DRAW_SCALE,100*global.DRAW_SCALE,'CREDITS',global.DRAW_SCALE,global.DRAW_SCALE,0)
+
+draw_set_font(fDebug)
+draw_text_transformed(800*global.DRAW_SCALE,600*global.DRAW_SCALE,'Still working, stand by#
+Press ESC key or BACK baton',1,1,0)
+
+/*
+TODO: запилить анимацию фирменную скролла и вращения строк
+контент: разрабы и благодарности
+*/
 </string>
           </argument>
         </arguments>
