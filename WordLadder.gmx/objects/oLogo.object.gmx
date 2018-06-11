@@ -25,23 +25,11 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//CONFIG R/W:
-/*
-if file_exists("config.cfg")
-  {
-  }
-else
-  {
-  }
-*/
+            <string>global.cfg = 'config.cfg'
+funcCfgRead()
+funcProfileRead()
+
 //WINDOW SETTINGS:
-//TODO: get w,h, full grom cfg
-//global.WIN_WIDTH = display_get_width()
-//global.WIN_HEIGHT = display_get_height()
-//global.WIN_WIDTH = 800
-//global.WIN_HEIGHT = 600
-global.WIN_WIDTH = 1280
-global.WIN_HEIGHT = 720
 if global.WIN_HEIGHT / global.WIN_WIDTH &gt;=0.75          //4:3 ratio
   {
   global.DRAW_SCALE = global.WIN_WIDTH / 1600           //black lines on top &amp; bottom
@@ -55,13 +43,8 @@ else
   global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2
   }
 window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
-//window_set_fullscreen(true)
-                            //значения рассчитываются неверно и не все
-                            //при соотношении сторон 16:9 слева есть черное простраство,
-                            //которое не учитывается, хотя следует
-                            //из-за этого смещается разметка меню
-                            //и ведет себя некорректно
-                            //нужен фикс!
+window_set_fullscreen(global.FULL)
+window_set_position(10,10)                                //temp TODO
 //LOGO Code:
 
 //IF LOGO SKIPPED:

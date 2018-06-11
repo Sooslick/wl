@@ -38,9 +38,13 @@
     <script>scripts\funcTickOffset.gml</script>
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>
+    <script>scripts\funcCfgRead.gml</script>
+    <script>scripts\funcProfileRead.gml</script>
   </scripts>
+  <shaders name="shaders"/>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
+    <font>fonts\fImpact64</font>
     <font>fonts\fDebug</font>
   </fonts>
   <objects name="objects">
