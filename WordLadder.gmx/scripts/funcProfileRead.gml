@@ -1,3 +1,4 @@
+//check PROFILE_STRUCT README 4 ADDITIONAL INFO
 if file_exists('profiles/' + global.Profile + '.save')
     {
     //PLAYER NET ID

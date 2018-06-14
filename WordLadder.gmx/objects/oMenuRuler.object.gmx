@@ -199,32 +199,32 @@ if bNewGame.clicked
   Dead = true
   NextMenu = 1
   }
-if bProfile.clicked
+else if bProfile.clicked
   {
   Dead = true
   NextMenu = 2
   }
-if bOptions.clicked
+else if bOptions.clicked
   {
   Dead = true
   NextMenu = 3
   }
-if bAuthors.clicked
+else if bAuthors.clicked
   {
   Dead = true
   NextMenu = 4
   }
-if bExit.clicked
+else if bExit.clicked
   {
   //TODO cfg save
   action_end_game()
   }
-if b2Hide.clicked
+else if b2Hide.clicked
   {
   bTick = 1          //button animation start
   b2Hide.clicked = false
   }
-if b2Accept.clicked
+else if b2Accept.clicked
   {
   b2Accept.clicked = false
   //bg.cheat.process TODO!

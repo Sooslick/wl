@@ -40,6 +40,7 @@
     <script>scripts\funcChrDecode.gml</script>
     <script>scripts\funcCfgRead.gml</script>
     <script>scripts\funcProfileRead.gml</script>
+    <script>scripts\funcProfileWrite.gml</script>
   </scripts>
   <shaders name="shaders"/>
   <fonts name="fonts">
@@ -58,6 +59,8 @@
     <object>objects\oOptionsRuler</object>
     <object>objects\oAuthorsRuler</object>
     <object>objects\oEasterEggRuler</object>
+    <object>objects\oProfileSelector</object>
+    <object>objects\oProfileCreator</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>
