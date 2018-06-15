@@ -128,7 +128,10 @@ else if PBack.clicked
           <argument>
             <kind>1</kind>
             <string>draw_set_font(fImpact64)
-draw_text(800,1000,global.PNAME)
+draw_set_alpha(1)
+draw_set_colour(c_white)
+//draw_text(800*global.DRAW_SCALE,1000*global.DRAW_SCALE,global.PNAME)
+//draw_text(800*global.DRAW_SCALE,1100*global.DRAW_SCALE,global.Profile)
 </string>
           </argument>
         </arguments>

@@ -53,7 +53,7 @@ if file_exists(global.cfg)
       else
         global.FULL = true
     else
-      global.FULL = false
+      global.FULL = true
     file_text_readln(f)
     }
 else                //defaults
@@ -63,5 +63,5 @@ else                //defaults
     global.Profile = 'noob'
     global.WIN_WIDTH = display_get_width()
     global.WIN_HEIGHT = display_get_height()
-    global.FULL = false
+    global.FULL = true
     }

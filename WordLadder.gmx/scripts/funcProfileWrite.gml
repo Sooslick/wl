@@ -1,4 +1,7 @@
 //check PROFILE_STRUCT README 4 ADDITIONAL INFO
+//fname = 'profiles/' + global.Profile + '.save'
+//if !file_exists(fname)
+//create file
 
     //PLAYER NET ID
     f = file_bin_open('profiles/' + global.Profile + '.save',1)

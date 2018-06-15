@@ -45,12 +45,12 @@ file_find_close();
  
 for (j=0; j&lt;pcount; j++)
   {
-  b[j] = instance_create(258,j*66+66,oButton)                   //todo coordinates   
-  b[j].content = string_copy(pfs[j],1,string_length(pfs[j])-4)
+  b[j] = instance_create(300,j*133+133,oButton)                   //todo coordinates   
+  b[j].content = string_copy(pfs[j],1,string_length(pfs[j])-5)
   b[j].font    = fImpact64
   }  
   
-b[pcount] = instance_create(300,pcount*66+66,oButton)
+b[pcount] = instance_create(300,pcount*133+145,oButton)
 b[pcount].content = 'new profile'
 b[pcount].font    = fImpact64
 </string>
@@ -77,6 +77,45 @@ b[pcount].font    = fImpact64
             <kind>1</kind>
             <string>for (j=0; j&lt;=pcount; j++)
   instance_destroy(b[j])
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="56">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//if new profile
+if b[pcount].clicked
+  {
+  instance_create(0,0,oProfileCreator)
+  instance_destroy(self,true)
+  }
+else    //testing every button
+  for (i=0; i&lt;pcount; i++)
+    if b[i].clicked
+      {
+      global.Profile = b[i].content       //set profile to 
+      funcProfileRead()
+      instance_create(0,0,oProfileRuler)
+      instance_destroy(self,true)
+      test = false
+      break
+      }
 </string>
           </argument>
         </arguments>
