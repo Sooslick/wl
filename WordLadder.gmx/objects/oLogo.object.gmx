@@ -26,6 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>global.cfg = 'config.cfg'
+global.SaveCorrupted = false
 funcCfgRead()
 funcProfileRead()
 
@@ -40,11 +41,11 @@ else
   {
   global.DRAW_SCALE = global.WIN_HEIGHT / 1200          //black on left &amp; right
   global.DRAW_VOFF = 0
-  global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2
+  global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2    //still incorrect
   }
 window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
 window_set_fullscreen(global.FULL)
-window_set_position(10,10)                                //temp TODO
+window_set_position(20,20)                                //temp TODO
 //LOGO Code:
 
 //IF LOGO SKIPPED:

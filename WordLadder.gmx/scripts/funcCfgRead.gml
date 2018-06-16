@@ -55,6 +55,42 @@ if file_exists(global.cfg)
     else
       global.FULL = true
     file_text_readln(f)
+    
+    //Volume CFG
+    s = file_text_read_string(f)
+    if string_copy(s,1,13) = 'MasterVolume='
+      {
+      global.Master = real(string_delete(s,1,13))
+      if global.Master<0 || global.Master>100
+        global.Master = 100
+      }
+    else
+      global.Master = 100
+    file_text_readln(f)
+    
+    s = file_text_read_string(f)
+    if string_copy(s,1,12) = 'SoundVolume='
+      {
+      global.Sound = real(string_delete(s,1,12))
+      if global.Sound<0 || global.Sound>100
+        global.Sound = 100
+      }
+    else
+      global.Sound = 100
+    file_text_readln(f)
+    
+    s = file_text_read_string(f)
+    if string_copy(s,1,12) = 'MusicVolume='
+      {
+      global.Music = real(string_delete(s,1,12))
+      if global.Music<0 || global.Music>100
+        global.Music = 100
+      }
+    else
+      global.Music = 100
+    file_text_readln(f)
+    
+    file_text_close(f)
     }
 else                //defaults
     {
@@ -64,4 +100,7 @@ else                //defaults
     global.WIN_WIDTH = display_get_width()
     global.WIN_HEIGHT = display_get_height()
     global.FULL = true
+    global.Master = 100
+    global.Sound = 100
+    global.Music = 100
     }

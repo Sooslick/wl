@@ -216,7 +216,8 @@ else if bAuthors.clicked
   }
 else if bExit.clicked
   {
-  //TODO cfg save
+  funcCfgWrite()
+  funcProfileWrite()
   action_end_game()
   }
 else if b2Hide.clicked
@@ -252,13 +253,20 @@ else if b2Accept.clicked
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_font(fImpact96)
+            <string>//Caption
+draw_set_font(fImpact96)
 draw_set_color(c_white)
 draw_set_halign(fa_center)
 draw_set_valign(fa_center)
 draw_set_alpha(1)
 draw_text_transformed(800*global.DRAW_SCALE,100*global.DRAW_SCALE,'RENAME THIS GAME',global.DRAW_SCALE,global.DRAW_SCALE,0)
 
+//Profile name TODO: fade out
+draw_set_font(fImpact64)
+draw_set_halign(fa_right)
+draw_text_transformed(1580*global.DRAW_SCALE,1150*global.DRAW_SCALE,'Profile: '+global.Profile,global.DRAW_SCALE,global.DRAW_SCALE,0)
+
+//Fade out
 if Dead
   draw_sprite_ext(sPixel,0,0,0,global.WIN_WIDTH,global.WIN_HEIGHT,0,0,DeadTick)
 </string>

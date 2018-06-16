@@ -24,4 +24,5 @@ else
     global.PNETID = -1
     global.PNAME = 'SAVE CORRUPTED'
     global.PLOCALE = 0
+    global.SaveCorrupted = true
     }

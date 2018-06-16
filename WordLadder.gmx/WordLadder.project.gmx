@@ -39,10 +39,10 @@
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>
     <script>scripts\funcCfgRead.gml</script>
+    <script>scripts\funcCfgWrite.gml</script>
     <script>scripts\funcProfileRead.gml</script>
     <script>scripts\funcProfileWrite.gml</script>
   </scripts>
-  <shaders name="shaders"/>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
     <font>fonts\fImpact64</font>

@@ -35,6 +35,29 @@ cursortick = 0
         </arguments>
       </action>
     </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>global.FirstLaunch = false
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -122,8 +145,9 @@ else
             <string>//on enter click change globals 
 global.Profile = name
 global.PNAME = name
-//TODO: set stat &amp; create empty save correctly
-funcProfileRead()   //now return SAVE CORRUPTED
+global.PLOCALE = 0
+//stat &amp; achv
+funcProfileWrite() 
 
 if CalledFrom = 0 
   instance_create(0,0,oProfileRuler)
@@ -154,7 +178,7 @@ instance_destroy(self,true)
             <kind>1</kind>
             <string>if !keyboard_check(vk_enter)
   {     
-  if keyboard_check(vk_backspace)
+  if keyboard_check(vk_backspace)                           //todo: bug
       name = string_copy(name,1,string_length(name)-1)
   else
     //checking adekvate symbola
@@ -164,6 +188,8 @@ instance_destroy(self,true)
           name+= '\#'
         else
           name+= keyboard_lastchar
+    //else
+    //  play error sound
   keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...
   }
 </string>
