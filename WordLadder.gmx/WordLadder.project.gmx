@@ -52,12 +52,14 @@
     <object>objects\oLogo</object>
     <object>objects\oMenuRuler</object>
     <object>objects\oButton</object>
+    <object>objects\oForm</object>
     <object>objects\oSquareRuler</object>
     <object>objects\oSquare</object>
     <object>objects\oNewGameRuler</object>
     <object>objects\oProfileRuler</object>
     <object>objects\oOptionsRuler</object>
     <object>objects\oAuthorsRuler</object>
+    <object>objects\oAchievementsRuler</object>
     <object>objects\oEasterEggRuler</object>
     <object>objects\oProfileSelector</object>
     <object>objects\oProfileCreator</object>

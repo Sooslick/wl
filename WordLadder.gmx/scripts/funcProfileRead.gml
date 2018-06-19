@@ -17,6 +17,36 @@ if file_exists('profiles/' + global.Profile + '.save')
     s = file_bin_read_byte(f)
     global.PLOCALE = s
     
+    //STAT: TIMERS
+    global.PSINGAMETIME = 0
+    for (i=0; i<4; i++)
+      global.PSINGAMETIME = global.PSINGAMETIME*256 + file_bin_read_byte(f)
+      
+    global.PSPLAYTIME = 0
+    for (i=0; i<4; i++)
+      global.PSPLAYTIME = global.PSPLAYTIME*256 + file_bin_read_byte(f)
+    
+    global.PSONLINETIME = 0
+    for (i=0; i<4; i++)
+      global.PSONLINETIME = global.PSONLINETIME*256 + file_bin_read_byte(f)  
+      
+    //STAT: game  
+    global.PSWORDS = 0
+    for (i=0; i<4; i++)
+      global.PSWORDS = global.PSWORDS*256 + file_bin_read_byte(f)
+      
+    global.PSLETTERS = 0
+    for (i=0; i<4; i++)
+      global.PSLETTERS = global.PSLETTERS*256 + file_bin_read_byte(f)  
+      
+    global.PSGAMES = 0
+    for (i=0; i<4; i++)
+      global.PSGAMES = global.PSGAMES*256 + file_bin_read_byte(f)   
+      
+    global.PSSERVERS = 0
+    for (i=0; i<4; i++)
+      global.PSSERVERS = global.PSSERVERS*256 + file_bin_read_byte(f)   
+      
     file_bin_close(f)
     }
 else
@@ -24,5 +54,14 @@ else
     global.PNETID = -1
     global.PNAME = 'SAVE CORRUPTED'
     global.PLOCALE = 0
+    
+    global.PSINGAMETIME = 0
+    global.PSPLAYTIME = 0
+    global.PSONLINETIME = 0
+    global.PSWORDS = 0
+    global.PSLETTERS = 0
+    global.PSGAMES = 0
+    global.PSSERVERS = 0
+    
     global.SaveCorrupted = true
     }

@@ -25,58 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//profile selector
-PSelector = instance_create(800,100,oButton)
-PSelector.content = 'SELECT PROFILE'
-PSelector.font = fImpact64
-//nickname
-PNameForm = instance_create(800,300,oForm)
-PNameForm.content      = global.PNAME
-PNameForm.contentSaved = global.PNAME
-//lang
-//PLang = instance_create(800,500,oList)
-//PLang.val = 'RU: add locale'                    //TODO
-//ds_list_add(PLang.arr,'RU: add locale')         //TODO
-//ds_list_add(PLang.arr,'English')
-//achievements menu
-PAch = instance_create(800,700,oButton)
-PAch.content = 'ACHIEVEMENTS'
-PAch.font = fImpact64
-
-//stats
-//PStats = instance_create(0,0,oProfileStats)
-//connected: db
-//back
-PBack = instance_create(800,1000,oButton)
-PBack.content = "BACK"
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="1" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>instance_destroy(PSelector,true)
-instance_destroy(PNameForm,true)
-//instance_destroy(PLang,true)
-instance_destroy(PAch,true)
-//instance_destroy(PStats,true)
-instance_destroy(PBack,true)
+            <string>bBack = instance_create(800,1050,oButton)
+bBack.content = 'BACK'
 </string>
           </argument>
         </arguments>
@@ -99,29 +49,9 @@ instance_destroy(PBack,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if PSelector.clicked
-  {
-  instance_create(0,0,oProfileSelector)
-  funcProfileWrite()
-  instance_destroy(self,true)
-  }
-else if PNameForm.clicked
-  {
-  global.PNAME = PNameForm.content
-  PNameForm.clicked = false
-  }
-else if PAch.clicked
-  {
-  instance_create(0,0,oAchievementsRuler)
-  funcProfileWrite()
-  instance_destroy(self,true)
-  }
-else if PBack.clicked
-  {
-  instance_create(0,0,oMenuRuler)
-  funcProfileWrite()
-  instance_destroy(self,true)
-  }
+            <string>//check buttons pressed
+if bBack.clicked
+  action_another_room(rMenu)
 </string>
           </argument>
         </arguments>
@@ -144,17 +74,27 @@ else if PBack.clicked
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_font(fImpact64)
+            <string>draw_set_font(fImpact96)
+draw_set_color(c_white)
+draw_set_halign(fa_center)
+draw_set_valign(fa_center)
 draw_set_alpha(1)
-draw_set_colour(c_white)
-//draw_text(800*global.DRAW_SCALE,1000*global.DRAW_SCALE,global.PNAME)
-//draw_text(800*global.DRAW_SCALE,1100*global.DRAW_SCALE,global.Profile)
+draw_text_transformed(800*global.DRAW_SCALE,100*global.DRAW_SCALE,'CREDITS',global.DRAW_SCALE,global.DRAW_SCALE,0)
+
+draw_set_font(fDebug)
+draw_text_transformed(800*global.DRAW_SCALE,600*global.DRAW_SCALE,'Still working, stand by#
+Press ESC key or BACK baton',1,1,0)
+
+/*
+TODO: запилить анимацию фирменную скролла и вращения строк
+контент: разрабы и благодарности
+*/
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="10" enumb="13">
+    <event eventtype="9" enumb="27">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -171,9 +111,8 @@ draw_set_colour(c_white)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//checking form
-if PNameForm.clicked
-  global.PNAME = PNameForm.content
+            <string>instance_create(0,0,oMenuRuler)
+instance_destroy(self,false)
 </string>
           </argument>
         </arguments>
