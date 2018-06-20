@@ -34,17 +34,16 @@ PNameForm = instance_create(800,300,oForm)
 PNameForm.content      = global.PNAME
 PNameForm.contentSaved = global.PNAME
 //lang
-//PLang = instance_create(800,500,oList)
-//PLang.val = 'RU: add locale'                    //TODO
-//ds_list_add(PLang.arr,'RU: add locale')         //TODO
-//ds_list_add(PLang.arr,'English')
+PLang = instance_create(800,500,oList)
+PLang.val = 'Russian'                    //TODO
+PLang.num = 1
+ds_map_add(PLang.arr,0,'English')
+ds_map_add(PLang.arr,1,'Russian')         //TODO
 //achievements menu
 PAch = instance_create(800,700,oButton)
 PAch.content = 'ACHIEVEMENTS'
 PAch.font = fImpact64
 
-//stats
-//PStats = instance_create(0,0,oProfileStats)
 //connected: db
 //back
 PBack = instance_create(800,1000,oButton)
@@ -75,7 +74,6 @@ PBack.content = "BACK"
 instance_destroy(PNameForm,true)
 //instance_destroy(PLang,true)
 instance_destroy(PAch,true)
-//instance_destroy(PStats,true)
 instance_destroy(PBack,true)
 </string>
           </argument>

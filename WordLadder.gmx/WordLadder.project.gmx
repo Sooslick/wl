@@ -42,6 +42,7 @@
     <script>scripts\funcCfgWrite.gml</script>
     <script>scripts\funcProfileRead.gml</script>
     <script>scripts\funcProfileWrite.gml</script>
+    <script>scripts\formatTimeString.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
@@ -52,7 +53,9 @@
     <object>objects\oLogo</object>
     <object>objects\oMenuRuler</object>
     <object>objects\oButton</object>
+    <object>objects\oConfirmButton</object>
     <object>objects\oForm</object>
+    <object>objects\oList</object>
     <object>objects\oSquareRuler</object>
     <object>objects\oSquare</object>
     <object>objects\oNewGameRuler</object>
@@ -63,6 +66,8 @@
     <object>objects\oEasterEggRuler</object>
     <object>objects\oProfileSelector</object>
     <object>objects\oProfileCreator</object>
+    <object>objects\oTimeCounter</object>
+    <object>objects\oStatsDrawer</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>

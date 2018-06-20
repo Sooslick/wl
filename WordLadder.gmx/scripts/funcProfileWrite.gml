@@ -77,4 +77,13 @@
     for (i=3; i>=0; i--)
       file_bin_write_byte(f,byte[i])    
     
+    tmp = global.PSRESETS     
+    for (i=0;i<4;i++)
+      {
+      byte[i] = tmp mod 256
+      tmp = tmp div 256
+      }
+    for (i=3; i>=0; i--)
+      file_bin_write_byte(f,byte[i])   
+      
     file_bin_close(f)

@@ -46,7 +46,11 @@ if file_exists('profiles/' + global.Profile + '.save')
     global.PSSERVERS = 0
     for (i=0; i<4; i++)
       global.PSSERVERS = global.PSSERVERS*256 + file_bin_read_byte(f)   
-      
+     
+    global.PSRESETS = 0
+    for (i=0; i<4; i++)
+      global.PSRESETS = global.PSRESETS*256 + file_bin_read_byte(f)   
+       
     file_bin_close(f)
     }
 else
@@ -62,6 +66,7 @@ else
     global.PSLETTERS = 0
     global.PSGAMES = 0
     global.PSSERVERS = 0
+    global.PSRESETS = 0
     
     global.SaveCorrupted = true
     }
