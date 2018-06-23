@@ -28,6 +28,7 @@
   <sounds name="sound"/>
   <sprites name="sprites">
     <sprite>sprites\sButton</sprite>
+    <sprite>sprites\sCheckBox</sprite>
     <sprite>sprites\sSquare</sprite>
     <sprite>sprites\sEnglish</sprite>
     <sprite>sprites\sPixel</sprite>
@@ -53,6 +54,7 @@
     <object>objects\oLogo</object>
     <object>objects\oMenuRuler</object>
     <object>objects\oButton</object>
+    <object>objects\oCheckBox</object>
     <object>objects\oConfirmButton</object>
     <object>objects\oForm</object>
     <object>objects\oList</object>
