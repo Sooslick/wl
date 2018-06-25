@@ -47,9 +47,93 @@ window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
 window_set_fullscreen(global.FULL)
 window_set_position(20,20)                                //temp TODO
 //LOGO Code:
-
-//IF LOGO SKIPPED:
-action_another_room(rMenu)
+frame=0
+if global.ShowLogo
+      {
+      stepno=0
+      opacity=1.0
+      }
+//IF LOGO SKIPPED:      
+else
+      action_another_room(rMenu)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>frame++
+switch (frame)
+  {
+  case 30: stepno=1; break;         //animation case
+  case 120: stepno=3; break;        //0: begin
+  }                                 //1: black
+if stepno==3                        //2: white
+  action_another_room(rMenu)        //3: end
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if stepno==0
+  {
+  draw_sprite_ext(sPixel,0,0,0,1600,1200,0,c_white,1)
+  draw_sprite(LogoBlack,0,800,600)
+  }
+else if stepno==1
+  {
+  draw_sprite_ext(LogoWhite,0,800,600,1,1,2,c_red,0.5)
+  draw_sprite_ext(LogoWhite,0,800,600,1,1,358,c_aqua,0.5)
+  draw_sprite(LogoWhite,0,800,600)
+  draw_sprite_ext(sPixel,0,0,0,1600,1200,0,c_white,opacity)
+  opacity/=2
+  if opacity&lt;0.01 stepno=2
+  }
+else if stepno==2
+  {
+  switch (frame)
+    {
+    case 65: draw_sprite_ext(LogoWhite,0,800,800,1.25,1.25,10,c_red,0.5); break;
+    case 67: case 69: draw_sprite_ext(LogoWhite,0,800,600,1.5,1.5,10,c_red,0.5); break;
+    case 75: case 76: draw_sprite_ext(LogoWhite,0,800,400,1.5,1.5,8,c_red,0.5); break;
+    default: draw_sprite_ext(LogoWhite,0,800,600,1,1,2,c_red,0.5); break;
+    }
+  draw_sprite_ext(LogoWhite,0,800,600,1,1,358,c_aqua,0.5)
+  draw_sprite(LogoWhite,0,800,600)
+  }
 </string>
           </argument>
         </arguments>

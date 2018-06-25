@@ -32,6 +32,10 @@
     <sprite>sprites\sSquare</sprite>
     <sprite>sprites\sEnglish</sprite>
     <sprite>sprites\sPixel</sprite>
+    <sprites name="OldLogo">
+      <sprite>sprites\LogoBlack</sprite>
+      <sprite>sprites\LogoWhite</sprite>
+    </sprites>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -45,6 +49,7 @@
     <script>scripts\funcProfileWrite.gml</script>
     <script>scripts\formatTimeString.gml</script>
   </scripts>
+  <shaders name="shaders"/>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
     <font>fonts\fImpact64</font>

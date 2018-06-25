@@ -41,9 +41,9 @@
 //ds_list_add(RSelector,'1600x900') 
 //ds_list_add(RSelector,'1600x1200')      
 //fullscreen
-//Full = instance_create(800,300,oFlag)
-//Full.content = 'Fullscreen'
-//Full.checked = 
+Full = instance_create(800,300,oCheckBox)
+Full.content = 'Fullscreen'
+Full.checked = global.FULL
 //interface
 //create olist aka locale
 //reset
@@ -76,7 +76,8 @@ PBack.content = "BACK"
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_destroy(PBack,true)
+            <string>instance_destroy(Full,true)
+instance_destroy(PBack,true)
 </string>
           </argument>
         </arguments>
@@ -101,35 +102,16 @@ PBack.content = "BACK"
             <kind>1</kind>
             <string>if PBack.clicked
   {
+  //rewrite config fields
+  global.FULL = Full.checked
+  window_set_fullscreen(global.FULL)
+  //TODO: recalculate screen properties
+  
+  //rewrite cfg file and back
   instance_create(0,0,oMenuRuler)
   funcCfgWrite()
   instance_destroy(self,true)
   }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="27">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>instance_create(0,0,oMenuRuler)
-funcCfgWrite()
-instance_destroy(self,false)
 </string>
           </argument>
         </arguments>
