@@ -35,10 +35,10 @@ PNameForm.content      = global.PNAME
 PNameForm.contentSaved = global.PNAME
 //lang
 PLang = instance_create(800,500,oList)
-PLang.val = 'Russian'                    //TODO
-PLang.num = 1
 ds_map_add(PLang.arr,0,'English')
-ds_map_add(PLang.arr,1,'Russian')         //TODO
+ds_map_add(PLang.arr,1,'Russian')
+PLang.num = global.PLOCALE
+PLang.val = PLang.arr[?global.PLOCALE]
 //achievements menu
 PAch = instance_create(800,700,oButton)
 PAch.content = 'ACHIEVEMENTS'
@@ -72,7 +72,7 @@ PBack.content = "BACK"
             <kind>1</kind>
             <string>instance_destroy(PSelector,true)
 instance_destroy(PNameForm,true)
-//instance_destroy(PLang,true)
+instance_destroy(PLang,true)
 instance_destroy(PAch,true)
 instance_destroy(PBack,true)
 </string>
@@ -107,6 +107,26 @@ else if PNameForm.clicked
   {
   global.PNAME = PNameForm.content
   PNameForm.clicked = false
+  }
+else if PLang.clicked
+  {
+  if PLang.active
+    {
+    PSelector.clickable = false
+    PNameForm.clickable = false
+    PAch.clickable = false
+    PBack.clickable = false
+    PLang.clicked = false
+    }
+  else
+    {
+    PSelector.clickable = true
+    PNameForm.clickable = true
+    PAch.clickable = true
+    PBack.clickable = true
+    PLang.clicked = false
+    global.PLOCALE = PLang.num
+    }
   }
 else if PAch.clicked
   {

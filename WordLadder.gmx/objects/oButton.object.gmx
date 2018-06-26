@@ -29,7 +29,7 @@
 hover = 1       //draw cl
 a = 1           //draw alpha
 content = ''    //draw string; set after create call
-active = true   //clickable
+clickable = true   
 clicked = false
 
 ssc = 1                     //size scale
@@ -92,7 +92,7 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if active
+            <string>if clickable
   if hover
     clicked = true
 </string>

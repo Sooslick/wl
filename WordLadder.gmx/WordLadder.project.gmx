@@ -28,6 +28,8 @@
   <sounds name="sound"/>
   <sprites name="sprites">
     <sprite>sprites\sButton</sprite>
+    <sprite>sprites\sList</sprite>
+    <sprite>sprites\sForm</sprite>
     <sprite>sprites\sCheckBox</sprite>
     <sprite>sprites\sSquare</sprite>
     <sprite>sprites\sEnglish</sprite>
@@ -49,7 +51,6 @@
     <script>scripts\funcProfileWrite.gml</script>
     <script>scripts\formatTimeString.gml</script>
   </scripts>
-  <shaders name="shaders"/>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
     <font>fonts\fImpact64</font>
