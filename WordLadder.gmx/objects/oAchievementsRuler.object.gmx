@@ -84,8 +84,8 @@ if bAlert&lt;&gt;0
 if bReset.clicked
   {
   bReset.clicked = false
-  bReset.active = false
-  bBack.active = false
+  bReset.clickable = false
+  bBack.clickable = false
   bAlert = instance_create(0,0,oConfirmButton)
   bAlert.content = 'Reset all stats?'
   }
@@ -103,15 +103,15 @@ else if bAlert&lt;&gt;0
     global.PSRESETS++
     instance_destroy(bAlert,true)
     bAlert = 0
-    bReset.active = true
-    bBack.active = true
+    bReset.clickable = true
+    bBack.clickable = true
     }
   else if bAlert.bNo.clicked
     {
     instance_destroy(bAlert,true)
     bAlert = 0
-    bReset.active = true
-    bBack.active = true
+    bReset.clickable = true
+    bBack.clickable = true
     }
   }
 else if bBack.clicked

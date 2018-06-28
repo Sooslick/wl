@@ -104,3 +104,5 @@ else                //defaults
     global.Sound = 100
     global.Music = 100
     }
+    
+//TODO: cfg map

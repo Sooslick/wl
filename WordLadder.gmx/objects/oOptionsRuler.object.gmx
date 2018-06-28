@@ -26,29 +26,44 @@
           <argument>
             <kind>1</kind>
             <string>//Screen Resolution
-//RSelector = instance_create(800,100,oList)
-//RSelector.val = '800x600'
-//ds_list_add(RSelector,'800x600') 
-//ds_list_add(RSelector,'1024x600') 
-//ds_list_add(RSelector,'1024x768') 
-//ds_list_add(RSelector,'1152x864')
-//ds_list_add(RSelector,'1280x720')
-//ds_list_add(RSelector,'1280x768')
-//ds_list_add(RSelector,'1280x1024') 
-//ds_list_add(RSelector,'1440x900')
-//ds_list_add(RSelector,'1400x1050')
-//ds_list_add(RSelector,'1440x1080') 
-//ds_list_add(RSelector,'1600x900') 
-//ds_list_add(RSelector,'1600x1200')      
+RSelector = instance_create(280,80,oList)
+RSelector.val = string(global.WIN_WIDTH) + 'x' + string(global.WIN_HEIGHT)
+RSelector.num = -1
+ds_map_add(RSelector.arr,0,'800x600') 
+ds_map_add(RSelector.arr,1,'1024x768') 
+ds_map_add(RSelector.arr,2,'1152x864')
+ds_map_add(RSelector.arr,3,'1280x720')
+ds_map_add(RSelector.arr,4,'1366x768')
+ds_map_add(RSelector.arr,5,'1440x1080') 
+ds_map_add(RSelector.arr,6,'1600x1200') 
+//TODO add more     
+//TODO: разделить widescreen и 4:3 режимы
 //fullscreen
-Full = instance_create(800,300,oCheckBox)
+Full = instance_create(280,240,oCheckBox)   //TODO oList: screen mode
 Full.content = 'Fullscreen'
 Full.checked = global.FULL
-//interface
-//create olist aka locale
+//widescreen
+//Wide = instance_create(280,400,oCheckBox)   //TODO oList: screen mode
+//Wide.content = 'Widescreen mode'
+//Wide.checked = global.WIDE
+
+//lang create olist aka locale
+//PLang = instance_create(280,560,oList)
+//ds_map_add(PLang.arr,0,'English')
+//ds_map_add(PLang.arr,1,'Russian')
+//PLang.num = global.PLOCALE
+//PLang.val = PLang.arr[?global.PLOCALE]
+
+//showlogo
+ShowLogo = instance_create(280,720,oCheckBox)  
+ShowLogo.content = 'Show Logo'
+ShowLogo.checked = global.ShowLogo
 //reset
-//oFlag
+Reset = instance_create(280,980,oButton)  
+Reset.content = 'Restore defaults'
+Reset.checked = false
 //Sound &amp; music
+//oSlider
 //oSlider
 //oSlider
 
@@ -76,7 +91,15 @@ PBack.content = "BACK"
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_destroy(Full,true)
+            <string>instance_destroy(RSelector,true)
+instance_destroy(Full,true)
+//instance_destroy(Wide,true)
+//instance_destroy(PLang,true)
+instance_destroy(ShowLogo,true)
+instance_destroy(Reset,true)
+//
+//
+//
 instance_destroy(PBack,true)
 </string>
           </argument>
@@ -100,12 +123,60 @@ instance_destroy(PBack,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if PBack.clicked
+            <string>if RSelector.clicked
+  {
+  if RSelector.active
+    {
+    Full.clickable = false
+    //Wide.clickable = false
+    //PLang.clickable = false
+    ShowLogo.clickable = false
+    Reset.clickable = false
+    PBack.clickable = false
+    RSelector.clicked = false
+    }
+  else
+    {
+    Full.clickable = true
+    //Wide.clickable = true
+    //PLang.clickable = true
+    ShowLogo.clickable = true
+    Reset.clickable = true
+    PBack.clickable = true
+    RSelector.clicked = false
+    //global.WIN_WIDTH = 
+    //global.WIN_HEIGHT = 
+    //TODO: func res decode
+    }
+  }
+else if Reset.clicked
+  {
+  //Button properties
+  Reset.clicked = false
+  Reset.clickable = false
+  Reset.checked = true
+  Reset.content = 'RESTORED'
+  //cfg
+  global.ShowLogo = true
+  global.WIN_WIDTH = display_get_width()
+  global.WIN_HEIGHT = display_get_height()
+  //TODO: recalculate screen properties
+  //TODO: change oList.val
+  global.FULL = true
+  global.Master = 100
+  global.Sound = 100
+  global.Music = 100
+  //TODO change
+  //TODO
+  //TODO
+  }
+else if PBack.clicked
   {
   //rewrite config fields
   global.FULL = Full.checked
   window_set_fullscreen(global.FULL)
   //TODO: recalculate screen properties
+  global.ShowLogo = ShowLogo.checked
   
   //rewrite cfg file and back
   instance_create(0,0,oMenuRuler)
