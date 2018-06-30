@@ -45,13 +45,13 @@ file_find_close();
  
 for (j=0; j&lt;pcount; j++)
   {
-  b[j] = instance_create(300,j*133+133,oButton)                   //todo coordinates   
+  b[j] = instance_create(300,j*140+280,oButton)                     
   b[j].content = string_copy(pfs[j],1,string_length(pfs[j])-5)
   b[j].font    = fImpact64
   }  
   
-b[pcount] = instance_create(300,pcount*133+145,oButton)
-b[pcount].content = 'new profile'
+b[pcount] = instance_create(300,pcount*140+300,oButton)
+b[pcount].content = 'NEW PROFILE'
 b[pcount].font    = fImpact64
 </string>
           </argument>
@@ -102,7 +102,10 @@ b[pcount].font    = fImpact64
             <string>//if new profile
 if b[pcount].clicked
   {
-  instance_create(0,0,oProfileCreator)
+  p = instance_create(0,0,oProfileCreator)
+  p.parent = parent
+  parent.ActiveMenuPtr = p
+  parent.Header = 'ENTER USERNAME'
   instance_destroy(self,true)
   }
 else    //testing every button
@@ -111,7 +114,10 @@ else    //testing every button
       {
       global.Profile = b[i].content       //set profile to 
       funcProfileRead()
-      instance_create(0,0,oProfileRuler)
+      p = instance_create(0,0,oProfileRuler)
+      p.parent = parent
+      parent.ActiveMenuPtr = p
+      parent.Header = 'PROFILE SETTINGS'
       instance_destroy(self,true)
       test = false
       break

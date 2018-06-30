@@ -34,9 +34,8 @@ clicked = false     //element clicked
 clickable = true
 //a = 1               //alpha
 
-ssc = 1                     //size scale
-csc = global.DRAW_SCALE     //coord scale
-dsc = csc*ssc               //draw scale
+dsc = 1                     //draw scale
+ssc = global.DRAW_SCALE     //size scale
 
 arr = ds_map_create()
 val = ''
@@ -65,10 +64,10 @@ num = 0
             <kind>1</kind>
             <string>if !active
   {
-  if (window_mouse_get_x() &lt; (x + 256*ssc) *csc +global.DRAW_HOFF) &amp;&amp;  //TODO changepos  
-     (window_mouse_get_x() &gt; (x - 256*ssc) *csc +global.DRAW_HOFF) &amp;&amp;   
-     (window_mouse_get_y() &lt; (y +  64*ssc) *csc +global.DRAW_VOFF) &amp;&amp;     
-     (window_mouse_get_y() &gt; (y -  64*ssc) *csc +global.DRAW_VOFF)      
+  if (display_mouse_get_x() &lt; (x + 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;    
+     (display_mouse_get_x() &gt; (x - 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;   
+     (display_mouse_get_y() &lt; (y +  64*dsc) * ssc +global.DRAW_VOFF) &amp;&amp;     
+     (display_mouse_get_y() &gt; (y -  64*dsc) * ssc +global.DRAW_VOFF)      
           {
           hover = 1            //check cursor pos     //not by mouse enter/leave event
           hoverElement = -1
@@ -80,11 +79,11 @@ else
   {
   hover = 0
   hoverElement = -1
-  if (window_mouse_get_x() &lt; (x + 256*ssc) *csc +global.DRAW_HOFF) &amp;&amp;       //check vert pos
-     (window_mouse_get_x() &gt; (x - 256*ssc) *csc +global.DRAW_HOFF)
+  if (display_mouse_get_x() &lt; (x + 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;    
+     (display_mouse_get_x() &gt; (x - 256*dsc) * ssc +global.DRAW_HOFF)        //checking hpos
         for (i=0; i&lt;=ds_map_size(arr); i++)
-          if (window_mouse_get_y() &lt; (y + i*128 +  64*ssc) *csc +global.DRAW_VOFF) &amp;&amp;   //check hor   
-             (window_mouse_get_y() &gt; (y + i*128 -  64*ssc) *csc +global.DRAW_VOFF)      //4 every line
+          if (display_mouse_get_y() &lt; (y + i*128 + 64*dsc) * ssc +global.DRAW_VOFF) &amp;&amp;     
+             (display_mouse_get_y() &gt; (y + i*128 - 64*dsc) * ssc +global.DRAW_VOFF)     //checking vpos 4 every line
                 {
                 hover = 1       
                 hoverElement = i-1
@@ -172,26 +171,26 @@ draw_set_alpha(1)
 if !active
   {
   draw_set_alpha(hover+0.66)
-  draw_sprite_ext(sList,hover,x*csc,y*csc,dsc,dsc,0,c_white,1)      //if list closed
-  draw_text_transformed((x-240)*csc,y*csc,val,dsc,dsc,0)
+  draw_sprite_ext(sList,hover,x,y,dsc,dsc,0,c_white,1)      //if list closed
+  draw_text_transformed((x-240),y,val,dsc,dsc,0)
   }
 else
   {
-  draw_sprite_ext(sList,2    ,x*csc,y*csc,dsc,dsc,0,c_white,1)      //if list opened
-  draw_text_transformed((x-240)*csc,y*csc,val,dsc,dsc,0)
+  draw_sprite_ext(sList,2    ,x,y,dsc,dsc,0,c_white,1)      //if list opened
+  draw_text_transformed((x-240),y,val,dsc,dsc,0)
   for (i=0;i&lt;ds_map_size(arr);i++)
     {
     if hoverElement==i    
        {
        draw_set_alpha(1)                                          //list positions
-       draw_sprite_ext(sList,4,x*csc,(y+128+i*128)*csc,dsc,dsc,0,c_white,1)
+       draw_sprite_ext(sList,4,x,(y+128+i*128),dsc,dsc,0,c_white,1)
        }
     else
        {
        draw_set_alpha(0.66)
-       draw_sprite_ext(sList,3,x*csc,(y+128+i*128)*csc,dsc,dsc,0,c_white,1)
+       draw_sprite_ext(sList,3,x,(y+128+i*128),dsc,dsc,0,c_white,1)
        }
-    draw_text_transformed((x-240)*csc,(y+128+i*128)*csc,arr[?i],dsc,dsc,0)
+    draw_text_transformed((x-240),(y+128+i*128),arr[?i],dsc,dsc,0)
     }
   }
 </string>

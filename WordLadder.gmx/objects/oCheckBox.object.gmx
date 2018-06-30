@@ -26,15 +26,15 @@
           <argument>
             <kind>1</kind>
             <string>//sprite: scope; checked +2; hover +1
+font = fImpact64
 hover = 1       //draw cl
 a = 1           //draw alpha
-//content = ''    //draw string; set after create call
+content = ''    //draw string; set after create call
 clickable = true  
 checked = false
 
-ssc = 1                     //size scale
-csc = global.DRAW_SCALE     //coord scale
-dsc = csc*ssc               //draw scale
+dsc = 1                     //draw scale
+ssc = global.DRAW_SCALE     //size scale
 </string>
           </argument>
         </arguments>
@@ -57,18 +57,24 @@ dsc = csc*ssc               //draw scale
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (window_mouse_get_x() &lt; (x + 256*ssc) *csc +global.DRAW_HOFF) &amp;&amp;    
-   (window_mouse_get_x() &gt; (x - 256*ssc) *csc +global.DRAW_HOFF) &amp;&amp;   
-   (window_mouse_get_y() &lt; (y +  64*ssc) *csc +global.DRAW_VOFF) &amp;&amp;     
-   (window_mouse_get_y() &gt; (y -  64*ssc) *csc +global.DRAW_VOFF)      
+            <string>if (display_mouse_get_x() &lt; (x + 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;    
+   (display_mouse_get_x() &gt; (x - 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;   
+   (display_mouse_get_y() &lt; (y +  64*dsc) * ssc +global.DRAW_VOFF) &amp;&amp;     
+   (display_mouse_get_y() &gt; (y -  64*dsc) * ssc +global.DRAW_VOFF)       
         {
         hover = 1            //check cursor pos
-        a = 1                //not by mouse enter/leave event
+        if clickable      
+          a = 1    
+        else
+          a = 0.66   
         }
 else
         {
         hover = 0
-        a = 0.66
+        if clickable      
+          a = 0.66    
+        else
+          a = 0.33
         }
 </string>
           </argument>
@@ -120,12 +126,23 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//MAIN DRAW BUTTON  
+            <string>  //DRAW PRE-SETS
+draw_set_font(font)
+draw_set_color(c_white)
+draw_set_halign(fa_right)
+draw_set_valign(fa_center)
+
+//MAIN DRAW BUTTON 
+draw_set_alpha(1)
+draw_sprite_ext(sButton,hover,x,y,dsc,dsc,0,c_white,1)
+draw_set_alpha(a)
+draw_text_transformed(x+120*dsc,y,content,dsc,dsc,0) 
+
 draw_set_alpha(1)
 if checked
-  draw_sprite_ext(sCheckBox,hover+2,x*csc,y*csc,dsc,dsc,0,c_white,1)
+  draw_sprite_ext(sCheckBox,hover+2,x+192*dsc,y,dsc,dsc,0,c_white,1)
 else
-  draw_sprite_ext(sCheckBox,hover,x*csc,y*csc,dsc,dsc,0,c_white,1)
+  draw_sprite_ext(sCheckBox,hover,x+192*dsc,y,dsc,dsc,0,c_white,1)
 </string>
           </argument>
         </arguments>

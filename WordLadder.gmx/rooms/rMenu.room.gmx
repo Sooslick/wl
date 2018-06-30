@@ -10,18 +10,17 @@
   <persistent>0</persistent>
   <colour>0</colour>
   <showcolour>-1</showcolour>
-  <code>if global.FirstLaunch
-  {
+  <code>/*
+if global.FirstLaunch
+  {                                                         //TODO: advokate selector
   p = instance_create(0,0,oProfileCreator)
   p.CalledFrom = 1
   }
 else if global.SaveCorrupted
   instance_create(0,0,oProfileSelector) //new profile (or login) menu after fault
-else
-  instance_create(0,0,oMenuRuler)
-  
+  */
+instance_create(0,0,oMenuRuler)  
 instance_create(0,0,oTimeCounter)
-
 global.SaveCorrupted = false            //reset global after first restore</code>
   <enableViews>-1</enableViews>
   <clearViewBackground>-1</clearViewBackground>

@@ -27,6 +27,9 @@
             <kind>1</kind>
             <string>//Tech variables
 Header = 'RENAME THIS GAME'
+ActiveMenuPtr = 0               //MenuRuler ID
+ActiveMenuOpened = false
+ButtonImgChange = 0                //pointer to baton where sprite nado smenit
 //Cheat = ''                      //typed by squares //removed to SquarRuler
 Dead = false                    //killing MenuRuler for create new Ruler
 DeadTick = 0                  //killing timer  
@@ -34,11 +37,12 @@ NextMenu = 0                //transition: 1=newgame; 2=profile; 3=ops; 4=creds
 //Offset processor + anim
 bActive = true
 bOffInner = 1200                         //offset coordinates min-max
-bOffOuter = 1860 +global.DRAW_HOFF*2     //fix DRAW GUI bug with drawing in deadzone
+bOffOuter = 1790
 //b2Active = false                       //currently useless
 b2OffInner = 1050
 b2OffOuter = 1150 +global.DRAW_VOFF*2
 bTick = 0           //animation frame
+b2Tick = 0
 //Buttons init
 bNewGame = instance_create(bOffInner,280,oButton)
 bNewGame.content = 'PLAY'
@@ -53,12 +57,10 @@ bExit.content = 'EXIT'
 //TODO B2 INIT
 b2Hide = instance_create(300,b2OffOuter,oButton)
 b2Hide.content = 'SWITCH'
-b2Hide.ssc = 0.66
-b2Hide.dsc = b2Hide.ssc * b2Hide.csc
+b2Hide.dsc = 0.66
 b2Accept = instance_create(300,b2OffOuter+100,oButton)
 b2Accept.content = 'ACCEPT'
-b2Accept.ssc = 0.66
-b2Accept.dsc = b2Accept.ssc * b2Accept.csc
+b2Accept.dsc = 0.66
 //Background processor
 bg = instance_create(0,0,oSquareRuler)
 bg.parent = id
@@ -94,6 +96,8 @@ instance_destroy(bExit,true)
 instance_destroy(b2Hide,true)
 instance_destroy(b2Accept,true)
 instance_destroy(bg,true)
+if !ActiveMenuPtr==0
+  instance_destroy(ActiveMenuPtr,true)
 switch NextMenu
   {
   case 1:  instance_create(0,0,oNewGameRuler); break;
@@ -126,44 +130,72 @@ switch NextMenu
             <kind>1</kind>
             <string>if bTick&gt;0
   {
-  if bActive    //main out;
+  if bActive      //main out;
     {
-    tmp_x = funcTickOffset(bTick, bOffInner,  bOffOuter,  true)
-    tmp_y = funcTickOffset(bTick, b2OffInner, b2OffOuter, false)
-    bNewGame.x = tmp_x
-    bProfile.x = tmp_x
-    bOptions.x = tmp_x
-    bAuthors.x = tmp_x
-    bExit.x    = tmp_x
-    b2Hide.y   = tmp_y
-    b2Accept.y = tmp_y + 100
+    tmp = funcTickOffset(bTick, bOffInner,  bOffOuter,  true)
+    bNewGame.x = tmp
+    bProfile.x = tmp
+    bOptions.x = tmp
+    bAuthors.x = tmp
+    bExit.x    = tmp
     if bTick==10
       {
-      bActive = false
-      bg.active = true
       bTick = -1
+      bActive = false
+      if ButtonImgChange != 0
+        ButtonImgChange.sp = sButtonMark
       }
     }
   else          //main in
     {
-    tmp_x = funcTickOffset(bTick, bOffInner,  bOffOuter,  false)
-    tmp_y = funcTickOffset(bTick, b2OffInner, b2OffOuter, true)
-    bNewGame.x = tmp_x
-    bProfile.x = tmp_x
-    bOptions.x = tmp_x
-    bAuthors.x = tmp_x
-    bExit.x    = tmp_x
-    b2Hide.y   = tmp_y
-    b2Accept.y = tmp_y + 100
+    tmp = funcTickOffset(bTick, bOffInner,  bOffOuter,  false)
+    bNewGame.x = tmp
+    bProfile.x = tmp
+    bOptions.x = tmp
+    bAuthors.x = tmp
+    bExit.x    = tmp
     if bTick==10
       {
-      bActive = true
-      bg.active = false
       bTick = -1
+      bActive = true
       }
     }
   bTick++
   }
+  
+if b2Tick&gt;0
+  {
+  if !bg.active    //sec out;
+    {
+    tmp = funcTickOffset(b2Tick, b2OffInner, b2OffOuter, false)
+    b2Hide.y   = tmp
+    b2Accept.y = tmp + 100
+    if b2Tick==10
+      {
+      bActive = false
+      bg.active = true
+      b2Tick = -1
+      }
+    }
+  else          //sec in
+    {
+    tmp = funcTickOffset(b2Tick, b2OffInner, b2OffOuter, true)
+    b2Hide.y   = tmp
+    b2Accept.y = tmp + 100
+    if b2Tick==10
+      {
+      bActive = true
+      bNewGame.clickable = true
+      bProfile.clickable = true
+      bOptions.clickable = true
+      bAuthors.clickable = true
+      bExit.clickable = true
+      bg.active = false
+      b2Tick = -1
+      }
+    }
+  b2Tick++
+  }  
   
 if Dead             
   {
@@ -196,35 +228,183 @@ if Dead
             <string>//check buttons pressed
 if bNewGame.clicked
   {
-  Dead = true
-  NextMenu = 1
+  if ActiveMenuOpened                       //if button menu is opened
+    {
+    if instance_exists(oNewGameRuler)       //same button: close menu
+      {
+      bTick = 1
+      ButtonImgChange.sp = sButton
+      ActiveMenuOpened = false
+      Header = 'RENAME THIS GAME'
+      instance_destroy(ActiveMenuPtr,true) 
+      ActiveMenuPtr = 0
+      b2Hide.clickable = true
+      b2Accept.clickable = true
+      }
+    else
+      {
+      instance_destroy(ActiveMenuPtr,true) 
+      ActiveMenuPtr = instance_create(0,0,oNewGameRuler)        //else switch menu 
+      Header = 'GAME PREFERENCES' 
+      ButtonImgChange.sp = sButton
+      ButtonImgChange = bNewGame
+      ButtonImgChange.sp = sButtonMark
+      }
+    }
+  else
+    {                                       //menu closed: open &amp; deactivate b2
+    bTick = 1
+    ButtonImgChange = bNewGame
+    ActiveMenuOpened = true
+    ActiveMenuPtr = instance_create(0,0,oNewGameRuler)
+    Header = 'GAME PREFERENCES' 
+    b2Hide.clickable = false
+    b2Accept.clickable = false
+    }
+  bNewGame.clicked = false
   }
+
+//similar sections    
 else if bProfile.clicked
   {
-  Dead = true
-  NextMenu = 2
+  if ActiveMenuOpened                 
+    {
+    if instance_exists(oProfileRuler)     
+      {
+      bTick = 1
+      ButtonImgChange.sp = sButton
+      ActiveMenuOpened = false
+      Header = 'RENAME THIS GAME'
+      instance_destroy(ActiveMenuPtr,true) 
+      ActiveMenuPtr = 0
+      b2Hide.clickable = true
+      b2Accept.clickable = true
+      }
+    else
+      {
+      instance_destroy(ActiveMenuPtr,true) 
+      ActiveMenuPtr = instance_create(0,0,oProfileRuler)  
+      ActiveMenuPtr.parent = id
+      Header = 'PROFILE SETTINGS' 
+      ButtonImgChange.sp = sButton
+      ButtonImgChange = bProfile
+      ButtonImgChange.sp = sButtonMark    
+      }
+    }
+  else
+    {                                    
+    bTick = 1
+    ButtonImgChange = bProfile
+    ActiveMenuOpened = true
+    Header = 'PROFILE SETTINGS' 
+    ActiveMenuPtr = instance_create(0,0,oProfileRuler)
+    ActiveMenuPtr.parent = id
+    b2Hide.clickable = false
+    b2Accept.clickable = false
+    }
+  bProfile.clicked = false  
   }
+  
 else if bOptions.clicked
   {
-  Dead = true
-  NextMenu = 3
+  if ActiveMenuOpened                 
+    {
+    if instance_exists(oOptionsRuler)     
+      {
+      bTick = 1
+      ButtonImgChange.sp = sButton
+      ActiveMenuOpened = false
+      Header = 'RENAME THIS GAME'
+      instance_destroy(ActiveMenuPtr,true) 
+      ActiveMenuPtr = 0
+      b2Hide.clickable = true
+      b2Accept.clickable = true
+      }
+    else
+      {
+      instance_destroy(ActiveMenuPtr,true) 
+      ActiveMenuPtr = instance_create(0,0,oOptionsRuler)     
+      Header = 'GAME OPTIONS' 
+      ButtonImgChange.sp = sButton
+      ButtonImgChange = bOptions
+      ButtonImgChange.sp = sButtonMark   
+      }
+    }
+  else
+    {                                    
+    bTick = 1
+    ButtonImgChange = bOptions
+    ActiveMenuOpened = true
+    Header = 'GAME OPTIONS' 
+    ActiveMenuPtr = instance_create(0,0,oOptionsRuler)
+    b2Hide.clickable = false
+    b2Accept.clickable = false
+    }
+  bOptions.clicked = false
   }
+  
 else if bAuthors.clicked
   {
-  Dead = true
-  NextMenu = 4
+  if ActiveMenuOpened                 
+    {
+    if instance_exists(oAuthorsRuler)     
+      {
+      bTick = 1
+      ButtonImgChange.sp = sButton
+      ActiveMenuOpened = false
+      Header = 'RENAME THIS GAME'
+      instance_destroy(ActiveMenuPtr,true) 
+      ActiveMenuPtr = 0
+      b2Hide.clickable = true
+      b2Accept.clickable = true
+      }
+    else
+      {
+      instance_destroy(ActiveMenuPtr,true) 
+      ActiveMenuPtr = instance_create(0,0,oAuthorsRuler)   
+      Header = 'CREDITS' 
+      ButtonImgChange.sp = sButton
+      ButtonImgChange = bAuthors
+      ButtonImgChange.sp = sButtonMark    
+      }
+    }
+  else
+    {                                    
+    bTick = 1
+    ButtonImgChange = bAuthors
+    ActiveMenuOpened = true
+    Header = 'CREDITS' 
+    ActiveMenuPtr = instance_create(0,0,oAuthorsRuler)
+    b2Hide.clickable = false
+    b2Accept.clickable = false
+    }
+  bAuthors.clicked = false
   }
+  
+//SAVE DATA &amp; QUIT  
 else if bExit.clicked
   {
   funcCfgWrite()
   funcProfileWrite()
   action_end_game()
   }
+  
+//CLICKED = TRUE ONLY IF ACTIVE AKA CLICKABLE
 else if b2Hide.clicked
   {
   bTick = 1          //button animation start
+  b2Tick = 1            //switch buttons
   b2Hide.clicked = false
+  ButtonImgChange = 0
+  //Clickable = true only if anim end and come in (check step event)
+  bNewGame.clickable = false
+  bProfile.clickable = false
+  bOptions.clickable = false
+  bAuthors.clickable = false
+  bExit.clickable = false
   }
+  
+//cheat accept
 else if b2Accept.clicked
   {
   b2Accept.clicked = false
@@ -259,16 +439,19 @@ draw_set_color(c_white)
 draw_set_halign(fa_center)
 draw_set_valign(fa_center)
 draw_set_alpha(1)
-draw_text_transformed(800*global.DRAW_SCALE,100*global.DRAW_SCALE,'RENAME THIS GAME',global.DRAW_SCALE,global.DRAW_SCALE,0)
+draw_text(800,100,Header)
 
 //Profile name TODO: fade out
 draw_set_font(fImpact64)
 draw_set_halign(fa_right)
-draw_text_transformed(1580*global.DRAW_SCALE,1150*global.DRAW_SCALE,'Profile: '+global.Profile,global.DRAW_SCALE,global.DRAW_SCALE,0)
+draw_text(1580,1150,'Profile: '+global.Profile)
 
 //Fade out
 if Dead
-  draw_sprite_ext(sPixel,0,0,0,global.WIN_WIDTH,global.WIN_HEIGHT,0,0,DeadTick)
+  draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,DeadTick)
+  
+//black line
+draw_sprite_ext(sPixel,0,1600,0,global.DRAW_HOFF/global.DRAW_SCALE,1200,0,c_black,1)
 </string>
           </argument>
         </arguments>

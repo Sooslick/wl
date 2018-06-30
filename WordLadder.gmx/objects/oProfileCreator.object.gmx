@@ -25,7 +25,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>CalledFrom = 0          //0: from profile, 1: from main menu (first launch)
+            <string>//CalledFrom = 0          //0: from profile, 1: from main menu (first launch)
 name = ''
 //cursor animation
 cursor = true
@@ -112,14 +112,13 @@ draw_set_alpha(1)
 draw_set_halign(fa_center)
 draw_set_valign(fa_center)
 draw_set_font(fImpact96)
-draw_text_transformed(800*global.DRAW_SCALE,100*global.DRAW_SCALE,'WHAT IS YOUR NAME?',global.DRAW_SCALE,global.DRAW_SCALE,0)
 //name preset
 draw_set_halign(fa_left)
 draw_set_font(fImpact64)
 if cursor
-  draw_text_transformed(100*global.DRAW_SCALE,600*global.DRAW_SCALE,name+'|',global.DRAW_SCALE,global.DRAW_SCALE,0)
+  draw_text(100,600,name+'|')
 else
-  draw_text_transformed(100*global.DRAW_SCALE,600*global.DRAW_SCALE,name,global.DRAW_SCALE,global.DRAW_SCALE,0)
+  draw_text(100,600,name)
 </string>
           </argument>
         </arguments>
@@ -149,11 +148,12 @@ global.PLOCALE = 0
 //stat &amp; achv
 funcProfileWrite() 
 
-if CalledFrom = 0 
-  instance_create(0,0,oProfileRuler)
-else
-  instance_create(0,0,oMenuRuler)
-instance_destroy(self,true)
+//if CalledFrom = 0 
+  p = instance_create(0,0,oProfileRuler)
+  p.parent = parent
+  parent.ActiveMenuPtr = p
+  parent.Header = 'PROFILE SETTINGS'
+  instance_destroy(self,true)
 </string>
           </argument>
         </arguments>
@@ -214,7 +214,10 @@ instance_destroy(self,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_create(0,0,oProfileSelector)
+            <string>p = instance_create(0,0,oProfileSelector)
+p.parent = parent
+parent.ActiveMenuPtr = p
+parent.Header = 'SELECT PROFILE'
 instance_destroy(self,true)
 </string>
           </argument>

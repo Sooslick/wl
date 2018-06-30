@@ -25,29 +25,26 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//profile selector
-PSelector = instance_create(800,100,oButton)
-PSelector.content = 'SELECT PROFILE'
-PSelector.font = fImpact64
-//nickname
-PNameForm = instance_create(800,300,oForm)
+            <string>//nickname
+PNameForm = instance_create(300,280,oForm)
 PNameForm.content      = global.PNAME
 PNameForm.contentSaved = global.PNAME
 //lang
-PLang = instance_create(800,500,oList)
+PLang = instance_create(300,440,oList)
 ds_map_add(PLang.arr,0,'English')
 ds_map_add(PLang.arr,1,'Russian')
 PLang.num = global.PLOCALE
 PLang.val = PLang.arr[?global.PLOCALE]
 //achievements menu
-PAch = instance_create(800,700,oButton)
+PAch = instance_create(300,680,oButton)
 PAch.content = 'ACHIEVEMENTS'
 PAch.font = fImpact64
+//profile selector
+PSelector = instance_create(300,1000,oButton)
+PSelector.content = 'SELECT PROFILE'
+PSelector.font = fImpact64
 
 //connected: db
-//back
-PBack = instance_create(800,1000,oButton)
-PBack.content = "BACK"
 </string>
           </argument>
         </arguments>
@@ -74,7 +71,7 @@ PBack.content = "BACK"
 instance_destroy(PNameForm,true)
 instance_destroy(PLang,true)
 instance_destroy(PAch,true)
-instance_destroy(PBack,true)
+funcProfileWrite()
 </string>
           </argument>
         </arguments>
@@ -99,8 +96,10 @@ instance_destroy(PBack,true)
             <kind>1</kind>
             <string>if PSelector.clicked
   {
-  instance_create(0,0,oProfileSelector)
-  funcProfileWrite()
+  p = instance_create(0,0,oProfileSelector)
+  p.parent = parent
+  parent.ActiveMenuPtr = p
+  parent.Header = 'SELECT PROFILE'
   instance_destroy(self,true)
   }
 else if PNameForm.clicked
@@ -115,7 +114,6 @@ else if PLang.clicked
     PSelector.clickable = false
     PNameForm.clickable = false
     PAch.clickable = false
-    PBack.clickable = false
     PLang.clicked = false
     }
   else
@@ -123,21 +121,16 @@ else if PLang.clicked
     PSelector.clickable = true
     PNameForm.clickable = true
     PAch.clickable = true
-    PBack.clickable = true
     PLang.clicked = false
     global.PLOCALE = PLang.num
     }
   }
 else if PAch.clicked
   {
-  instance_create(0,0,oAchievementsRuler)
-  funcProfileWrite()
-  instance_destroy(self,true)
-  }
-else if PBack.clicked
-  {
-  instance_create(0,0,oMenuRuler)
-  funcProfileWrite()
+  p = instance_create(0,0,oAchievementsRuler)
+  p.parent = parent
+  parent.ActiveMenuPtr = p
+  parent.Header = 'STATISTICS'
   instance_destroy(self,true)
   }
 </string>

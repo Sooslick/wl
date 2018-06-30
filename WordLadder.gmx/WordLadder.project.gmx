@@ -28,6 +28,7 @@
   <sounds name="sound"/>
   <sprites name="sprites">
     <sprite>sprites\sButton</sprite>
+    <sprite>sprites\sButtonMark</sprite>
     <sprite>sprites\sList</sprite>
     <sprite>sprites\sForm</sprite>
     <sprite>sprites\sCheckBox</sprite>

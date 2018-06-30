@@ -25,16 +25,16 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>font = fImpact96
+            <string>sp = sButton  
+font = fImpact96
 hover = 1       //draw cl
 a = 1           //draw alpha
 content = ''    //draw string; set after create call
 clickable = true   
 clicked = false
 
-ssc = 1                     //size scale
-csc = global.DRAW_SCALE     //coord scale
-dsc = csc*ssc               //draw scale
+dsc = 1                     //draw scale
+ssc = global.DRAW_SCALE     //size scale
 </string>
           </argument>
         </arguments>
@@ -57,18 +57,24 @@ dsc = csc*ssc               //draw scale
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (window_mouse_get_x() &lt; (x + 256*ssc) *csc +global.DRAW_HOFF) &amp;&amp;    
-   (window_mouse_get_x() &gt; (x - 256*ssc) *csc +global.DRAW_HOFF) &amp;&amp;   
-   (window_mouse_get_y() &lt; (y +  64*ssc) *csc +global.DRAW_VOFF) &amp;&amp;     
-   (window_mouse_get_y() &gt; (y -  64*ssc) *csc +global.DRAW_VOFF)      
+            <string>if (display_mouse_get_x() &lt; (x + 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;    
+   (display_mouse_get_x() &gt; (x - 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;   
+   (display_mouse_get_y() &lt; (y +  64*dsc) * ssc +global.DRAW_VOFF) &amp;&amp;     
+   (display_mouse_get_y() &gt; (y -  64*dsc) * ssc +global.DRAW_VOFF)      
         {
-        hover = 1            //check cursor pos
-        a = 1                //not by mouse enter/leave event
+        hover = 1            //check cursor pos not by mouse enter/leave event
+        if clickable      
+          a = 1    
+        else
+          a = 0.66            
         }
 else
         {
         hover = 0
-        a = 0.66
+        if clickable    
+          a = 0.66   
+        else
+          a = 0.33 
         }
 </string>
           </argument>
@@ -126,14 +132,14 @@ draw_set_valign(fa_center)
 if x != xprevious           
   {
   draw_set_alpha(0.5)
-  draw_sprite_ext(sButton,hover,xprevious*csc,yprevious*csc,dsc,dsc,0,c_white,1)
-  draw_text_transformed(xprevious*csc,yprevious*csc,content,dsc,dsc,0)
+  draw_sprite_ext(sp,hover,xprevious,yprevious,dsc,dsc,0,c_white,0.5)
+  draw_text_transformed(xprevious,yprevious,content,dsc,dsc,0)
   }
 //MAIN DRAW BUTTON  
 draw_set_alpha(1)
-draw_sprite_ext(sButton,hover,x*csc,y*csc,dsc,dsc,0,c_white,1)
+draw_sprite_ext(sp,hover,x,y,dsc,dsc,0,c_white,1)
 draw_set_alpha(a)
-draw_text_transformed(x*csc,y*csc,content,dsc,dsc,0)
+draw_text_transformed(x,y,content,dsc,dsc,0)
 </string>
           </argument>
         </arguments>

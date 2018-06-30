@@ -25,13 +25,13 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>bReset = instance_create(800,700,oButton)
+            <string>bReset = instance_create(300,700,oButton)
 bReset.content = 'RESET'
 bAlert = 0
-bBack = instance_create(800,1050,oButton)
+bBack = instance_create(300,1000,oButton)
 bBack.content = 'BACK'
 
-stats = instance_create(0,0,oStatsDrawer)
+stats = instance_create(60,100,oStatsDrawer)
 </string>
           </argument>
         </arguments>
@@ -56,6 +56,7 @@ stats = instance_create(0,0,oStatsDrawer)
             <kind>1</kind>
             <string>instance_destroy(stats)
 instance_destroy(bBack)
+instance_destroy(bReset)
 if bAlert&lt;&gt;0
   instance_destroy(bAlert)
 </string>
@@ -115,7 +116,13 @@ else if bAlert&lt;&gt;0
     }
   }
 else if bBack.clicked
-  action_another_room(rMenu)
+  {
+  p = instance_create(0,0,oProfileRuler)
+  p.parent = parent
+  parent.ActiveMenuPtr = p
+  parent.Header = 'PROFILE SETTINGS'
+  instance_destroy(self,true)
+  }
 </string>
           </argument>
         </arguments>
@@ -143,16 +150,10 @@ draw_set_color(c_white)
 draw_set_halign(fa_center)
 draw_set_valign(fa_center)
 draw_set_alpha(1)
-draw_text_transformed(800*global.DRAW_SCALE,100*global.DRAW_SCALE,'STATS and ACHIEVEMENTS',global.DRAW_SCALE,global.DRAW_SCALE,0)
+draw_text(800,100,'STATS and ACHIEVEMENTS')
 
 draw_set_font(fDebug)
-draw_text_transformed(800*global.DRAW_SCALE,600*global.DRAW_SCALE,'Still working, stand by#
-Press BACK baton to return',1,1,0)
-
-/*
-TODO: запилить анимацию фирменную скролла и вращения строк
-контент: разрабы и благодарности
-*/
+draw_text(800,600,'Still working, stand by#Press BACK baton to return')
 </string>
           </argument>
         </arguments>

@@ -38,9 +38,8 @@ bNo = instance_create(1100,700,oButton)
 bNo.content = 'CANCEL'
 bNo.depth = -10
 
-ssc = 1                     //size scale
-csc = global.DRAW_SCALE     //coord scale
-dsc = csc*ssc               //draw scale
+dsc = 1                     //draw scale
+ssc = global.DRAW_SCALE     //size scale
 </string>
           </argument>
         </arguments>
@@ -94,11 +93,10 @@ draw_set_halign(fa_center)
 draw_set_valign(fa_center)
 
 //MAIN DRAW 
-//draw_set_alpha(0.5)
+draw_set_alpha(0.5)
+draw_rectangle(150,400,1450,800,false)
 draw_set_alpha(1)
-draw_rectangle(150*csc,400*csc,1450*csc,800*csc,false)
-//draw_set_alpha(1)
-draw_text_transformed(800*csc,500*csc,content,dsc,dsc,0)
+draw_text_transformed(800,500,content,dsc,dsc,0)
 </string>
           </argument>
         </arguments>
