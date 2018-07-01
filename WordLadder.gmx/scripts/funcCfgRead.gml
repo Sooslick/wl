@@ -5,30 +5,30 @@ if file_exists(global.cfg)
     s = file_text_read_string(f)
     if string_copy(s,1,9) = 'ShowLogo='
       if string_copy(s,10,5) = 'false'
-        global.ShowLogo = false
+        global.config[?'ShowLogo'] = false
       else
-        global.ShowLogo = true
+        global.config[?'ShowLogo'] = true
     else
-      global.ShowLogo = true
+      global.config[?'ShowLogo'] = true
     file_text_readln(f)
       
     //FIRST LAUNCH
     s = file_text_read_string(f)
     if string_copy(s,1,12) = 'FirstLaunch='
       if string_copy(s,13,5) = 'false'
-        global.FirstLaunch = false
+        global.config[?'FirstLaunch'] = false
       else
-        global.FirstLaunch = true
+        global.config[?'FirstLaunch'] = true
     else
-      global.FirstLaunch = true
+      global.config[?'FirstLaunch'] = true
     file_text_readln(f)  
         
     //PROFILE SELECTOR
     s = file_text_read_string(f)
     if string_copy(s,1,8) = 'Profile='
-      global.Profile = string_delete(s,1,8)
+      global.config[?'ProfileFile'] = string_delete(s,1,8)
     else
-      global.Profile = 'noob'       //default profile FIX PLZ
+      global.config[?'ProfileFile'] = 'anonymous'       //default profile FIX PLZ
     file_text_readln(f)
         
     //SCREEN CONFIG
@@ -49,60 +49,82 @@ if file_exists(global.cfg)
     s = file_text_read_string(f)
     if string_copy(s,1,11) = 'Fullscreen='
       if string_copy(s,12,5) = 'false'
-        global.FULL = false
+        global.config[?'Fullscreen'] = false
       else
-        global.FULL = true
+        global.config[?'Fullscreen'] = true
     else
-      global.FULL = true
+      global.config[?'Fullscreen'] = true
+    file_text_readln(f)
+    
+    s = file_text_read_string(f)
+    if string_copy(s,1,11) = 'Widescreen='
+      if string_copy(s,12,5) = 'false'
+        global.config[?'Widescreen'] = false
+      else
+        global.config[?'Widescreen'] = true
+    else
+      global.config[?'Widescreen'] = false
+    file_text_readln(f)
+    
+    //Localization: 0 - en; 1 - ru //TODO localization strings
+    s = file_text_read_string(f)
+    if string_copy(s,1,13) = 'Localization='
+      {
+      global.config[?'Localization'] = real(string_delete(s,1,13))
+      if global.config[?'Localization']<0 || global.config[?'Localization']>1
+        global.config[?'Localization'] = 0
+      }
+    else
+      global.config[?'Localization'] = 0
     file_text_readln(f)
     
     //Volume CFG
     s = file_text_read_string(f)
     if string_copy(s,1,13) = 'MasterVolume='
       {
-      global.Master = real(string_delete(s,1,13))
-      if global.Master<0 || global.Master>100
-        global.Master = 100
+      global.config[?'Master'] = real(string_delete(s,1,13))
+      if global.config[?'Master']<0 || global.config[?'Master']>100
+        global.config[?'Master'] = 100
       }
     else
-      global.Master = 100
+      global.config[?'Master'] = 100
     file_text_readln(f)
     
     s = file_text_read_string(f)
     if string_copy(s,1,12) = 'SoundVolume='
       {
-      global.Sound = real(string_delete(s,1,12))
-      if global.Sound<0 || global.Sound>100
-        global.Sound = 100
+      global.config[?'Sound'] = real(string_delete(s,1,12))
+      if global.config[?'Sound']<0 || global.config[?'Sound']>100
+        global.config[?'Sound'] = 100
       }
     else
-      global.Sound = 100
+      global.config[?'Sound'] = 100
     file_text_readln(f)
     
     s = file_text_read_string(f)
     if string_copy(s,1,12) = 'MusicVolume='
       {
-      global.Music = real(string_delete(s,1,12))
-      if global.Music<0 || global.Music>100
-        global.Music = 100
+      global.config[?'Music'] = real(string_delete(s,1,12))
+      if global.config[?'Music']<0 || global.config[?'Music']>100
+        global.config[?'Music'] = 100
       }
     else
-      global.Music = 100
+      global.config[?'Music'] = 100
     file_text_readln(f)
     
     file_text_close(f)
     }
 else                //defaults
     {
-    global.ShowLogo = true
-    global.FirstLaunch = true
-    global.Profile = 'noob'
+    global.config[?'ShowLogo'] = true
+    global.config[?'FirstLaunch'] = true
+    global.config[?'ProfileFile'] = 'noob'
     global.WIN_WIDTH = display_get_width()
     global.WIN_HEIGHT = display_get_height()
-    global.FULL = true
-    global.Master = 100
-    global.Sound = 100
-    global.Music = 100
+    global.config[?'Fullscreen'] = true
+    global.config[?'Widescreen'] = true
+    global.config[?'Localization'] = 0
+    global.config[?'Master'] = 100
+    global.config[?'Sound'] = 100
+    global.config[?'Music'] = 100
     }
-    
-//TODO: cfg map

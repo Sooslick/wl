@@ -33,14 +33,14 @@ draw_set_valign(fa_center)
 //MAIN DRAW   
 draw_set_alpha(1)
 //draw_text_transformed(x*csc,y*csc,content,dsc,dsc,0)
-draw_text_transformed(x,y+100, 'ingame: '+formatTimeString(global.PSINGAMETIME),1,1,0)
-draw_text_transformed(x,y+130,'  play: '+formatTimeString(global.PSPLAYTIME),1,1,0)
-draw_text_transformed(x,y+160,'online: '+formatTimeString(global.PSONLINETIME),1,1,0)
-draw_text_transformed(x,y+200,'  words '+string(global.PSWORDS),1,1,0)
-draw_text_transformed(x,y+230,'letters '+string(global.PSLETTERS),1,1,0)
-draw_text_transformed(x,y+260,'  games '+string(global.PSGAMES),1,1,0)
-draw_text_transformed(x,y+290,'servers '+string(global.PSSERVERS),1,1,0)
-draw_text_transformed(x,y+400,'RESETS: '+string(global.PSRESETS),1,1,0)
+draw_text_transformed(x,y+100, 'ingame: '+formatTimeString(global.profile[?'PSINGAMETIME']),1,1,0)
+draw_text_transformed(x,y+130,'  play: '+formatTimeString(global.profile[?'PSPLAYTIME']),1,1,0)
+draw_text_transformed(x,y+160,'online: '+formatTimeString(global.profile[?'PSONLINETIME']),1,1,0)
+draw_text_transformed(x,y+200,'  words '+string(global.profile[?'PSWORDS']),1,1,0)
+draw_text_transformed(x,y+230,'letters '+string(global.profile[?'PSLETTERS']),1,1,0)
+draw_text_transformed(x,y+260,'  games '+string(global.profile[?'PSGAMES']),1,1,0)
+draw_text_transformed(x,y+290,'servers '+string(global.profile[?'PSSERVERS']),1,1,0)
+draw_text_transformed(x,y+400,'RESETS: '+string(global.profile[?'PSRESETS']),1,1,0)
 </string>
           </argument>
         </arguments>

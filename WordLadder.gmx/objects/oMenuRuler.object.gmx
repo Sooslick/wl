@@ -444,7 +444,7 @@ draw_text(800,100,Header)
 //Profile name TODO: fade out
 draw_set_font(fImpact64)
 draw_set_halign(fa_right)
-draw_text(1580,1150,'Profile: '+global.Profile)
+draw_text(1580,1150,'Profile: '+ global.config[?'ProfileFile'])
 
 //Fade out
 if Dead

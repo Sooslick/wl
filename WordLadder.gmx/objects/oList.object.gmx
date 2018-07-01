@@ -35,7 +35,6 @@ clickable = true
 //a = 1               //alpha
 
 dsc = 1                     //draw scale
-ssc = global.DRAW_SCALE     //size scale
 
 arr = ds_map_create()
 val = ''
@@ -64,10 +63,7 @@ num = 0
             <kind>1</kind>
             <string>if !active
   {
-  if (display_mouse_get_x() &lt; (x + 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;    
-     (display_mouse_get_x() &gt; (x - 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;   
-     (display_mouse_get_y() &lt; (y +  64*dsc) * ssc +global.DRAW_VOFF) &amp;&amp;     
-     (display_mouse_get_y() &gt; (y -  64*dsc) * ssc +global.DRAW_VOFF)      
+  if funcCheckGuiHover((x-256*dsc), (y-64*dsc), (x+256*dsc), (y+64*dsc))       
           {
           hover = 1            //check cursor pos     //not by mouse enter/leave event
           hoverElement = -1
@@ -79,16 +75,13 @@ else
   {
   hover = 0
   hoverElement = -1
-  if (display_mouse_get_x() &lt; (x + 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;    
-     (display_mouse_get_x() &gt; (x - 256*dsc) * ssc +global.DRAW_HOFF)        //checking hpos
-        for (i=0; i&lt;=ds_map_size(arr); i++)
-          if (display_mouse_get_y() &lt; (y + i*128 + 64*dsc) * ssc +global.DRAW_VOFF) &amp;&amp;     
-             (display_mouse_get_y() &gt; (y + i*128 - 64*dsc) * ssc +global.DRAW_VOFF)     //checking vpos 4 every line
-                {
-                hover = 1       
-                hoverElement = i-1
-                break
-                }
+  for (i=0; i&lt;=ds_map_size(arr); i++)
+    if funcCheckGuiHover((x-256*dsc), (y+i*128-64*dsc), (x+256*dsc), (y+i*128+64*dsc))   //checking vpos 4 every line
+      {
+      hover = 1       
+      hoverElement = i-1
+      break
+      }
   }
 </string>
           </argument>
@@ -120,8 +113,11 @@ else
       {
       active = false
       clicked = true
-      num = hoverElement
-      val = arr[?num]
+      if hoverElement&gt;=0
+        {
+        num = hoverElement
+        val = arr[?num]
+        }
       }
     else
       {

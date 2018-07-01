@@ -29,43 +29,66 @@
 RSelector = instance_create(300,280,oList)
 RSelector.val = string(global.WIN_WIDTH) + 'x' + string(global.WIN_HEIGHT)
 RSelector.num = -1
-ds_map_add(RSelector.arr,0,'800x600') 
-ds_map_add(RSelector.arr,1,'1024x768') 
-ds_map_add(RSelector.arr,2,'1152x864')
-ds_map_add(RSelector.arr,3,'1280x720')
-ds_map_add(RSelector.arr,4,'1366x768')
-ds_map_add(RSelector.arr,5,'1440x1080') 
-ds_map_add(RSelector.arr,6,'1600x1200') 
-//TODO add more     
-//TODO: разделить widescreen и 4:3 режимы
+if global.config[?'Widescreen']
+  {
+  ds_map_add(RSelector.arr,0,'1024x576')
+  ds_map_add(RSelector.arr,1,'1152x648')
+  ds_map_add(RSelector.arr,2,'1280x720') 
+  ds_map_add(RSelector.arr,3,'1366x768') 
+  ds_map_add(RSelector.arr,4,'1536x864') 
+  ds_map_add(RSelector.arr,5,'1600x900') 
+  ds_map_add(RSelector.arr,6,'1920x1080') //TODO: check win res to prevent clicking on 1080p
+  }                                             //when screen res is obossany 1024x768
+else
+  {
+  ds_map_add(RSelector.arr,0,'800x600') 
+  ds_map_add(RSelector.arr,1,'1024x768') 
+  ds_map_add(RSelector.arr,2,'1152x864')
+  ds_map_add(RSelector.arr,3,'1280x960')
+  ds_map_add(RSelector.arr,4,'1400x1050') 
+  ds_map_add(RSelector.arr,5,'1440x1080') 
+  ds_map_add(RSelector.arr,6,'1600x1200') 
+  }
+
 //fullscreen
-Full = instance_create(300,440,oCheckBox)   //TODO oList: screen mode
-Full.content = 'FULLSCREEN'
-Full.checked = global.FULL
+Full = instance_create(300,440,oCheckBox) 
+Full.content = 'Fullscreen'
+Full.checked = global.config[?'Fullscreen']
+
 //widescreen
-//Wide = instance_create(280,400,oCheckBox)   //TODO oList: screen mode
-//Wide.content = 'Widescreen mode'
-//Wide.checked = global.WIDE
+Wide = instance_create(300,600,oCheckBox) 
+Wide.content = 'Widescreen'
+Wide.checked = global.config[?'Widescreen']
 
 //lang create olist aka locale
-//PLang = instance_create(280,560,oList)
-//ds_map_add(PLang.arr,0,'English')
-//ds_map_add(PLang.arr,1,'Russian')
-//PLang.num = global.PLOCALE
-//PLang.val = PLang.arr[?global.PLOCALE]
+PLang = instance_create(900,280,oList)
+ds_map_add(PLang.arr,0,'English')
+ds_map_add(PLang.arr,1,'Russian')
+PLang.num = global.config[?'Localization']
+PLang.val = PLang.arr[?global.config[?'Localization']]
 
 //showlogo
-ShowLogo = instance_create(300,720,oCheckBox)  
-ShowLogo.content = 'SHOW LOGO'
-ShowLogo.checked = global.ShowLogo
+ShowLogo = instance_create(300,760,oCheckBox)  
+ShowLogo.content = 'Show Logo'
+ShowLogo.checked = global.config[?'ShowLogo']
+
 //reset
-Reset = instance_create(300,980,oButton)  
+Reset = instance_create(300,920,oButton)  
 Reset.content = 'RESTORE DEFAULTS'
 Reset.font = fImpact64
+
 //Sound &amp; music
-//oSlider
-//oSlider
-//oSlider
+Master = instance_create(900,440,oSlider)
+Master.content = 'MASTER'
+Master.currval = global.config[?'Master']
+
+Sound = instance_create(900,600,oSlider)
+Sound.content = 'SOUND'
+Sound.currval = global.config[?'Sound']
+
+Music = instance_create(900,760,oSlider)
+Music.content = 'MUSIC'
+Music.currval = global.config[?'Music']
 </string>
           </argument>
         </arguments>
@@ -89,23 +112,44 @@ Reset.font = fImpact64
           <argument>
             <kind>1</kind>
             <string>  //rewrite config fields
-  global.FULL = Full.checked
-  window_set_fullscreen(global.FULL)
-  //TODO: recalculate screen properties
-  global.ShowLogo = ShowLogo.checked
+global.config[?'Fullscreen'] = Full.checked
+  //RESET WINDOW SETTINGS
+if global.WIN_HEIGHT / global.WIN_WIDTH &gt;=0.75          //4:3 ratio
+  {
+  global.DRAW_SCALE = global.WIN_WIDTH / 1600           //black lines on top &amp; bottom
+  global.DRAW_VOFF = (global.WIN_HEIGHT - 1200*global.DRAW_SCALE) / 2
+  global.DRAW_HOFF = 0
+  }
+else 
+  {
+  global.DRAW_SCALE = global.WIN_HEIGHT / 1200          //black on left &amp; right
+  global.DRAW_VOFF = 0
+  global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2 
+  }
+window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
+window_set_fullscreen(global.config[?'Fullscreen'])
+window_center()
+display_set_gui_size(1600,1200)
+
+global.config[?'ShowLogo'] = ShowLogo.checked
+global.config[?'Widescreen'] = Wide.checked
+global.config[?'Localization'] = PLang.num
+global.config[?'Master'] = Master.currval
+global.config[?'Sound'] = Sound.currval
+global.config[?'Music'] = Music.currval
   
   //rewrite cfg file and back
   funcCfgWrite()
   
 instance_destroy(RSelector,true)
 instance_destroy(Full,true)
-//instance_destroy(Wide,true)
-//instance_destroy(PLang,true)
+instance_destroy(Wide,true)
+instance_destroy(PLang,true)
 instance_destroy(ShowLogo,true)
 instance_destroy(Reset,true)
-//
-//
-//
+instance_destroy(Master,true)
+instance_destroy(Sound,true)
+instance_destroy(Music,true)
 </string>
           </argument>
         </arguments>
@@ -133,8 +177,8 @@ instance_destroy(Reset,true)
   if RSelector.active
     {
     Full.clickable = false
-    //Wide.clickable = false
-    //PLang.clickable = false
+    Wide.clickable = false
+    PLang.clickable = false
     ShowLogo.clickable = false
     Reset.clickable = false
     RSelector.clicked = false
@@ -142,16 +186,45 @@ instance_destroy(Reset,true)
   else
     {
     Full.clickable = true
-    //Wide.clickable = true
-    //PLang.clickable = true
+    Wide.clickable = true
+    PLang.clickable = true
     ShowLogo.clickable = true
     Reset.clickable = true
     RSelector.clicked = false
-    //global.WIN_WIDTH = 
-    //global.WIN_HEIGHT = 
-    //TODO: func res decode
+    funcSetWinResFromString(RSelector.val)
     }
   }
+else if Wide.clicked
+  {
+  Wide.clicked = false
+  ds_map_clear(RSelector.arr)
+  if Wide.checked
+    {
+    ds_map_add(RSelector.arr,0,'1024x576')
+    ds_map_add(RSelector.arr,1,'1152x648')
+    ds_map_add(RSelector.arr,2,'1280x720') 
+    ds_map_add(RSelector.arr,3,'1366x768') 
+    ds_map_add(RSelector.arr,4,'1536x864') 
+    ds_map_add(RSelector.arr,5,'1600x900') 
+    ds_map_add(RSelector.arr,6,'1920x1080') //TODO: check win res to prevent clicking on 1080p
+    }                                             //when screen res is obossany 1024x768
+  else
+    {
+    ds_map_add(RSelector.arr,0,'800x600') 
+    ds_map_add(RSelector.arr,1,'1024x768') 
+    ds_map_add(RSelector.arr,2,'1152x864')
+    ds_map_add(RSelector.arr,3,'1280x960')
+    ds_map_add(RSelector.arr,4,'1400x1050') 
+    ds_map_add(RSelector.arr,5,'1440x1080') 
+    ds_map_add(RSelector.arr,6,'1600x1200') 
+    }
+  }
+else if Master.clicked
+  Master.clicked = false
+else if Sound.clicked
+  Sound.clicked = false
+else if Music.clicked
+  Music.clicked = false
 else if Reset.clicked
   {
   //Button properties
@@ -169,9 +242,6 @@ else if Reset.clicked
   global.Master = 100
   global.Sound = 100
   global.Music = 100
-  //TODO change
-  //TODO
-  //TODO
   }
 </string>
           </argument>

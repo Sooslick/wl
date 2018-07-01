@@ -39,7 +39,6 @@ bNo.content = 'CANCEL'
 bNo.depth = -10
 
 dsc = 1                     //draw scale
-ssc = global.DRAW_SCALE     //size scale
 </string>
           </argument>
         </arguments>

@@ -1,7 +1,7 @@
     //GAME LOGO
     f = file_text_open_write(global.cfg)
     s = 'ShowLogo='
-      if global.ShowLogo
+      if global.config[?'ShowLogo']
         s+= 'true'
       else
         s+= 'false'
@@ -10,7 +10,7 @@
       
     //FIRST LAUNCH
     s = 'FirstLaunch='
-      if global.FirstLaunch
+      if global.config[?'FirstLaunch']
         s+= 'true'
       else
         s+= 'false'
@@ -18,7 +18,7 @@
     file_text_writeln(f)
         
     //PROFILE SELECTOR
-    s = 'Profile=' + global.Profile
+    s = 'Profile=' + global.config[?'ProfileFile']
     file_text_write_string(f,s)
     file_text_writeln(f)
         
@@ -32,23 +32,36 @@
     file_text_writeln(f)
     
     s = 'Fullscreen='
-      if global.FULL
+      if global.config[?'Fullscreen']
         s+= 'true'
       else
         s+= 'false'
     file_text_write_string(f,s)
     file_text_writeln(f)
     
+    s = 'Widescreen='
+      if global.config[?'Widescreen']
+        s+= 'true'
+      else
+        s+= 'false'
+    file_text_write_string(f,s)
+    file_text_writeln(f)
+    
+    //loc
+    s = 'Localization=' + string(global.config[?'Localization'])
+    file_text_write_string(f,s)
+    file_text_writeln(f)
+    
     //Sound CFG
-    s = 'MasterVolume=' + string(global.Master)
+    s = 'MasterVolume=' + string(global.config[?'Master'])
     file_text_write_string(f,s)
     file_text_writeln(f)
     
-    s = 'SoundVolume=' + string(global.Sound)
+    s = 'SoundVolume=' + string(global.config[?'Sound'])
     file_text_write_string(f,s)
     file_text_writeln(f)
     
-    s = 'MusicVolume=' + string(global.Music)
+    s = 'MusicVolume=' + string(global.config[?'Music'])
     file_text_write_string(f,s)
     file_text_writeln(f)
     

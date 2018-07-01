@@ -27,9 +27,10 @@
             <kind>1</kind>
             <string>global.cfg = 'config.cfg'
 global.SaveCorrupted = false
+global.config = ds_map_create()
+global.profile = ds_map_create()
 funcCfgRead()
 funcProfileRead()
-display_set_gui_size(1600,1200)
 
 //WINDOW SETTINGS:
 if global.WIN_HEIGHT / global.WIN_WIDTH &gt;=0.75          //4:3 ratio
@@ -45,11 +46,13 @@ else
   global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2    //still incorrect
   }
 window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
-window_set_fullscreen(global.FULL)
-window_set_position(20,20)                                //temp TODO
+window_set_fullscreen(global.config[?'Fullscreen'])
+window_center()
+display_set_gui_size(1600,1200)
+
 //LOGO Code:
 frame=0
-if global.ShowLogo
+if global.config[?'ShowLogo']
       {
       stepno=0
       opacity=1.0

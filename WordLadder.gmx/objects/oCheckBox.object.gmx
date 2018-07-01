@@ -31,10 +31,10 @@ hover = 1       //draw cl
 a = 1           //draw alpha
 content = ''    //draw string; set after create call
 clickable = true  
+clicked = false
 checked = false
 
 dsc = 1                     //draw scale
-ssc = global.DRAW_SCALE     //size scale
 </string>
           </argument>
         </arguments>
@@ -57,10 +57,7 @@ ssc = global.DRAW_SCALE     //size scale
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (display_mouse_get_x() &lt; (x + 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;    
-   (display_mouse_get_x() &gt; (x - 256*dsc) * ssc +global.DRAW_HOFF) &amp;&amp;   
-   (display_mouse_get_y() &lt; (y +  64*dsc) * ssc +global.DRAW_VOFF) &amp;&amp;     
-   (display_mouse_get_y() &gt; (y -  64*dsc) * ssc +global.DRAW_VOFF)       
+            <string>if funcCheckGuiHover((x-256*dsc), (y-64*dsc), (x+256*dsc), (y+64*dsc))       
         {
         hover = 1            //check cursor pos
         if clickable      
@@ -100,10 +97,13 @@ else
             <kind>1</kind>
             <string>if clickable
   if hover
+    {
+    clicked = true
     if checked
       checked = false
     else
       checked = true
+    }
 </string>
           </argument>
         </arguments>

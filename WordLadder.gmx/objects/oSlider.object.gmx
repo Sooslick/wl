@@ -25,7 +25,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>sp = sButton  
+            <string>//sp = sButton  
 font = fImpact96
 hover = 1       //draw cl
 a = 1           //draw alpha
@@ -34,6 +34,12 @@ clickable = true
 clicked = false
 
 dsc = 1                     //draw scale
+
+minval = 0
+maxval = 100
+minx = x-224
+maxx = x+224
+currval = 100
 </string>
           </argument>
         </arguments>
@@ -102,6 +108,37 @@ else
         </arguments>
       </action>
     </event>
+    <event eventtype="6" enumb="50">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if clicked
+  {
+  currval = ((window_mouse_get_x()-global.DRAW_HOFF) / global.DRAW_SCALE  - (minx*dsc)) /
+  ((maxx*dsc) - (minx*dsc)) * (maxval - minval)
+  if currval &lt; minval
+    currval = minval
+  else if currval &gt; maxval
+    currval = maxval
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -124,18 +161,18 @@ draw_set_font(font)
 draw_set_color(c_white)
 draw_set_halign(fa_center)
 draw_set_valign(fa_center)
-//simple motion blur fx
-if x != xprevious           
-  {
-  draw_set_alpha(0.5)
-  draw_sprite_ext(sp,hover,xprevious,yprevious,dsc,dsc,0,c_white,0.5)
-  draw_text_transformed(xprevious,yprevious,content,dsc,dsc,0)
-  }
+
+//DRAW SLIDER RECT
+draw_set_alpha(0.8)
+draw_rectangle((x-256)*dsc,(y-64)*dsc,((currval-minval)/(maxval-minval)*(maxx-minx)+minx)*dsc,(y+64)*dsc,false)
+
 //MAIN DRAW BUTTON  
 draw_set_alpha(1)
-draw_sprite_ext(sp,hover,x,y,dsc,dsc,0,c_white,1)
+draw_sprite_ext(sButton,hover,x,y,dsc,dsc,0,c_white,1)
 draw_set_alpha(a)
 draw_text_transformed(x,y,content,dsc,dsc,0)
+draw_set_alpha(1)
+draw_sprite_ext(sSlider,hover,(currval-minval)/(maxval-minval)*(maxx-minx)+minx,y,dsc,dsc,0,c_white,1)
 </string>
           </argument>
         </arguments>

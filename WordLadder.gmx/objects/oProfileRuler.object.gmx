@@ -27,14 +27,14 @@
             <kind>1</kind>
             <string>//nickname
 PNameForm = instance_create(300,280,oForm)
-PNameForm.content      = global.PNAME
-PNameForm.contentSaved = global.PNAME
+PNameForm.content      = global.profile[?'PNAME']
+PNameForm.contentSaved = global.profile[?'PNAME']
 //lang
 PLang = instance_create(300,440,oList)
 ds_map_add(PLang.arr,0,'English')
 ds_map_add(PLang.arr,1,'Russian')
-PLang.num = global.PLOCALE
-PLang.val = PLang.arr[?global.PLOCALE]
+PLang.num = global.profile[?'PLOCALE']
+PLang.val = PLang.arr[?global.profile[?'PLOCALE']]
 //achievements menu
 PAch = instance_create(300,680,oButton)
 PAch.content = 'ACHIEVEMENTS'
@@ -104,7 +104,7 @@ funcProfileWrite()
   }
 else if PNameForm.clicked
   {
-  global.PNAME = PNameForm.content
+  global.profile[?'PNAME'] = PNameForm.content
   PNameForm.clicked = false
   }
 else if PLang.clicked
@@ -122,7 +122,7 @@ else if PLang.clicked
     PNameForm.clickable = true
     PAch.clickable = true
     PLang.clicked = false
-    global.PLOCALE = PLang.num
+    global.profile[?'PLOCALE'] = PLang.num
     }
   }
 else if PAch.clicked
@@ -184,7 +184,7 @@ draw_set_colour(c_white)
             <kind>1</kind>
             <string>//checking form
 if PNameForm.clicked
-  global.PNAME = PNameForm.content
+  global.profile[?'PNAME'] = PNameForm.content
 </string>
           </argument>
         </arguments>

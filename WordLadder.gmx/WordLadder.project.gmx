@@ -32,6 +32,7 @@
     <sprite>sprites\sList</sprite>
     <sprite>sprites\sForm</sprite>
     <sprite>sprites\sCheckBox</sprite>
+    <sprite>sprites\sSlider</sprite>
     <sprite>sprites\sSquare</sprite>
     <sprite>sprites\sEnglish</sprite>
     <sprite>sprites\sPixel</sprite>
@@ -51,6 +52,8 @@
     <script>scripts\funcProfileRead.gml</script>
     <script>scripts\funcProfileWrite.gml</script>
     <script>scripts\formatTimeString.gml</script>
+    <script>scripts\funcSetWinResFromString.gml</script>
+    <script>scripts\funcCheckGuiHover.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
@@ -61,6 +64,7 @@
     <object>objects\oLogo</object>
     <object>objects\oMenuRuler</object>
     <object>objects\oButton</object>
+    <object>objects\oSlider</object>
     <object>objects\oCheckBox</object>
     <object>objects\oConfirmButton</object>
     <object>objects\oForm</object>
