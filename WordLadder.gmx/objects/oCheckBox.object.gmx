@@ -35,6 +35,7 @@ clicked = false
 checked = false
 
 dsc = 1                     //draw scale
+tsc = 1
 </string>
           </argument>
         </arguments>
@@ -109,6 +110,33 @@ else
         </arguments>
       </action>
     </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//content set func, called after set content string
+tsc = 375 / string_width(content)
+if tsc &gt; 1
+  tsc = 1       //reset scale if it not necessary
+tsc*= dsc   //draw scalability
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -136,7 +164,7 @@ draw_set_valign(fa_center)
 draw_set_alpha(1)
 draw_sprite_ext(sButton,hover,x,y,dsc,dsc,0,c_white,1)
 draw_set_alpha(a)
-draw_text_transformed(x+120*dsc,y,content,dsc,dsc,0) 
+draw_text_transformed(x+120*dsc,y,content,tsc,dsc,0) 
 
 draw_set_alpha(1)
 if checked

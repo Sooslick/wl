@@ -25,8 +25,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//CalledFrom = 0          //0: from profile, 1: from main menu (first launch)
-name = ''
+            <string>name = ''
 //cursor animation
 cursor = true
 cursortick = 0
@@ -52,7 +51,7 @@ cursortick = 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>global.FirstLaunch = false
+            <string>global.config[?'FirstLaunch'] = false
 </string>
           </argument>
         </arguments>
@@ -142,13 +141,22 @@ else
           <argument>
             <kind>1</kind>
             <string>//on enter click change globals 
-global.Profile = name
-global.PNAME = name
-global.PLOCALE = 0
+global.config[?'ProfileFile'] = name
+global.profile[?'PNAME'] = name
+global.profile[?'PLOCALE'] = 0
+global.profile[?'PNETID'] = -1
+global.profile[?'PSINGAMETIME'] = 0
+global.profile[?'PSPLAYTIME'] = 0
+global.profile[?'PSONLINETIME'] = 0
+global.profile[?'PSWORDS'] = 0
+global.profile[?'PSLETTERS'] = 0
+global.profile[?'PSGAMES'] = 0
+global.profile[?'PSSERVERS'] = 0
+global.profile[?'PSRESETS'] = 0
+
 //stat &amp; achv
 funcProfileWrite() 
 
-//if CalledFrom = 0 
   p = instance_create(0,0,oProfileRuler)
   p.parent = parent
   parent.ActiveMenuPtr = p

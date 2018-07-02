@@ -128,3 +128,9 @@ else                //defaults
     global.config[?'Sound'] = 100
     global.config[?'Music'] = 100
     }
+    
+if global.config[?'Fullscreen']
+  {
+  global.WIN_WIDTH = display_get_width()
+  global.WIN_HEIGHT = display_get_height()
+  }

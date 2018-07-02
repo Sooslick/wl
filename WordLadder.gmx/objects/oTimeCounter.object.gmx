@@ -76,7 +76,7 @@ if online
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/*draw_set_font(fDebug)
+            <string>draw_set_font(fDebug)
 draw_set_valign(fa_top)
 draw_set_halign(fa_left)
 draw_text(0,0,
@@ -84,10 +84,10 @@ draw_text(0,0,
 '#wmy: ' + string(window_mouse_get_y()) + 
 '#dmx: ' + string(display_mouse_get_x()) + 
 '#dmy: ' + string(display_mouse_get_y()) +
-'#gwmx: ' + string(window_mouse_get_x()/global.DRAW_SCALE) + 
-'#gwmy: ' + string(window_mouse_get_y()/global.DRAW_SCALE) + 
-'#gdmx: ' + string(display_mouse_get_x()/global.DRAW_SCALE) + 
-'#gdmy: ' + string(display_mouse_get_y()/global.DRAW_SCALE))*/
+'#gwmx: ' + string((window_mouse_get_x()-global.DRAW_HOFF) / global.DRAW_SCALE) + 
+'#gwmy: ' + string((window_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE) + 
+'#gdmx: ' + string((display_mouse_get_x()-global.DRAW_HOFF) / global.DRAW_SCALE) + 
+'#gdmy: ' + string((display_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE))
 </string>
           </argument>
         </arguments>

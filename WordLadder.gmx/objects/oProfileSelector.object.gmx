@@ -112,7 +112,7 @@ else    //testing every button
   for (i=0; i&lt;pcount; i++)
     if b[i].clicked
       {
-      global.Profile = b[i].content       //set profile to 
+      global.config[?'ProfileFile'] = b[i].content       //set profile to 
       funcProfileRead()
       p = instance_create(0,0,oProfileRuler)
       p.parent = parent

@@ -43,7 +43,7 @@ else
   {
   global.DRAW_SCALE = global.WIN_HEIGHT / 1200          //black on left &amp; right
   global.DRAW_VOFF = 0
-  global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2    //still incorrect
+  global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2 
   }
 window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
 window_set_fullscreen(global.config[?'Fullscreen'])
@@ -58,6 +58,8 @@ if global.config[?'ShowLogo']
       opacity=1.0
       }
 //IF LOGO SKIPPED:      
+else if global.config[?'FirstLaunch']
+      action_another_room(rFirst)
 else
       action_another_room(rMenu)
 </string>

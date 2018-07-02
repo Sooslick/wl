@@ -26,6 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>//Screen Resolution
+ResChanged = false
 RSelector = instance_create(300,280,oList)
 RSelector.val = string(global.WIN_WIDTH) + 'x' + string(global.WIN_HEIGHT)
 RSelector.num = -1
@@ -57,8 +58,12 @@ Full.checked = global.config[?'Fullscreen']
 
 //widescreen
 Wide = instance_create(300,600,oCheckBox) 
-Wide.content = 'Widescreen'
-Wide.checked = global.config[?'Widescreen']
+with (Wide)
+  {
+  content = 'Widescreen'
+  checked = global.config[?'Widescreen']
+  event_user(0)
+  }
 
 //lang create olist aka locale
 PLang = instance_create(900,280,oList)
@@ -68,14 +73,22 @@ PLang.num = global.config[?'Localization']
 PLang.val = PLang.arr[?global.config[?'Localization']]
 
 //showlogo
-ShowLogo = instance_create(300,760,oCheckBox)  
-ShowLogo.content = 'Show Logo'
-ShowLogo.checked = global.config[?'ShowLogo']
+ShowLogo = instance_create(300,760,oCheckBox) 
+with (ShowLogo) 
+  {
+  content = 'Show Logo'
+  checked = global.config[?'ShowLogo']
+  event_user(0)
+  }
 
 //reset
 Reset = instance_create(300,920,oButton)  
-Reset.content = 'RESTORE DEFAULTS'
-Reset.font = fImpact64
+with (Reset)
+  {
+  content = 'RESTORE DEFAULTS'
+  font = fImpact64
+  event_user(0)
+  }
 
 //Sound &amp; music
 Master = instance_create(900,440,oSlider)
@@ -113,24 +126,32 @@ Music.currval = global.config[?'Music']
             <kind>1</kind>
             <string>  //rewrite config fields
 global.config[?'Fullscreen'] = Full.checked
+if global.config[?'Fullscreen']
+  {
+  global.WIN_WIDTH = display_get_width()
+  global.WIN_HEIGHT = display_get_height()
+  }
   //RESET WINDOW SETTINGS
-if global.WIN_HEIGHT / global.WIN_WIDTH &gt;=0.75          //4:3 ratio
-  {
-  global.DRAW_SCALE = global.WIN_WIDTH / 1600           //black lines on top &amp; bottom
-  global.DRAW_VOFF = (global.WIN_HEIGHT - 1200*global.DRAW_SCALE) / 2
-  global.DRAW_HOFF = 0
-  }
-else 
-  {
-  global.DRAW_SCALE = global.WIN_HEIGHT / 1200          //black on left &amp; right
-  global.DRAW_VOFF = 0
-  global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2 
-  }
-window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
-window_set_fullscreen(global.config[?'Fullscreen'])
-window_center()
-display_set_gui_size(1600,1200)
-
+if ResChanged
+    {
+    if global.WIN_HEIGHT / global.WIN_WIDTH &gt;=0.75          //4:3 ratio
+      {
+      global.DRAW_SCALE = global.WIN_WIDTH / 1600           //black lines on top &amp; bottom
+      global.DRAW_VOFF = (global.WIN_HEIGHT - 1200*global.DRAW_SCALE) / 2
+      global.DRAW_HOFF = 0
+      }
+    else 
+      {
+      global.DRAW_SCALE = global.WIN_HEIGHT / 1200          //black on left &amp; right
+      global.DRAW_VOFF = 0
+      global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2 
+      }
+    window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
+    window_set_fullscreen(global.config[?'Fullscreen'])
+    window_center()
+    display_set_gui_size(1600,1200)
+    }
+//OTHER FIELDS
 global.config[?'ShowLogo'] = ShowLogo.checked
 global.config[?'Widescreen'] = Wide.checked
 global.config[?'Localization'] = PLang.num
@@ -192,7 +213,13 @@ instance_destroy(Music,true)
     Reset.clickable = true
     RSelector.clicked = false
     funcSetWinResFromString(RSelector.val)
+    ResChanged = true
     }
+  }
+else if Full.clicked
+  {
+  ResChanged = true
+  Full.clicked = false
   }
 else if Wide.clicked
   {
@@ -242,6 +269,7 @@ else if Reset.clicked
   global.Master = 100
   global.Sound = 100
   global.Music = 100
+  ResChanged = true
   }
 </string>
           </argument>

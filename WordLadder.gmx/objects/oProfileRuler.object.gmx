@@ -27,8 +27,12 @@
             <kind>1</kind>
             <string>//nickname
 PNameForm = instance_create(300,280,oForm)
-PNameForm.content      = global.profile[?'PNAME']
-PNameForm.contentSaved = global.profile[?'PNAME']
+with PNameForm
+  {
+  content      = global.profile[?'PNAME']
+  contentSaved = global.profile[?'PNAME']
+  event_user(0)
+  }
 //lang
 PLang = instance_create(300,440,oList)
 ds_map_add(PLang.arr,0,'English')

@@ -36,6 +36,7 @@ clicked = false //enter pressed
 clickable = true
 
 dsc = 1                     //draw scale
+tsc = 1
 
 HeldBackspaceTick = 0       //Backspace fix
                 
@@ -124,6 +125,7 @@ if cursortick&gt;=10
 HeldBackspaceTick+= 1
 if HeldBackspaceTick&gt;=25
   content = string_copy(content,1,string_length(content)-1)
+event_user(0)
 /////////////////////
 }
 </string>
@@ -166,6 +168,33 @@ else if hover
         </arguments>
       </action>
     </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//content set func, called after set content string
+tsc = 490 / string_width(content)
+if tsc &gt; 1
+  tsc = 1       //reset scale if it not necessary
+tsc*= dsc   //draw scalability
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -196,9 +225,9 @@ else
   draw_sprite_ext(sForm,hover,x,y,dsc,dsc,0,c_white,1)
 draw_set_alpha(a)
 if cursor &amp;&amp; active
-  draw_text_transformed((x-240),y,content+'|',dsc,dsc,0)
+  draw_text_transformed((x-244),y,content+'|',tsc,dsc,0)
 else
-  draw_text_transformed((x-240),y,content,dsc,dsc,0)
+  draw_text_transformed((x-244),y,content,tsc,dsc,0)
 </string>
           </argument>
         </arguments>
@@ -277,7 +306,7 @@ if !keyboard_check(vk_enter)
       content = string_copy(content,1,string_length(content)-1)
   else
     //checking adekvate symbola
-    if (ord(keyboard_lastchar)&gt;=32) &amp;&amp; (ord(keyboard_lastchar)&lt;=255)
+    if (ord(keyboard_lastchar)&gt;=32) &amp;&amp; (ord(keyboard_lastchar)&lt;=255) &amp;&amp; (string_length(content)&lt;16)
 //    if string_length(content)&lt;48
         if keyboard_lastchar=='#'       //special symbol
           content+= '\#'
@@ -286,6 +315,7 @@ if !keyboard_check(vk_enter)
     //else
     //  play error sound
   keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...
+  event_user(0)                         //recalculate text scale
   }
 else
   {

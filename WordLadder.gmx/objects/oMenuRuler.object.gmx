@@ -58,9 +58,11 @@ bExit.content = 'EXIT'
 b2Hide = instance_create(300,b2OffOuter,oButton)
 b2Hide.content = 'SWITCH'
 b2Hide.dsc = 0.66
+b2Hide.tsc = 0.65
 b2Accept = instance_create(300,b2OffOuter+100,oButton)
 b2Accept.content = 'ACCEPT'
 b2Accept.dsc = 0.66
+b2Accept.tsc = 0.65
 //Background processor
 bg = instance_create(0,0,oSquareRuler)
 bg.parent = id

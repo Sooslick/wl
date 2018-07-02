@@ -34,12 +34,14 @@
     <sprite>sprites\sCheckBox</sprite>
     <sprite>sprites\sSlider</sprite>
     <sprite>sprites\sSquare</sprite>
+    <sprite>sprites\sSquareFaded</sprite>
     <sprite>sprites\sEnglish</sprite>
     <sprite>sprites\sPixel</sprite>
     <sprites name="OldLogo">
       <sprite>sprites\LogoBlack</sprite>
       <sprite>sprites\LogoWhite</sprite>
     </sprites>
+    <sprite>sprites\sCareful</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -79,12 +81,14 @@
     <object>objects\oEasterEggRuler</object>
     <object>objects\oProfileSelector</object>
     <object>objects\oProfileCreator</object>
+    <object>objects\oProfileCreatorFirst</object>
     <object>objects\oTimeCounter</object>
     <object>objects\oStatsDrawer</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>
     <room>rooms\rMenu</room>
+    <room>rooms\rFirst</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>

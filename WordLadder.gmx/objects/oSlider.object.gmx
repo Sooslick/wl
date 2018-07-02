@@ -34,6 +34,7 @@ clickable = true
 clicked = false
 
 dsc = 1                     //draw scale
+tsc = 1
 
 minval = 0
 maxval = 100
@@ -139,6 +140,33 @@ else
         </arguments>
       </action>
     </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//content set func, called after set content string
+tsc = 512 / string_width(content)
+if tsc &gt; 1
+  tsc = 1       //reset scale if it not necessary
+tsc*= dsc   //draw scalability
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -170,7 +198,7 @@ draw_rectangle((x-256)*dsc,(y-64)*dsc,((currval-minval)/(maxval-minval)*(maxx-mi
 draw_set_alpha(1)
 draw_sprite_ext(sButton,hover,x,y,dsc,dsc,0,c_white,1)
 draw_set_alpha(a)
-draw_text_transformed(x,y,content,dsc,dsc,0)
+draw_text_transformed(x,y,content,tsc,dsc,0)
 draw_set_alpha(1)
 draw_sprite_ext(sSlider,hover,(currval-minval)/(maxval-minval)*(maxx-minx)+minx,y,dsc,dsc,0,c_white,1)
 </string>
