@@ -25,7 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>ARRMAX = 32             //MAINTABLE size const
+            <string>//init values
+ARRMAX = 32             //MAINTABLE size const
 tick = 0                //counter
 rot = 0                 //field rotation
 pxByTick = 2            //pixels by tick aka offset speed
@@ -43,6 +44,7 @@ animType = 0            //0 line; 1 diag;
 active = false          //is squares clickable?
 cheat = ''
 
+//squares array init
 f = file_bin_open('res/MAINTABLE.dat',0)
 for (i=0; i&lt;ARRMAX; i++)
   for (j=0; j&lt;ARRMAX; j++)
@@ -56,6 +58,10 @@ for (i=0; i&lt;ARRMAX; i++)
     sqArr[i,j].parent = id
     }
 file_bin_close(f)
+
+//cheat states
+chStop = false
+chReverse = false
 </string>
           </argument>
         </arguments>
@@ -103,12 +109,25 @@ file_bin_close(f)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//FIELD ROTATION
-rot+= 0.25
-if rot == 360
-  rot = 0
+            <string>if !chStop
+{
+//////////
+
+//FIELD ROTATION
+if chReverse
+  {
+  rot-= 0.25
+  if rot &lt;= 0
+    rot+= 360
+  }
+else
+  {
+  rot+= 0.25
+  if rot &gt;= 360
+    rot-= 360
+  }
 rotReversed = 360-rot
-  
+    
 //OFFSET CHANGING  
 if isHor
   {
@@ -237,6 +256,44 @@ if (rot == 80) || (rot == 260)
   {
   revState = 2
   animType = irandom_range(0,1)
+  }
+  
+//////////// ch stop
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//cheat processor, performed from MenuRuler.b2Accept
+if cheat == 'STOP'
+  chStop = true
+else if cheat == 'REVERSE'
+  if chReverse
+    chReverse = false
+  else
+    chReverse = true
+else if cheat == 'RESET'
+  {
+  chStop = false
+  chReverse = false
   }
 </string>
           </argument>

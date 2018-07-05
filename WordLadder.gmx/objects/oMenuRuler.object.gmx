@@ -411,7 +411,17 @@ else if b2Accept.clicked
   {
   b2Accept.clicked = false
   //bg.cheat.process TODO!
-  bg.cheat = ''
+  with (bg)
+    {
+    event_user(0)
+    cheat = ''
+    for (i=0; i&lt;ARRMAX; i++)
+      for (j=0; j&lt;ARRMAX; j++)
+        {
+        sqArr[i,j].clr = c_white    //change color
+        sqArr[i,j].spr = 0
+        }
+    }
   }
 </string>
           </argument>
