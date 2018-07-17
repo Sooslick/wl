@@ -33,7 +33,7 @@ ButtonImgChange = 0                //pointer to baton where sprite nado smenit
 //Cheat = ''                      //typed by squares //removed to SquarRuler
 Dead = false                    //killing MenuRuler for create new Ruler
 DeadTick = 0                  //killing timer  
-NextMenu = 0                //transition: 1=newgame; 2=profile; 3=ops; 4=creds
+//NextMenu = 0                //transition: 1=newgame; 2=profile; 3=ops; 4=creds
 //Offset processor + anim
 bActive = true
 bOffInner = 1200                         //offset coordinates min-max
@@ -100,14 +100,6 @@ instance_destroy(b2Accept,true)
 instance_destroy(bg,true)
 if !ActiveMenuPtr==0
   instance_destroy(ActiveMenuPtr,true)
-switch NextMenu
-  {
-  case 1:  instance_create(0,0,oNewGameRuler); break;
-  case 2:  instance_create(0,0,oProfileRuler); break;
-  case 3:  instance_create(0,0,oOptionsRuler); break;
-  case 4:  instance_create(0,0,oAuthorsRuler); break;
-  default: instance_create(0,0,oEasterEggRuler); break;
-  }
 </string>
           </argument>
         </arguments>
@@ -247,6 +239,7 @@ if bNewGame.clicked
       {
       instance_destroy(ActiveMenuPtr,true) 
       ActiveMenuPtr = instance_create(0,0,oNewGameRuler)        //else switch menu 
+      ActiveMenuPtr.parent = id
       Header = 'GAME PREFERENCES' 
       ButtonImgChange.sp = sButton
       ButtonImgChange = bNewGame
@@ -259,6 +252,7 @@ if bNewGame.clicked
     ButtonImgChange = bNewGame
     ActiveMenuOpened = true
     ActiveMenuPtr = instance_create(0,0,oNewGameRuler)
+    ActiveMenuPtr.parent = id
     Header = 'GAME PREFERENCES' 
     b2Hide.clickable = false
     b2Accept.clickable = false
@@ -464,6 +458,30 @@ if Dead
   
 //black line
 draw_sprite_ext(sPixel,0,1600,0,global.DRAW_HOFF/global.DRAW_SCALE,1200,0,c_black,1)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="90">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if keyboard_check(vk_control) &amp;&amp; keyboard_check(vk_shift)
+  action_another_room(rDev)
 </string>
           </argument>
         </arguments>

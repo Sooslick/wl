@@ -1,0 +1,40 @@
+Current struct:
+
+bytes	info
+1	PNETID
+1	N = Name Length
+N	Name String
+1	Locale. Check locale list below
+
+4    	In-game time. Counted while entire game
+4    	Playtime. Counted while game started
+4    	Online time. Counted in lobbies & ranked games
+4    	Total words typed
+4    	Total letters typed
+4    	Total games played
+4    	Total servers joined
+_______________________________________
+
+IDEAL STRUCT:
+
+bytes	info
+4	Game Version
+4	Save Version
+8	Date & Time
+
+4	Net ID
+1	N = Name Length
+N	Name String
+1	todo: other fields
+
+1	todo: game progress
+
+1	todo: stats
+
+1	todo: achievements
+
+___________________________
+
+Locales:
+0 = eng
+1 = ru

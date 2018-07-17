@@ -3,8 +3,8 @@
   <Configs name="configs">
     <Config>Configs\Default</Config>
   </Configs>
-  <datafiles number="1" name="datafiles">
-    <datafiles number="1" name="res">
+  <datafiles number="3" name="datafiles">
+    <datafiles number="3" name="res">
       <datafile>
         <name>MAINTABLE.dat</name>
         <exists>-1</exists>
@@ -23,6 +23,25 @@
         <filename>MAINTABLE.dat</filename>
       </datafile>
     </datafiles>
+    <datafiles number="3" name="dict">
+      <datafile>
+        <name>EN.dat</name>
+        <exists>-1</exists>
+        <size>4241861</size>
+        <exportAction>2</exportAction>
+        <exportDir></exportDir>
+        <overwrite>0</overwrite>
+        <freeData>-1</freeData>
+        <removeEnd>0</removeEnd>
+        <store>0</store>
+        <ConfigOptions>
+          <Config name="Default">
+            <CopyToMask>9223372036854775807</CopyToMask>
+          </Config>
+        </ConfigOptions>
+        <filename>EN.dat</filename>
+      </datafile>
+    </datafiles>
   </datafiles>
   <NewExtensions/>
   <sounds name="sound"/>
@@ -34,6 +53,7 @@
     <sprite>sprites\sCheckBox</sprite>
     <sprite>sprites\sSlider</sprite>
     <sprite>sprites\sSquare</sprite>
+    <sprite>sprites\sSquareCenter</sprite>
     <sprite>sprites\sSquareFaded</sprite>
     <sprite>sprites\sEnglish</sprite>
     <sprite>sprites\sPixel</sprite>
@@ -42,12 +62,14 @@
       <sprite>sprites\LogoWhite</sprite>
     </sprites>
     <sprite>sprites\sCareful</sprite>
+    <sprite>sprites\sLoading</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
   <scripts name="scripts">
     <script>scripts\funcTickOffset.gml</script>
     <script>scripts\funcChrEncode.gml</script>
+    <script>scripts\funcChrCheck.gml</script>
     <script>scripts\funcChrDecode.gml</script>
     <script>scripts\funcCfgRead.gml</script>
     <script>scripts\funcCfgWrite.gml</script>
@@ -64,31 +86,44 @@
   </fonts>
   <objects name="objects">
     <object>objects\oLogo</object>
-    <object>objects\oMenuRuler</object>
     <object>objects\oButton</object>
     <object>objects\oSlider</object>
     <object>objects\oCheckBox</object>
     <object>objects\oConfirmButton</object>
     <object>objects\oForm</object>
     <object>objects\oList</object>
-    <object>objects\oSquareRuler</object>
-    <object>objects\oSquare</object>
-    <object>objects\oNewGameRuler</object>
-    <object>objects\oProfileRuler</object>
-    <object>objects\oOptionsRuler</object>
-    <object>objects\oAuthorsRuler</object>
-    <object>objects\oAchievementsRuler</object>
-    <object>objects\oEasterEggRuler</object>
-    <object>objects\oProfileSelector</object>
-    <object>objects\oProfileCreator</object>
-    <object>objects\oProfileCreatorFirst</object>
     <object>objects\oTimeCounter</object>
     <object>objects\oStatsDrawer</object>
+    <objects name="MainMenuGroup">
+      <object>objects\oAchievementsRuler</object>
+      <object>objects\oAuthorsRuler</object>
+      <object>objects\oEasterEggRuler</object>
+      <object>objects\oMenuRuler</object>
+      <object>objects\oNewGameRuler</object>
+      <object>objects\oOptionsRuler</object>
+      <object>objects\oProfileCreator</object>
+      <object>objects\oProfileCreatorFirst</object>
+      <object>objects\oProfileRuler</object>
+      <object>objects\oProfileSelector</object>
+      <object>objects\oSquare</object>
+      <object>objects\oSquareRuler</object>
+      <object>objects\oGameSolo</object>
+    </objects>
+    <objects name="GameGeneralGroup">
+      <object>objects\oDictLoader</object>
+      <object>objects\oGameRuler</object>
+      <object>objects\oSimpleGameRuler</object>
+      <object>objects\oGameCube</object>
+    </objects>
+    <object>objects\oDevMenu</object>
+    <object>objects\oDevDictRd</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>
     <room>rooms\rMenu</room>
     <room>rooms\rFirst</room>
+    <room>rooms\rGame</room>
+    <room>rooms\rDev</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>

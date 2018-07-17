@@ -144,7 +144,10 @@ else    //testing every button
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_create(0,0,oProfileRuler)
+            <string>p = instance_create(0,0,oProfileRuler)
+p.parent = parent
+parent.ActiveMenuPtr = p
+parent.Header = 'PROFILE SETTINGS'
 instance_destroy(self,true)
 </string>
           </argument>
