@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>1</depth>
+  <depth>0</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,69 +25,19 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>loaded = false
-//TODO: check loaded state in gameruler
-//if !loaded
-locale = global.profile[?'PLOCALE']
+            <string>words = 0
+letters = 0
+attempts = 0
+ticks = 0
 
-//TODO: clear hashmap IF loaded
-
-if global.DictLoaded &lt;&gt; global.profile[?'PLOCALE']
-  {
-  //pre-define filename
-  switch global.profile[?'PLOCALE']
-    {
-    case 0: lfn = "dict/EN.dat"; break
-    //case 1:
-    }
-    
-  //pre-define hashmaps
-  global.DictDS = ds_map_create()
-  //TODO: check locale!
-  //first level hashmaps
-  for (i=65; i&lt;=90; i++)  
-    {
-    tmpm = ds_map_create()
-    //second level hashmap
-    for (j=65; j&lt;=90; j++) 
-      {
-      tmpl = ds_list_create()
-      ds_map_add_list(tmpm, chr(j), tmpl)
-      }
-    ds_map_add_map(global.DictDS, chr(i), tmpm)
-    }
-    
-  //reading dict file    
-  f = file_bin_open(lfn,0)
-  finalSize = file_bin_size(f)
-  currSize = file_bin_position(f)
-  }
-else
-  {
-  loaded = true
-  global.DictLoaded = locale
-  finalSize = 1
-  currSize = 1
-  }
-tickTimeConst = 1000 / room_speed + 1
-loadRot = 0
-
-GR = -1         //GameRuler Object
-
-//if pre-loaded
-/*
-else
-  {
-  loaded = true
-  with (parent) {event_user(0)}
-  }
-  */
+active = false
+B1 = -1
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="3" enumb="0">
+    <event eventtype="6" enumb="56">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -104,56 +54,35 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>loadRot+= 10
-if !loaded
-  {
-  timeEndTick = current_time + tickTimeConst
-  currSize = file_bin_position(f)
-  
-  while (current_time &lt; timeEndTick)
-    {
-    if file_bin_position(f) &gt;= finalSize
-      {
-      loaded = true
-      file_bin_close(f)
-      break
-      }
-    q = file_bin_read_byte(f)
-    s = ''
-    //todo locale check!
-    //word too shoft
-    if q&lt;2
-      for (i=1; i&lt;=q; i++)
-        file_bin_read_byte(f)
-    else
-      for (i=1; i&lt;=q; i++)
-        s+= chr(funcChrDecode(file_bin_read_byte(f)))
-    
-    //get first lv map  
-    tmpm = global.DictDS
-    c = string_char_at(s,1)
-    if ds_map_exists(tmpm,c)
-      tmpm = tmpm[? c]
-    else
-      continue
-    
-    //get sec lv map 
-    c = string_char_at(s,2) 
-    if ds_map_exists(tmpm,c)
-      tmpl = tmpm[? c]
-    else
-      continue   
-      
-    //put word
-    ds_list_add(tmpl,s) 
-    }
-  }
-else
-  {
-  global.DictLoaded = locale
-  with (parent) {event_user(1)}
-  instance_destroy(self,true)
-  }
+            <string>if B1 &gt; 0
+  if B1.clicked
+    action_another_room(rMenu)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//gameover event
+B1 = instance_create(800,1100,oButton)
+B1.content = 'BACK'
+active = true
 </string>
           </argument>
         </arguments>
@@ -176,21 +105,19 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_color(c_red)
-draw_line_width(0,10,1600,10,16)
-draw_set_color(c_white)
-draw_line_width(0,10,currSize/finalSize*1600,10,10)
-if !loaded
+            <string>if active
   {
-  draw_sprite_ext(sLoading,0,1500,80,2,2,loadRot,c_white,1)
-  draw_sprite_ext(sLoading,0,1500,80,1,1,-loadRot*2,c_white,1)
-  draw_set_color(c_red)
-  draw_line_width(0,10,1600,10,16)
+  draw_set_font(fImpact64)
+  draw_set_alpha(1)
   draw_set_color(c_white)
-  draw_line_width(0,10,currSize/finalSize*1600,10,10)
+  draw_set_halign(fa_left)
+  draw_set_valign(fa_center)
   
-  //debug
-  //draw_text(800,80,s)
+  s = 'PLAYTIME: ' + formatTimeString(ticks)
+  s+= '#ACCEPTED WORDS: ' + string(words)
+  s+= '#TOTAL LETTERS: ' + string(letters)
+  s+= '#INPUT ATTEMPTS: ' + string(attempts)
+  draw_text(100,600,s)
   }
 </string>
           </argument>

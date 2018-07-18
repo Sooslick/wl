@@ -54,6 +54,7 @@
     <sprite>sprites\sSlider</sprite>
     <sprite>sprites\sSquare</sprite>
     <sprite>sprites\sSquareCenter</sprite>
+    <sprite>sprites\sSquareTabu</sprite>
     <sprite>sprites\sSquareFaded</sprite>
     <sprite>sprites\sEnglish</sprite>
     <sprite>sprites\sPixel</sprite>
@@ -93,6 +94,7 @@
     <object>objects\oForm</object>
     <object>objects\oList</object>
     <object>objects\oTimeCounter</object>
+    <object>objects\oSquareTransition</object>
     <object>objects\oStatsDrawer</object>
     <objects name="MainMenuGroup">
       <object>objects\oAchievementsRuler</object>
@@ -114,6 +116,7 @@
       <object>objects\oGameRuler</object>
       <object>objects\oSimpleGameRuler</object>
       <object>objects\oGameCube</object>
+      <object>objects\oGameStatCounter</object>
     </objects>
     <object>objects\oDevMenu</object>
     <object>objects\oDevDictRd</object>

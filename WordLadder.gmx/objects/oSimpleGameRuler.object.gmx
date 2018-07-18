@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>1</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -47,8 +47,18 @@ for (i=1; i&lt;=MinLen; i++)
   prevWord+= chr(funcChrDecode(tmp))
   }  
   
-Timer = 450 * MinLen
+Timer = 300 * MinLen
 TabuList = ds_list_create()
+TabuQty = 1
+TabuQtyProg = 0
+TabuQtyMax = 10             //lv-ups: 10; 42; 42; 100; 666 -&gt; max.
+//TabuFill
+for (i=1; i&lt;=TabuQty; i++)
+  {
+  tmp = irandom_range(1,string_length(prevWord)-1)
+  if tmp != string_char_at(prevWord,string_length(prevWord))
+    ds_list_add(TabuList,string_char_at(prevWord,i))
+  }
 
 Cube = instance_create(800,600,oGameCube)
 Cube.parent = id
@@ -57,6 +67,9 @@ Cube.w1 = prevWord
 Cube.w2 = ''
 Cube.w3 = ''
 Cube.w4 = ''
+Cube.TabuList = TabuList
+
+Stat = instance_create(0,0,oGameStatCounter)
 </string>
           </argument>
         </arguments>
@@ -80,7 +93,17 @@ Cube.w4 = ''
           <argument>
             <kind>1</kind>
             <string>if prepared
+  {
+  Stat.ticks++
   Timer--
+  if Timer==0
+    {
+    tmp = instance_create(0,0,oSquareTransition)
+    tmp.parent = id
+    TransitionEvent = 0
+    prepared = false
+    }
+  }
 </string>
           </argument>
         </arguments>
@@ -112,8 +135,35 @@ Cube.w4 = ''
     prepared = true
     Cube.Rot = true
     currWord = string_char_at(prevWord,string_length(prevWord))
+    global.profile[?'PSGAMES'] ++
     }
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//gameover Event
+with Stat {event_user(0)}
+instance_destroy(Cube,true)
+instance_destroy(self,true)
 </string>
           </argument>
         </arguments>
@@ -196,6 +246,7 @@ draw_text(800,1100,formatTimeString(Timer))
           <argument>
             <kind>1</kind>
             <string>ok = true
+Stat.attempts++
 
 //check len
 if string_length(currWord) &lt; MinLen
@@ -204,10 +255,6 @@ if string_length(currWord) &lt; MinLen
 //check tabu
 if ok &amp;&amp; prepared
 {
-ds_list_clear(TabuList)
-for (i=1; i&lt;string_length(prevWord); i++)
-  if string_char_at(prevWord,i) != string_char_at(prevWord,string_length(prevWord))
-    ds_list_add(TabuList,string_char_at(prevWord,i))
 for (i=2; i&lt;=string_length(currWord); i++)
   if ds_list_find_index(TabuList, string_char_at(currWord,i)) != -1
     {
@@ -215,6 +262,11 @@ for (i=2; i&lt;=string_length(currWord); i++)
     break
     } 
 }
+
+//check prevword
+if ok &amp;&amp; prepared
+  if ds_list_find_index(prevWordList,currWord) != -1
+    ok = false
     
 //check dict
 if ok &amp;&amp; prepared
@@ -229,12 +281,41 @@ if ok &amp;&amp; prepared
       tmp = ds_list_find_index(tmpl,currWord)
       if tmp != -1
         {
+        words++
+        global.profile[?'PSWORDS'] ++
+        global.profile[?'PSLETTERS'] += string_length(currWord)
+        Stat.words++
+        Stat.letters += string_length(currWord)
         prevWord = currWord
         ds_list_add(prevWordList,currWord)
+        MinLen = string_length(currWord)
         Cube.Rot = true
-        Timer+= string_length(currWord)*450
+        Timer+= string_length(currWord)*150
         currWord = string_char_at(currWord, string_length(currWord))
-        words++
+        
+        TabuQtyProg++
+        if TabuQtyProg &gt;= TabuQtyMax
+          {
+          TabuQty++
+          TabuQtyProg = 0
+          switch TabuQty
+            {
+            case 2: case 3: TabuQtyMax = 42; break;
+            case 4: case 5: TabuQtyMax = 100; break;
+            case 6: TabuQtyMax = 666; break;
+            case 7: TabuQtyMax = 9000; break;
+            default: TabuQtyMax = 999999999
+            }
+          }
+        
+        //Tabu refresh
+        ds_list_clear(TabuList)
+        for (i=1; i&lt;=TabuQty; i++)
+          {
+          tmp = chr(funcChrDecode(irandom_range(1,26)))
+          if tmp != string_char_at(prevWord,string_length(prevWord))
+            ds_list_add(TabuList,tmp)
+          }
         }
       }
     }

@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>1</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -39,6 +39,8 @@ Shift = false               //height correction anim
 ShiftY = 0
 NewWord = true              //new word approach animation
 NewWordX = 0
+Tabu = false
+TabuProg = 0
 </string>
           </argument>
         </arguments>
@@ -224,6 +226,15 @@ draw_set_alpha(1)
 draw_set_color(c_white)
 draw_line(x-400,y,x+400,y)
 draw_line(x,y-300,x,y+300)*/
+
+//TabuList
+draw_set_alpha(1)
+if !Rot
+  for (i=0; i&lt;ds_list_size(TabuList); i++)
+    {
+    draw_text(x-j+i*72, y-j-100, TabuList[| i])
+    draw_sprite(sSquareTabu,0,x-j+i*72, y-j-100)
+    }
 </string>
           </argument>
         </arguments>

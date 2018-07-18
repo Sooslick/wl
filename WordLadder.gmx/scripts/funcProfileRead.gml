@@ -65,6 +65,7 @@ else
     global.profile[?'PSWORDS'] = 0
     global.profile[?'PSLETTERS'] = 0
     global.profile[?'PSGAMES'] = 0
+    //TODO: finished games
     global.profile[?'PSSERVERS'] = 0
     global.profile[?'PSRESETS'] = 0
     
