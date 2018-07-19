@@ -57,6 +57,7 @@ if global.DictLoaded &lt;&gt; global.profile[?'PLOCALE']
     ds_map_add_map(global.DictDS, chr(i), tmpm)
     }
     
+  LoadedHash = 'ZZ'
   //reading dict file    
   f = file_bin_open(lfn,0)
   finalSize = file_bin_size(f)
@@ -123,29 +124,39 @@ if !loaded
     //todo locale check!
     //word too shoft
     if q&lt;2
+      {
       for (i=1; i&lt;=q; i++)
         file_bin_read_byte(f)
+      continue
+      }
     else
       for (i=1; i&lt;=q; i++)
         s+= chr(funcChrDecode(file_bin_read_byte(f)))
     
-    //get first lv map  
-    tmpm = global.DictDS
-    c = string_char_at(s,1)
-    if ds_map_exists(tmpm,c)
-      tmpm = tmpm[? c]
+    if (string_char_at(s,1) == string_char_at(LoadedHash,1)) &amp;&amp;  
+       (string_char_at(s,2) == string_char_at(LoadedHash,2))
+            ds_list_add(tmpl,s) 
     else
-      continue
+      {
+      //get first lv map  
+      tmpm = global.DictDS
+      c = string_char_at(s,1)
+      if ds_map_exists(tmpm,c)
+        tmpm = tmpm[? c]
+      else
+        continue
     
-    //get sec lv map 
-    c = string_char_at(s,2) 
-    if ds_map_exists(tmpm,c)
-      tmpl = tmpm[? c]
-    else
-      continue   
+      //get sec lv map 
+      c = string_char_at(s,2) 
+      if ds_map_exists(tmpm,c)
+        tmpl = tmpm[? c]
+      else
+        continue   
       
-    //put word
-    ds_list_add(tmpl,s) 
+      //put word
+      ds_list_add(tmpl,s) 
+      LoadedHash = string_char_at(s,1) + string_char_at(s,2)
+      }
     }
   }
 else

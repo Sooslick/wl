@@ -86,6 +86,8 @@ if Rot
     MinLen = string_length(w2)
     Shift = true
     NewWord = true
+    Tabu = true
+    NewWordX = 0
     Rot = false
     }
   }
@@ -106,7 +108,25 @@ if Shift
   }
 if NewWord
   {
-  //alpha approach
+  if string_length(w1) &gt; MinLen
+    tmp = string_length(w1)
+  else
+    tmp = MinLen
+  if NewWordX &lt; tmp*64
+    NewWordX+= 16
+  else if NewWordX &gt; tmp*64
+    NewWordX-= 16
+  else
+    NewWord = false
+  }
+if Tabu
+  {
+  TabuProg++
+  if TabuProg &gt;= ds_list_size(TabuList)*10
+    {
+    TabuProg = 0
+    Tabu = false
+    }
   }
 </string>
           </argument>
@@ -153,14 +173,15 @@ for (i=0; i&lt;tmp; i++)
     xd=x+dist*cos(currrot)
     yd=y-dist*sin(currrot)
     }
-  draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,1)       
-  draw_text_transformed(xd,yd,string_char_at(w1,i+1), 1,1,RotDeg)
+  draw_sprite_ext(sSquareCenter,0, xd, yd, ApproachScale,ApproachScale,RotDeg,c_white,1)       
+  draw_text_transformed(xd,yd,string_char_at(w1,i+1), ApproachScale,ApproachScale,RotDeg)
   }
-//draw_sprite_ext(sSquareFaded,0,x-j+64*i,y-j,1,1,-RotDeg,c_white,1)  
+if (string_length(w1) &gt;= MinLen) &amp;&amp; !Rot
+  draw_sprite_ext(sSquareCenter,0, xd+64, yd, 1,1,RotDeg,c_white,1)   
   
 if w2 != ''
 {
-AlphaDec = 0.4 / (string_length(w2)-1)
+AlphaDec = 0.42 / (string_length(w2)-1)
 for (i=1; i&lt;string_length(w2); i++)
   {
   xd = x-j
@@ -181,7 +202,7 @@ for (i=1; i&lt;string_length(w2); i++)
 //w3
 if w3 != ''
 {
-AlphaDec = 0.4 / (string_length(w3)-1)
+AlphaDec = 0.42 / (string_length(w3)-1)
 for (i=1; i&lt;string_length(w3); i++)
   {
   xd = x-j+64*i
@@ -202,7 +223,10 @@ for (i=1; i&lt;string_length(w3); i++)
 //w4    
 if (w4 != '') &amp;&amp; NewWord
 {
-AlphaDec = 0.09
+//if NewWordX &gt;= (string_length(w4)-1)*64
+//  AlphaDec = 0.16 / (string_length(w4)-(NewWordX/64))
+//else
+  AlphaDec = 0.16
 i=1
 while (draw_get_alpha() &gt; 0)
   {
@@ -221,6 +245,13 @@ while (draw_get_alpha() &gt; 0)
   } 
 }  
 
+//Fading
+if !Rot
+  {
+  draw_sprite_ext(sSquareFaded,0,x-j+NewWordX-32,y-j-32,0.25,0.25,RotDeg,c_black,1) 
+  draw_sprite_ext(sPixel,0,x-j+NewWordX+32,y-j-32,MinLen*65,64,0,c_black,1)
+  }
+
 /*//DEBUG 
 draw_set_alpha(1)
 draw_set_color(c_white)
@@ -230,11 +261,36 @@ draw_line(x,y-300,x,y+300)*/
 //TabuList
 draw_set_alpha(1)
 if !Rot
-  for (i=0; i&lt;ds_list_size(TabuList); i++)
+  {
+  if Tabu
     {
-    draw_text(x-j+i*72, y-j-100, TabuList[| i])
-    draw_sprite(sSquareTabu,0,x-j+i*72, y-j-100)
+    tmp = TabuProg
+    i = 0
+    while tmp &gt; 0
+      {
+      if tmp &gt;= 10
+        {
+        draw_set_alpha(1)
+        draw_text(x-j+i*72, y-j-100, TabuList[| i])
+        draw_sprite(sSquareTabu,0,x-j+i*72, y-j-100)
+        }
+      else
+        {
+        draw_set_alpha(1/(10-tmp))
+        draw_text_transformed(x-j+i*72, y-j-100, TabuList[| i],(5-tmp)/2+0.5,(5-tmp)/2+0.5,0)
+        draw_sprite_ext(sSquareTabu,0,x-j+i*72, y-j-100, (5-tmp)/2+0.5, (5-tmp)/2+0.5, 0,c_white,draw_get_alpha())
+        }
+      tmp-= 10
+      i++
+      }
     }
+  else
+    for (i=0; i&lt;ds_list_size(TabuList); i++)
+      {
+      draw_text(x-j+i*72, y-j-100, TabuList[| i])
+      draw_sprite(sSquareTabu,0,x-j+i*72, y-j-100)
+      }
+  }
 </string>
           </argument>
         </arguments>

@@ -169,42 +169,6 @@ instance_destroy(self,true)
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>draw_set_font(fDebug)
-draw_set_alpha(1)
-draw_set_color(c_white)
-draw_set_halign(fa_left)
-draw_set_valign(fa_top)
-
-//full list
-for (i=0; i&lt;words; i++)
-  draw_text(5,5+i*20,prevWordList[| i])
-  
-//timer
-draw_set_font(fImpact64)
-draw_set_halign(fa_center)
-draw_text(800,1100,formatTimeString(Timer))
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
     <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
@@ -222,7 +186,27 @@ draw_text(800,1100,formatTimeString(Timer))
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//
+            <string>draw_set_font(fImpact64)
+draw_set_alpha(1)
+draw_set_color(c_white)
+draw_set_valign(fa_top)
+
+//timer
+draw_set_font(fImpact64)
+draw_set_halign(fa_center)
+draw_text(800,1100,formatTimeString(Timer))
+
+//full list
+draw_set_halign(fa_left)
+j = 0
+draw_sprite_ext(sSquareFaded,0,256,Cube.y-MinLen*32+64,1,0.3,180,c_white,0.66)
+for (i=words-1; i&gt;=0; i--)
+  {
+  if string_length(prevWordList[| i]) &gt;= MinLen
+    draw_text(5,Cube.y-MinLen*32-25+j*70,prevWordList[| i])
+  j++
+  draw_set_alpha(draw_get_alpha()-0.08)
+  }
 </string>
           </argument>
         </arguments>
@@ -287,8 +271,8 @@ if ok &amp;&amp; prepared
         Stat.words++
         Stat.letters += string_length(currWord)
         prevWord = currWord
-        ds_list_add(prevWordList,currWord)
         MinLen = string_length(currWord)
+        ds_list_add(prevWordList,currWord)
         Cube.Rot = true
         Timer+= string_length(currWord)*150
         currWord = string_char_at(currWord, string_length(currWord))
@@ -312,8 +296,8 @@ if ok &amp;&amp; prepared
         ds_list_clear(TabuList)
         for (i=1; i&lt;=TabuQty; i++)
           {
-          tmp = chr(funcChrDecode(irandom_range(1,26)))
-          if tmp != string_char_at(prevWord,string_length(prevWord))
+          tmp = funcNewTabuLetter(2)                     //2% chance of vowel tabu
+          if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
             ds_list_add(TabuList,tmp)
           }
         }
@@ -355,11 +339,12 @@ if ok &amp;&amp; prepared
   else
     {
     keyboard_lastchar = string_upper(keyboard_lastchar)
-    if funcChrCheck(ord(keyboard_lastchar))
+    if (ord(keyboard_lastchar)&gt;64)&amp;&amp;(ord(keyboard_lastchar)&lt;91)
       currWord+= keyboard_lastchar
     keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...
     }
   Cube.w1 = currWord  
+  Cube.NewWord = true
   }
 </string>
           </argument>

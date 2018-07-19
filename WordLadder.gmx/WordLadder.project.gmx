@@ -79,6 +79,7 @@
     <script>scripts\formatTimeString.gml</script>
     <script>scripts\funcSetWinResFromString.gml</script>
     <script>scripts\funcCheckGuiHover.gml</script>
+    <script>scripts\funcNewTabuLetter.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>

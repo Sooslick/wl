@@ -28,8 +28,11 @@
             <string>B1 = instance_create(300,200,oButton)
 B1.content = 'DICT W'
 
-B2 = instance_create(300,500,oButton)
+B2 = instance_create(300,450,oButton)
 B2.content = 'DICT R'
+
+B3 = instance_create(300,750,oButton)
+B3.content = 'FADE'
 </string>
           </argument>
         </arguments>
@@ -87,6 +90,22 @@ else if B2.clicked
   {
   instance_create(0,0,oDevDictRd)
   instance_destroy(self,true)
+  }
+else if B3.clicked
+  {
+  B3.clicked = false
+  fn = get_save_filename("PNG File|*.png","")
+  if fn != ""
+    {
+    draw_clear_alpha(c_black,0)
+    draw_set_color(c_white)
+    for (i=0; i&lt;256; i++)
+      {
+      draw_set_alpha(i/256)
+      draw_line(800+i,100,800+i,356)
+      }
+    screen_save(fn)
+    }
   }
 </string>
           </argument>
