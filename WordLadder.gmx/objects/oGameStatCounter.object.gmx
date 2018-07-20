@@ -30,8 +30,15 @@ letters = 0
 attempts = 0
 ticks = 0
 
+tabus = 0
+lens = 0
+dicts = 0
+prevs = 0
+
 active = false
 B1 = -1
+
+s = ''
 </string>
           </argument>
         </arguments>
@@ -83,6 +90,15 @@ B1 = -1
 B1 = instance_create(800,1100,oButton)
 B1.content = 'BACK'
 active = true
+
+s = 'PLAYTIME: ' + formatTimeString(ticks)
+s+= '#ACCEPTED WORDS: ' + string(words)
+s+= '#TOTAL LETTERS: ' + string(letters)
+s+= '#INPUT ATTEMPTS: ' + string(attempts)
+s+= '##TYPOS: ' + string(dicts)
+s+= '#REPEATS: ' + string(prevs)
+s+= '#TABOOS: ' + string(tabus)
+s+= '#TOOSHORTS: ' + string(lens)
 </string>
           </argument>
         </arguments>
@@ -113,10 +129,6 @@ active = true
   draw_set_halign(fa_left)
   draw_set_valign(fa_center)
   
-  s = 'PLAYTIME: ' + formatTimeString(ticks)
-  s+= '#ACCEPTED WORDS: ' + string(words)
-  s+= '#TOTAL LETTERS: ' + string(letters)
-  s+= '#INPUT ATTEMPTS: ' + string(attempts)
   draw_text(100,600,s)
   }
 </string>

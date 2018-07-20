@@ -30,7 +30,11 @@ prepared = false
 prevWord = ''
 currWord = ''
 prevWordList = ds_list_create()
+prevOffset = -1
 words = 0
+
+prevAnim = false
+prevAnimTick = 0
 
 BStart = instance_create(800,1000, oButton)
 BStart.content = 'BEGIN'
@@ -102,6 +106,16 @@ Stat = instance_create(0,0,oGameStatCounter)
     tmp.parent = id
     TransitionEvent = 0
     prepared = false
+    }
+    
+  if prevAnim
+    {
+    prevAnimTick++
+    if prevAnimTick &gt;= 32
+      {
+      prevAnimTick = 0
+      prevAnim = false
+      }
     }
   }
 </string>
@@ -199,13 +213,40 @@ draw_text(800,1100,formatTimeString(Timer))
 //full list
 draw_set_halign(fa_left)
 j = 0
-draw_sprite_ext(sSquareFaded,0,256,Cube.y-MinLen*32+64,1,0.3,180,c_white,0.66)
-for (i=words-1; i&gt;=0; i--)
+
+if prevAnim
+  cl = make_color_rgb(255,prevAnimTick*8,prevAnimTick*8)
+else
+  cl = c_white
+
+draw_sprite_ext(sSquareFaded,0,256,Cube.y-MinLen*32+64,1,0.3,180,cl,0.66)
+
+if prevOffset == -1
+  for (i=words-1; i&gt;=0; i--)
+    {
+    if string_length(prevWordList[| i]) &gt;= MinLen
+      draw_text(5,Cube.y-MinLen*32+45+j*70,prevWordList[| i])
+    j++
+    draw_set_alpha(draw_get_alpha()-0.08)
+    }
+else
   {
-  if string_length(prevWordList[| i]) &gt;= MinLen
-    draw_text(5,Cube.y-MinLen*32-25+j*70,prevWordList[| i])
-  j++
-  draw_set_alpha(draw_get_alpha()-0.08)
+  for (i=prevOffset; i&gt;=0; i--)
+    {
+    if string_length(prevWordList[| i]) &gt;= MinLen
+      draw_text(5,Cube.y-MinLen*32-25+j*70,prevWordList[| i])
+    j++
+    draw_set_alpha(draw_get_alpha()-0.08)
+    }
+  draw_set_alpha(0.92)
+  j = -1
+  for (i=prevOffset+1; i&lt;words; i++)
+    {
+    if string_length(prevWordList[| i]) &gt;= MinLen
+      draw_text(5,Cube.y-MinLen*32-25+j*70,prevWordList[| i])
+    j--
+    draw_set_alpha(draw_get_alpha()-0.08)
+    }
   }
 </string>
           </argument>
@@ -234,23 +275,37 @@ Stat.attempts++
 
 //check len
 if string_length(currWord) &lt; MinLen
+  {
   ok = false
+  Cube.LengthErr = true
+  Stat.lens++
+  }
   
 //check tabu
 if ok &amp;&amp; prepared
 {
 for (i=2; i&lt;=string_length(currWord); i++)
-  if ds_list_find_index(TabuList, string_char_at(currWord,i)) != -1
+  {
+  j = ds_list_find_index(TabuList, string_char_at(currWord,i))
+  if j != -1
     {
     ok = false 
+    Cube.TabuErr = true
+    Cube.TabuErrNum = j
+    Stat.tabus++
     break
     } 
+  }
 }
 
 //check prevword
 if ok &amp;&amp; prepared
   if ds_list_find_index(prevWordList,currWord) != -1
+    {
     ok = false
+    prevAnim = true
+    Stat.prevs++
+    }
     
 //check dict
 if ok &amp;&amp; prepared
@@ -274,6 +329,8 @@ if ok &amp;&amp; prepared
         MinLen = string_length(currWord)
         ds_list_add(prevWordList,currWord)
         Cube.Rot = true
+        Cube.LengthErrTick = 0
+        Cube.LengthErr = false
         Timer+= string_length(currWord)*150
         currWord = string_char_at(currWord, string_length(currWord))
         
@@ -296,12 +353,27 @@ if ok &amp;&amp; prepared
         ds_list_clear(TabuList)
         for (i=1; i&lt;=TabuQty; i++)
           {
-          tmp = funcNewTabuLetter(2)                     //2% chance of vowel tabu
+          tmp = funcNewTabuLetter(3)                     //3% chance of vowel tabu
           if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
             ds_list_add(TabuList,tmp)
           }
         }
+      else
+        {
+        Cube.LengthErr = true
+        Stat.dicts++
+        }
       }
+    else
+      {
+      Cube.LengthErr = true
+      Stat.dicts++
+      }
+    }
+  else
+    {
+    Cube.LengthErr = true
+    Stat.dicts++
     }
   }
   
@@ -335,6 +407,8 @@ if ok &amp;&amp; prepared
     {    
     if string_length(currWord) &gt; 1      
       currWord = string_copy(currWord,1,string_length(currWord)-1)
+    Cube.TabuErr = false
+    Cube.TabuErrNum = -1
     }
   else
     {
@@ -345,6 +419,19 @@ if ok &amp;&amp; prepared
     }
   Cube.w1 = currWord  
   Cube.NewWord = true
+  
+  //find similar in prevs
+  prevOffset = -1
+  for (i=words-1; i&gt;=0; i--)
+    {
+    if string_length(prevWordList[| i]) &lt; MinLen
+      continue
+    if currWord == string_copy(prevWordList[| i], 1,string_length(currWord))
+      {
+      prevOffset = i
+      break
+      }
+    }
   }
 </string>
           </argument>

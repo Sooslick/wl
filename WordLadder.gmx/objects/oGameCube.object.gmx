@@ -41,6 +41,10 @@ NewWord = true              //new word approach animation
 NewWordX = 0
 Tabu = false
 TabuProg = 0
+TabuErr = false
+TabuErrNum = -1
+LengthErr = false
+LengthErrTick = 0
 </string>
           </argument>
         </arguments>
@@ -128,6 +132,15 @@ if Tabu
     Tabu = false
     }
   }
+if LengthErr
+  {
+  LengthErrTick++
+  if LengthErrTick &gt;= 32
+    {
+    LengthErrTick = 0
+    LengthErr = false
+    }
+  }
 </string>
           </argument>
         </arguments>
@@ -178,6 +191,11 @@ for (i=0; i&lt;tmp; i++)
   }
 if (string_length(w1) &gt;= MinLen) &amp;&amp; !Rot
   draw_sprite_ext(sSquareCenter,0, xd+64, yd, 1,1,RotDeg,c_white,1)   
+if LengthErr
+  {
+  a = (0.52 - (LengthErrTick*0.015))
+  draw_sprite_ext(sPixel,0,x-j-32,yd-32,MinLen*64,64,0,c_red,a)
+  }
   
 if w2 != ''
 {
@@ -288,7 +306,10 @@ if !Rot
     for (i=0; i&lt;ds_list_size(TabuList); i++)
       {
       draw_text(x-j+i*72, y-j-100, TabuList[| i])
-      draw_sprite(sSquareTabu,0,x-j+i*72, y-j-100)
+      if TabuErrNum == i
+        draw_sprite(sSquareTabu,1,x-j+i*72, y-j-100)
+      else
+        draw_sprite(sSquareTabu,0,x-j+i*72, y-j-100)
       }
   }
 </string>

@@ -33,6 +33,13 @@ loaded = false
 //TODO: locale check
 dict = instance_create(0,0,oDictLoader)
 dict.parent = id
+
+RuleTick = 0
+switch (global.GameType)
+  {
+  case 1:
+    RuleStr = 'Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'
+  }
 </string>
           </argument>
         </arguments>
@@ -85,6 +92,7 @@ TransitionEvent = 0
 switch (global.GameType)                    //GR: GameRuler
   {
   case 1:
+    loaded = true
     GR = instance_create(0,0,oSimpleGameRuler)
     GR.parent = id
     break
@@ -101,6 +109,37 @@ switch (global.GameType)                    //GR: GameRuler
   default:
     //todo: err msg
     action_another_room(rMenu)
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if !loaded
+  {
+  draw_sprite_ext(sSquareFaded,0,512,128,2,0.3,180,c_white,0.9)
+  draw_set_alpha(0.9)
+  draw_set_font(fImpact64)
+  draw_set_halign(fa_left)
+  draw_set_valign(fa_top)
+  draw_text_ext(5,37,RuleStr,72,999)
   }
 </string>
           </argument>
@@ -124,7 +163,8 @@ switch (global.GameType)                    //GR: GameRuler
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>action_another_room(rMenu)
+            <string>if loaded
+  action_another_room(rMenu)
 </string>
           </argument>
         </arguments>
