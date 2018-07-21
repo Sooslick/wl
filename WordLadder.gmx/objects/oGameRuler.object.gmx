@@ -35,11 +35,59 @@ dict = instance_create(0,0,oDictLoader)
 dict.parent = id
 
 RuleTick = 0
+drawStr = 'LOADING'
 switch (global.GameType)
   {
   case 1:
-    RuleStr = 'Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'
+    RuleStr = 'SIMPLE RULES##
+    Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.
+    #Word cannot contain banned letters.'
   }
+
+BannedStr = "BANNED LETTERS##
+When you write the word, check it for banned letters! You can't use them.#
+These letters are randomly defined for each word and are displayed on the screen!"
+TimerStr = "TIMER##
+You have a time limitation! When time out game ends.#
+Timer is increased after successful typing the word and is decreased after fail instantly!"
+BonusStr = "GAME PROGRESS##
+Check a progress bar on top of the screen! When it's filled, the game grants you special abilities.#
+It may be a simple hint, word's length regression or ability to use one of banned letters!"
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>RuleTick++
+if (RuleTick == 10) || (RuleTick == 20) || (RuleTick == 30)
+  drawStr+= '.'
+else if RuleTick == 40
+  drawStr = RuleStr
+else if RuleTick == 320
+  drawStr = BannedStr
+else if RuleTick == 560
+  drawStr = TimerStr
+else if RuleTick == 800
+  drawStr = BonusStr
+else if RuleTick == 1040
+  drawStr = RuleStr
 </string>
           </argument>
         </arguments>
@@ -135,11 +183,11 @@ switch (global.GameType)                    //GR: GameRuler
             <string>if !loaded
   {
   draw_sprite_ext(sSquareFaded,0,512,128,2,0.3,180,c_white,0.9)
-  draw_set_alpha(0.9)
+  draw_set_alpha(0.7)
   draw_set_font(fImpact64)
   draw_set_halign(fa_left)
   draw_set_valign(fa_top)
-  draw_text_ext(5,37,RuleStr,72,999)
+  draw_text_ext(5,37,drawStr,72,1111)
   }
 </string>
           </argument>

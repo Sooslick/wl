@@ -39,15 +39,10 @@ prevAnimTick = 0
 BStart = instance_create(800,1000, oButton)
 BStart.content = 'BEGIN'
 
-tmp = irandom_range(1,99)
-if tmp &gt;= 10
-  MinLen = 3
-else
-  MinLen = 4  
-
+MinLen = 4  
 for (i=1; i&lt;=MinLen; i++)
   {
-  tmp = irandom_range(1,26) //todo CHECK LOCALE BLYA
+  tmp = irandom_range(0,25) //todo CHECK LOCALE BLYA
   prevWord+= chr(funcChrDecode(tmp))
   }  
   
@@ -56,6 +51,25 @@ TabuList = ds_list_create()
 TabuQty = 1
 TabuQtyProg = 0
 TabuQtyMax = 10             //lv-ups: 10; 42; 42; 100; 666 -&gt; max.
+TabuQtyAnim = false
+TabuQtyAnimX = 0
+TabuQtyAnimXTarget = 0
+
+DecQty = 1
+DecReq = 10                 //lv-ups: 10; 42; 42; 100; 100; 666 -&gt; max
+DecProg = 0                 //prog: tabuqty + wordlen  - 10
+DecAnim = false
+DecAnimX = 0
+DecAnimXTarget = 0
+
+Shift = false               //using of ability flag
+ShiftQty = 0
+ShiftReq = 100              //linear increase
+ShiftProg = 0               //prog: tabuqty + wordlen
+ShiftAnim = false
+ShiftAnimX = 0
+ShiftAnimXTarget = 0
+
 //TabuFill
 for (i=1; i&lt;=TabuQty; i++)
   {
@@ -116,6 +130,30 @@ Stat = instance_create(0,0,oGameStatCounter)
       prevAnimTick = 0
       prevAnim = false
       }
+    }
+    
+  if TabuQtyAnim
+    {
+    tmp = (TabuQtyAnimXTarget - TabuQtyAnimX) / 5
+    TabuQtyAnimX+= tmp
+    if abs(tmp) &lt;= 1
+      TabuQtyAnim = false
+    }
+    
+  if DecAnim
+    {
+    tmp = (DecAnimXTarget - DecAnimX) / 5
+    DecAnimX+= tmp
+    if abs(tmp) &lt;= 1
+      DecAnim = false
+    }
+    
+  if ShiftAnim
+    {
+    tmp = (ShiftAnimXTarget - ShiftAnimX) / 5
+    ShiftAnimX+= tmp
+    if abs(tmp) &lt;= 1
+      ShiftAnim = false
     }
   }
 </string>
@@ -201,14 +239,40 @@ instance_destroy(self,true)
           <argument>
             <kind>1</kind>
             <string>draw_set_font(fImpact64)
-draw_set_alpha(1)
-draw_set_color(c_white)
 draw_set_valign(fa_top)
 
+//TabuAnim
+draw_set_alpha(1)
+draw_set_color(64)
+draw_line_width(0,10,1600,10,16)
+draw_set_color(128)
+draw_line_width(0,10,TabuQtyAnimX,10,10)
+
+//DecAnim
+draw_set_alpha(1)
+draw_set_color(64)
+draw_line_width(0,30,1600,30,16)
+draw_set_color(128)
+draw_line_width(0,30,DecAnimX,30,10)
+
+//ShiftAnim
+draw_set_alpha(1)
+draw_set_color(64)
+draw_line_width(0,50,1600,50,16)
+draw_set_color(128)
+draw_line_width(0,50,ShiftAnimX,50,10)
+
 //timer
-draw_set_font(fImpact64)
+draw_set_alpha(1)
+draw_set_color(c_white)
 draw_set_halign(fa_center)
 draw_text(800,1100,formatTimeString(Timer))
+
+//abilities
+draw_set_halign(fa_right)
+draw_text(1595,Cube.y-MinLen*32+45,'Shifts: '+string(ShiftQty))
+//tabus
+//hints
 
 //full list
 draw_set_halign(fa_left)
@@ -248,6 +312,67 @@ else
     draw_set_alpha(draw_get_alpha()-0.08)
     }
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="40">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if ShiftQty &gt; 0
+  if !Shift
+    {
+    Shift = true
+    currWord = string_char_at(prevWord, string_length(prevWord)-1)
+    Cube.w1 = currWord
+    Cube.NewWord = true
+    Cube.Shifted = true
+    }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="38">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if Shift
+    {
+    Shift = false
+    currWord = string_char_at(prevWord, string_length(prevWord))
+    Cube.w1 = currWord
+    Cube.NewWord = true
+    Cube.Shifted = false
+    }
 </string>
           </argument>
         </arguments>
@@ -320,11 +445,13 @@ if ok &amp;&amp; prepared
       tmp = ds_list_find_index(tmpl,currWord)
       if tmp != -1
         {
+        //stats count
         words++
         global.profile[?'PSWORDS'] ++
         global.profile[?'PSLETTERS'] += string_length(currWord)
         Stat.words++
         Stat.letters += string_length(currWord)
+        //words changing
         prevWord = currWord
         MinLen = string_length(currWord)
         ds_list_add(prevWordList,currWord)
@@ -333,7 +460,46 @@ if ok &amp;&amp; prepared
         Cube.LengthErr = false
         Timer+= string_length(currWord)*150
         currWord = string_char_at(currWord, string_length(currWord))
-        
+        //shift prog
+        if Shift
+          {
+          ShiftQty--
+          Shift = false
+          Cube.w2 = string_copy(Cube.w2,1,string_length(Cube.w2)-1)
+          }
+        ShiftProg+= string_length(prevWord) + ds_list_size(TabuList)
+        if ShiftProg &gt;= ShiftReq
+          {
+          ShiftProg-= ShiftReq
+          ShiftReq+= MinLen
+          ShiftQty++
+          }
+        ShiftAnim = true
+        ShiftAnimXTarget = ShiftProg / ShiftReq * 1600
+        //length dec calc
+        tmp = string_length(prevWord) + ds_list_size(TabuList) - 9
+        if tmp &gt; 0
+          {
+          DecProg+= tmp
+          if DecProg &gt;= DecReq
+            {
+            DecProg-= DecReq
+            DecQty++
+            MinLen--
+            Cube.MinLenDec = true
+            switch DecQty
+              {
+              case 2: case 3: DecReq = 42; break;
+              case 4: case 5: DecReq = 100; break;
+              case 6: DecReq = 666; break;
+              case 7: DecReq = 9000; break;
+              default: DecReq = 999999999
+              }
+            }
+          DecAnim = true
+          DecAnimXTarget = DecProg / DecReq * 1600
+          }
+        //tabu calc
         TabuQtyProg++
         if TabuQtyProg &gt;= TabuQtyMax
           {
@@ -348,12 +514,13 @@ if ok &amp;&amp; prepared
             default: TabuQtyMax = 999999999
             }
           }
-        
+        TabuQtyAnim = true
+        TabuQtyAnimXTarget = TabuQtyProg / TabuQtyMax * 1600
         //Tabu refresh
         ds_list_clear(TabuList)
         for (i=1; i&lt;=TabuQty; i++)
           {
-          tmp = funcNewTabuLetter(3)                     //3% chance of vowel tabu
+          tmp = funcNewTabuLetter(3 + TabuQtyProg / 100)      //3% chance of vowel tabu
           if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
             ds_list_add(TabuList,tmp)
           }
@@ -376,9 +543,6 @@ if ok &amp;&amp; prepared
     Stat.dicts++
     }
   }
-  
-//if neok
-  //alarm anim
 </string>
           </argument>
         </arguments>

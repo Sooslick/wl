@@ -45,6 +45,9 @@ TabuErr = false
 TabuErrNum = -1
 LengthErr = false
 LengthErrTick = 0
+
+MinLenDec = false
+Shifted = false
 </string>
           </argument>
         </arguments>
@@ -88,11 +91,17 @@ if Rot
     w1 = string_char_at(w1,string_length(w1))
     ShiftY = (string_length(w2) - MinLen)*32
     MinLen = string_length(w2)
+    if MinLenDec
+      {
+      MinLen--
+      MinLenDec = false
+      }
     Shift = true
     NewWord = true
     Tabu = true
     NewWordX = 0
     Rot = false
+    Shifted = false
     }
   }
 if Shift
@@ -199,8 +208,12 @@ if LengthErr
   
 if w2 != ''
 {
-AlphaDec = 0.42 / (string_length(w2)-1)
-for (i=1; i&lt;string_length(w2); i++)
+if Shifted
+  tmp = 1
+else
+  tmp = 0
+AlphaDec = 0.42 / (string_length(w2)-1-tmp)
+for (i=1; i&lt;string_length(w2)-tmp; i++)
   {
   xd = x-j
   yd = y-j+64*i
@@ -213,7 +226,7 @@ for (i=1; i&lt;string_length(w2); i++)
     }
   draw_set_alpha(draw_get_alpha()-AlphaDec)
   draw_sprite_ext(sSquareCenter,0,xd,yd,1,1,RotDeg,c_white,draw_get_alpha()) 
-  draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)-i), 1,1,RotDeg+90)
+  draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)-i-tmp), 1,1,RotDeg+90)
   }
 }
   
