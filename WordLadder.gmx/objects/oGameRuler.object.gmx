@@ -39,20 +39,12 @@ drawStr = 'LOADING'
 switch (global.GameType)
   {
   case 1:
-    RuleStr = 'SIMPLE RULES##
-    Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.
-    #Word cannot contain banned letters.'
+    RuleStr = 'SIMPLE RULES##Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'
   }
 
-BannedStr = "BANNED LETTERS##
-When you write the word, check it for banned letters! You can't use them.#
-These letters are randomly defined for each word and are displayed on the screen!"
-TimerStr = "TIMER##
-You have a time limitation! When time out game ends.#
-Timer is increased after successful typing the word and is decreased after fail instantly!"
-BonusStr = "GAME PROGRESS##
-Check a progress bar on top of the screen! When it's filled, the game grants you special abilities.#
-It may be a simple hint, word's length regression or ability to use one of banned letters!"
+BannedStr = "BANNED LETTERS##When you write the word, check it for banned letters! You can't use them.#These letters are randomly defined for each word and are displayed on the screen!"
+TimerStr = "TIMER##You have a time limitation! When time out game ends.#Timer is increased after successful typing the word and is decreased after fail instantly!"
+BonusStr = "GAME PROGRESS##Check a progress bar on top of the screen! When it's filled, the game grants you special abilities.#It may be a simple hint, word's length regression or ability to use one of banned letters!"
 </string>
           </argument>
         </arguments>

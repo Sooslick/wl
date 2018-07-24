@@ -25,7 +25,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>words = 0
+            <string>pp = 0
+
+words = 0
 letters = 0
 attempts = 0
 ticks = 0
@@ -39,6 +41,8 @@ active = false
 B1 = -1
 
 s = ''
+
+//TODO more stats
 </string>
           </argument>
         </arguments>

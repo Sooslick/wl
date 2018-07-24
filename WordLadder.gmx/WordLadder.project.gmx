@@ -80,6 +80,7 @@
     <script>scripts\funcSetWinResFromString.gml</script>
     <script>scripts\funcCheckGuiHover.gml</script>
     <script>scripts\funcNewTabuLetter.gml</script>
+    <script>scripts\funcGetWord.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
@@ -118,6 +119,7 @@
       <object>objects\oSimpleGameRuler</object>
       <object>objects\oGameCube</object>
       <object>objects\oGameStatCounter</object>
+      <object>objects\oSquareHint</object>
     </objects>
     <object>objects\oDevMenu</object>
     <object>objects\oDevDictRd</object>

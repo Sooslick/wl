@@ -48,6 +48,7 @@ LengthErrTick = 0
 
 MinLenDec = false
 Shifted = false
+aps = 1                     //alpha per square
 </string>
           </argument>
         </arguments>
@@ -86,7 +87,10 @@ if Rot
     {
     RotDeg = 0
     w4 = w3
-    w3 = w2
+    if Shifted
+      w3 = string_copy(w2,1,string_length(w2)-1)
+    else
+      w3 = w2
     w2 = w1
     w1 = string_char_at(w1,string_length(w1))
     ShiftY = (string_length(w2) - MinLen)*32
@@ -103,6 +107,7 @@ if Rot
     Rot = false
     Shifted = false
     }
+  aps = 1 / (string_length(w2)-shoff-1 + string_length(w3)-1 + string_length(w4)*((90-RotDeg)/90) -2)
   }
 if Shift
   {
@@ -178,6 +183,12 @@ draw_set_halign(fa_center)
 draw_set_valign(fa_center)
 draw_set_alpha(1)
 
+//pre-computing
+if Shifted
+  shoff = 1
+else
+  shoff = 0
+
 //w1
 j = MinLen*32 - 32
 if string_length(w1) &gt; MinLen
@@ -196,24 +207,34 @@ for (i=0; i&lt;tmp; i++)
     yd=y-dist*sin(currrot)
     }
   draw_sprite_ext(sSquareCenter,0, xd, yd, ApproachScale,ApproachScale,RotDeg,c_white,1)       
-  draw_text_transformed(xd,yd,string_char_at(w1,i+1), ApproachScale,ApproachScale,RotDeg)
+  draw_text_transformed(xd,yd,string_char_at(w1,i+1), 1,1,RotDeg)
   }
 if (string_length(w1) &gt;= MinLen) &amp;&amp; !Rot
-  draw_sprite_ext(sSquareCenter,0, xd+64, yd, 1,1,RotDeg,c_white,1)   
+  draw_sprite_ext(sSquareCenter,2, xd+64, yd, 1,1,RotDeg,c_white,1)   
 if LengthErr
   {
   a = (0.52 - (LengthErrTick*0.015))
-  draw_sprite_ext(sPixel,0,x-j-32,yd-32,MinLen*64,64,0,c_red,a)
+  draw_sprite_ext(sPixel,0,x-j-32,yd-32,tmp*64,64,0,c_red,a)
   }
   
 if w2 != ''
 {
 if Shifted
-  tmp = 1
-else
-  tmp = 0
-AlphaDec = 0.42 / (string_length(w2)-1-tmp)
-for (i=1; i&lt;string_length(w2)-tmp; i++)
+  {
+  xd = x-j
+  yd = y-j-64
+  if Rot
+    {
+    dist=point_distance(x,y,xd,yd)
+    currrot=degtorad(point_direction(x,y,xd,yd)+RotDeg)  
+    xd=x+dist*cos(currrot)
+    yd=y-dist*sin(currrot)
+    }
+  draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,1)       
+  draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)), 1,1,RotDeg+90)
+  //TODO fade out while ROT
+  }
+for (i=1; i&lt;string_length(w2)-shoff; i++)
   {
   xd = x-j
   yd = y-j+64*i
@@ -224,9 +245,9 @@ for (i=1; i&lt;string_length(w2)-tmp; i++)
     xd=x+dist*cos(currrot)
     yd=y-dist*sin(currrot)
     }
-  draw_set_alpha(draw_get_alpha()-AlphaDec)
+  draw_set_alpha(draw_get_alpha()-aps)
   draw_sprite_ext(sSquareCenter,0,xd,yd,1,1,RotDeg,c_white,draw_get_alpha()) 
-  draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)-i-tmp), 1,1,RotDeg+90)
+  draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)-i-shoff), 1,1,RotDeg+90)
   }
 }
   
@@ -237,7 +258,7 @@ AlphaDec = 0.42 / (string_length(w3)-1)
 for (i=1; i&lt;string_length(w3); i++)
   {
   xd = x-j+64*i
-  yd = y-j+(string_length(w2)-1)*64
+  yd = y-j+(string_length(w2)-1-shoff)*64
   if Rot
     {
     dist=point_distance(x,y,xd,yd)
@@ -245,24 +266,20 @@ for (i=1; i&lt;string_length(w3); i++)
     xd=x+dist*cos(currrot)
     yd=y-dist*sin(currrot)
     }
-  draw_set_alpha(draw_get_alpha()-AlphaDec)
+  draw_set_alpha(draw_get_alpha()-aps)
   draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,draw_get_alpha()) 
   draw_text_transformed(xd, yd,string_char_at(w3,string_length(w3)-i), 1,1,RotDeg+180)
   }
 }
 
 //w4    
-if (w4 != '') &amp;&amp; NewWord
+if (w4 != '')
 {
-//if NewWordX &gt;= (string_length(w4)-1)*64
-//  AlphaDec = 0.16 / (string_length(w4)-(NewWordX/64))
-//else
-  AlphaDec = 0.16
 i=1
 while (draw_get_alpha() &gt; 0)
   {
   xd = x-j+(string_length(w3)-1)*64
-  yd = y-j+(string_length(w2)-1)*64-i*64
+  yd = y-j+(string_length(w2)-1-shoff)*64-i*64
   if Rot
     {
     dist=point_distance(x,y,xd,yd)
@@ -270,14 +287,14 @@ while (draw_get_alpha() &gt; 0)
     xd=x+dist*cos(currrot)
     yd=y-dist*sin(currrot)
     }
-  draw_set_alpha(draw_get_alpha()-AlphaDec)
+  draw_set_alpha(draw_get_alpha()-aps)
   draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,draw_get_alpha()) 
   draw_text_transformed(xd, yd, string_char_at(w4,string_length(w4)-i), 1,1,RotDeg+270)
   } 
 }  
 
 //Fading
-if !Rot
+if !Rot &amp;&amp; !Approach &amp;&amp; NewWord
   {
   draw_sprite_ext(sSquareFaded,0,x-j+NewWordX-32,y-j-32,0.25,0.25,RotDeg,c_black,1) 
   draw_sprite_ext(sPixel,0,x-j+NewWordX+32,y-j-32,MinLen*65,64,0,c_black,1)

@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>1</depth>
+  <depth>2</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -47,6 +47,8 @@ for (i=1; i&lt;=MinLen; i++)
   }  
   
 Timer = 300 * MinLen
+Think = 0                   //one word clockwatch
+
 TabuList = ds_list_create()
 TabuQty = 1
 TabuQtyProg = 0
@@ -69,6 +71,20 @@ ShiftProg = 0               //prog: tabuqty + wordlen
 ShiftAnim = false
 ShiftAnimX = 0
 ShiftAnimXTarget = 0
+
+TT = false               //using of ability TabuType flag
+TTNum = -1
+TTQty = 0
+TTReq = 1000              //linear increase
+TTProg = 0               //prog: tabuqty + wordlen
+TTAnim = false
+TTAnimX = 0
+TTAnimXTarget = 0
+
+HintTimeUp = false
+HintTooLong = false
+HintWrong = 0           //0 = waiting;  1 = ready;  2 = passed
+HintTimer = 0           //while &gt;0 a new oSquareHint cannot be created
 
 //TabuFill
 for (i=1; i&lt;=TabuQty; i++)
@@ -114,6 +130,13 @@ Stat = instance_create(0,0,oGameStatCounter)
   {
   Stat.ticks++
   Timer--
+  Think++
+  if HintTimer &gt; 0
+    HintTimer--
+  if Think==3333
+    HintTooLong = true
+  if Timer==666
+    HintTimeUp = true
   if Timer==0
     {
     tmp = instance_create(0,0,oSquareTransition)
@@ -154,6 +177,42 @@ Stat = instance_create(0,0,oGameStatCounter)
     ShiftAnimX+= tmp
     if abs(tmp) &lt;= 1
       ShiftAnim = false
+    }
+  
+  if TTAnim
+    {
+    tmp = (TTAnimXTarget - TTAnimX) / 5
+    TTAnimX+= tmp
+    if abs(tmp) &lt;= 1
+      TTAnim = false
+    }
+  
+  if HintTimeUp &amp;&amp; HintTimer==0
+    {
+    HintObj = instance_create(0,0,oSquareHint)
+    HintObj.HINT_WORD = funcGetWord()
+    HintObj.HINT_LENGTH = MinLen*4
+    with HintObj {event_user(0)}
+    HintTimer += 666
+    HintTimeUp = false
+    }
+  else if HintTooLong &amp;&amp; HintTimer==0
+    {
+    HintObj = instance_create(0,0,oSquareHint)
+    HintObj.HINT_WORD = funcGetWord()
+    HintObj.HINT_LENGTH = MinLen*4
+    with HintObj {event_user(0)}
+    HintTimer += 690
+    HintTiiLong = false
+    }
+  else if HintWrong==1 &amp;&amp; HintTimer==0
+    {
+    HintObj = instance_create(0,0,oSquareHint)
+    HintObj.HINT_WORD = funcGetWord()
+    HintObj.HINT_LENGTH = MinLen*4
+    with HintObj {event_user(0)}
+    HintTimer += 720
+    HintWrong = 2
     }
   }
 </string>
@@ -238,40 +297,47 @@ instance_destroy(self,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_font(fImpact64)
+            <string>//alpha background
+draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,0.5)
+//pre-sets
+draw_set_font(fImpact64)
 draw_set_valign(fa_top)
-
-//TabuAnim
 draw_set_alpha(1)
+//TabuAnim
 draw_set_color(64)
 draw_line_width(0,10,1600,10,16)
 draw_set_color(128)
 draw_line_width(0,10,TabuQtyAnimX,10,10)
-
 //DecAnim
-draw_set_alpha(1)
 draw_set_color(64)
 draw_line_width(0,30,1600,30,16)
 draw_set_color(128)
 draw_line_width(0,30,DecAnimX,30,10)
-
 //ShiftAnim
-draw_set_alpha(1)
 draw_set_color(64)
 draw_line_width(0,50,1600,50,16)
 draw_set_color(128)
 draw_line_width(0,50,ShiftAnimX,50,10)
-
+//TTAnim
+draw_set_color(64)
+draw_line_width(0,70,1600,70,16)
+draw_set_color(128)
+draw_line_width(0,70,TTAnimX,70,10)
+//HintTimer
+draw_set_color(64)
+draw_line_width(0,90,1600,90,16)
+draw_set_color(128)
+draw_line_width(0,90,HintTimer,90,10)
 //timer
-draw_set_alpha(1)
 draw_set_color(c_white)
 draw_set_halign(fa_center)
 draw_text(800,1100,formatTimeString(Timer))
-
 //abilities
 draw_set_halign(fa_right)
+draw_sprite_ext(sSquareFaded,0,1344,Cube.y-MinLen*32-12,1,0.3,0,c_white,0.66)
+draw_text(1595,Cube.y-MinLen*32-25,'Score: ' +string(Stat.pp))
 draw_text(1595,Cube.y-MinLen*32+45,'Shifts: '+string(ShiftQty))
-//tabus
+draw_text(1595,Cube.y-MinLen*32+115,'Unbans: '+string(TTQty))
 //hints
 
 //full list
@@ -311,6 +377,13 @@ else
     j--
     draw_set_alpha(draw_get_alpha()-0.08)
     }
+  }
+//TabuHilight
+if TT
+  {
+  draw_set_alpha(0.66)
+  j = MinLen*32
+  draw_rectangle(Cube.x-j+TTNum*72,Cube.y-j-100,Cube.x-j+TTNum*72+66,Cube.y-j-34,false)
   }
 </string>
           </argument>
@@ -412,7 +485,7 @@ if ok &amp;&amp; prepared
 for (i=2; i&lt;=string_length(currWord); i++)
   {
   j = ds_list_find_index(TabuList, string_char_at(currWord,i))
-  if j != -1
+  if (j != -1) &amp;&amp; (j != TTNum)
     {
     ok = false 
     Cube.TabuErr = true
@@ -427,6 +500,11 @@ for (i=2; i&lt;=string_length(currWord); i++)
 if ok &amp;&amp; prepared
   if ds_list_find_index(prevWordList,currWord) != -1
     {
+    if HintWrong == 0
+      {
+      HintWrong = 1
+      HintTimer+= 228
+      }
     ok = false
     prevAnim = true
     Stat.prevs++
@@ -451,6 +529,7 @@ if ok &amp;&amp; prepared
         global.profile[?'PSLETTERS'] += string_length(currWord)
         Stat.words++
         Stat.letters += string_length(currWord)
+        Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
         //words changing
         prevWord = currWord
         MinLen = string_length(currWord)
@@ -458,14 +537,13 @@ if ok &amp;&amp; prepared
         Cube.Rot = true
         Cube.LengthErrTick = 0
         Cube.LengthErr = false
-        Timer+= string_length(currWord)*150
+        Timer+= string_length(currWord)*150 - Timer div 60
         currWord = string_char_at(currWord, string_length(currWord))
         //shift prog
         if Shift
           {
           ShiftQty--
           Shift = false
-          Cube.w2 = string_copy(Cube.w2,1,string_length(Cube.w2)-1)
           }
         ShiftProg+= string_length(prevWord) + ds_list_size(TabuList)
         if ShiftProg &gt;= ShiftReq
@@ -476,6 +554,22 @@ if ok &amp;&amp; prepared
           }
         ShiftAnim = true
         ShiftAnimXTarget = ShiftProg / ShiftReq * 1600
+        //TT prog
+        if TT
+          {
+          TT = false
+          TTNum = 0
+          TTQty--
+          }
+        TTProg+= string_length(prevWord) + ds_list_size(TabuList) + (Timer div 1800)
+        if TTProg &gt;= TTReq
+          {
+          TTProg-= TTReq
+          TTReq+= TTReq div 42
+          TTQty++
+          }
+        TTAnim = true
+        TTAnimXTarget = TTProg / TTReq * 1600
         //length dec calc
         tmp = string_length(prevWord) + ds_list_size(TabuList) - 9
         if tmp &gt; 0
@@ -524,21 +618,41 @@ if ok &amp;&amp; prepared
           if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
             ds_list_add(TabuList,tmp)
           }
+        //HintRefresh
+        HintTimeUp = false
+        HintTooLong = false
+        HintWrong = 0
+        HintTimer+= 228
         }
       else
         {
+        if HintWrong == 0
+          {
+          HintWrong = 1
+          HintTimer+= 228
+          }
         Cube.LengthErr = true
         Stat.dicts++
         }
       }
     else
       {
+      if HintWrong == 0
+        {
+        HintWrong = 1
+        HintTimer+= 228
+        }
       Cube.LengthErr = true
       Stat.dicts++
       }
     }
   else
     {
+    if HintWrong == 0
+      {
+      HintWrong = 1
+      HintTimer+= 228
+      }
     Cube.LengthErr = true
     Stat.dicts++
     }
@@ -574,7 +688,24 @@ if ok &amp;&amp; prepared
     Cube.TabuErr = false
     Cube.TabuErrNum = -1
     }
-  else
+  else if keyboard_check(vk_tab) &amp;&amp; TTQty &gt; 0
+    {
+    if TT
+      {
+      TTNum++
+      if TTNum == ds_list_size(TabuList)
+        {
+        TTNum = -1
+        TT = false
+        }
+      }
+    else
+      {
+      TT = true
+      TTNum = 0
+      }
+    }
+  else if !Cube.Rot
     {
     keyboard_lastchar = string_upper(keyboard_lastchar)
     if (ord(keyboard_lastchar)&gt;64)&amp;&amp;(ord(keyboard_lastchar)&lt;91)

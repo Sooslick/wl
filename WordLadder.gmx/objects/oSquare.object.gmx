@@ -97,6 +97,17 @@ parent = 0          //SquareRuler
       revState = 0
       }
     break
+  case 8:                       //both SQ &amp; Content randomly disappearing
+    tmp = random_range(0,0.066)
+    opSq-= tmp
+    opCon-= tmp
+    if opSq &lt;= 0
+      {
+      opSq = 0
+      opCon = 0
+      revState = 0
+      }
+    break
   }
 </string>
           </argument>
