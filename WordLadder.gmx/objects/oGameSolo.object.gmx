@@ -94,9 +94,9 @@ instance_destroy(PBack,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if P1.clicked
+            <string>if P3.clicked
   {
-  global.GameType = 1
+  global.GameType = 3
   action_another_room(rGame)
   }
 else if PBack.clicked

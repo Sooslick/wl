@@ -1,38 +1,58 @@
-Current struct:
+Current struct: v0.0.0.1
 
 bytes	info
-1	PNETID
+
+    GENERAL
+4	Header / Save Version (0.0.0.1)
+4	PNETID
 1	N = Name Length
 N	Name String
 1	Locale. Check locale list below
 
+  OVERALL STAT
 4    	In-game time. Counted while entire game
 4    	Playtime. Counted while game started
 4    	Online time. Counted in lobbies & ranked games
 4    	Total words typed
+4	Total input attempts
 4    	Total letters typed
+4	Total letters accepted
+4	Total letters backspaced
+4	Total hints shown
+4	Total shifts acquired
+4	Total shifts used
+4	Total banned letters
+4	Total unbans acquired
+4	Total unbans used
+4	Total banned typos
+4	Total short words
+4	Total wrong words
+4	Total repeated words
 4    	Total games played
+4	Total games ended
 4    	Total servers joined
+4	Total stat resets
+
+ SPECIFIED STAT
+1	M = Sections count
+
+    SECTION
+1	ID. Check section IDs below
 _______________________________________
 
-IDEAL STRUCT:
+Sections:
+0 = Solo Simple lv1
+1 = Solo Simple lv2
+2 = Solo Simple lv3
 
-bytes	info
-4	Game Version
-4	Save Version
-8	Date & Time
+10 = Solo Hardened lv1
+11 = Solo Hardened lv2
+12 = Solo Hardened lv3
 
-4	Net ID
-1	N = Name Length
-N	Name String
-1	todo: other fields
+20 = Solo Endless
+21 = Solo Custom
 
-1	todo: game progress
-
-1	todo: stats
-
-1	todo: achievements
-
+120 = Coop Endless
 ___________________________
 
 Locales:

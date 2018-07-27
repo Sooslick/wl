@@ -64,6 +64,7 @@
     </sprites>
     <sprite>sprites\sCareful</sprite>
     <sprite>sprites\sLoading</sprite>
+    <sprite>sprites\sFlash</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -81,6 +82,8 @@
     <script>scripts\funcCheckGuiHover.gml</script>
     <script>scripts\funcNewTabuLetter.gml</script>
     <script>scripts\funcGetWord.gml</script>
+    <script>scripts\funcReadLong.gml</script>
+    <script>scripts\funcWriteLong.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
@@ -116,7 +119,7 @@
     <objects name="GameGeneralGroup">
       <object>objects\oDictLoader</object>
       <object>objects\oGameRuler</object>
-      <object>objects\oSimpleGameRuler</object>
+      <object>objects\oInfGameRuler</object>
       <object>objects\oGameCube</object>
       <object>objects\oGameStatCounter</object>
       <object>objects\oSquareHint</object>

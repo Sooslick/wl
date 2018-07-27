@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>1</depth>
+  <depth>0</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -29,17 +29,22 @@
 tc.ingame = true 
    
 loaded = false
+loadFade = 0.5
+loadFading = true
 //dictionary data struct
 //TODO: locale check
 dict = instance_create(0,0,oDictLoader)
 dict.parent = id
 
 RuleTick = 0
+FlashX = -10000
 drawStr = 'LOADING'
 switch (global.GameType)
   {
   case 1:
     RuleStr = 'SIMPLE RULES##Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'
+  case 3:
+    RuleStr = 'ENDLESS MODE##Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'
   }
 
 BannedStr = "BANNED LETTERS##When you write the word, check it for banned letters! You can't use them.#These letters are randomly defined for each word and are displayed on the screen!"
@@ -68,9 +73,12 @@ BonusStr = "GAME PROGRESS##Check a progress bar on top of the screen! When it's 
           <argument>
             <kind>1</kind>
             <string>RuleTick++
-if (RuleTick == 10) || (RuleTick == 20) || (RuleTick == 30)
+FlashX+=251
+if FlashX &gt; 20000
+  FlashX-= 44000
+if (RuleTick == 5) || (RuleTick == 10) || (RuleTick == 15)
   drawStr+= '.'
-else if RuleTick == 40
+else if RuleTick == 20
   drawStr = RuleStr
 else if RuleTick == 320
   drawStr = BannedStr
@@ -80,6 +88,16 @@ else if RuleTick == 800
   drawStr = BonusStr
 else if RuleTick == 1040
   drawStr = RuleStr
+if loaded &amp;&amp; loadFading
+  if GR.prepared
+    {
+    loadFade-= 0.025
+    if loadFade &lt;= 0
+      {
+      loadFade = 0
+      loadFading = false
+      }
+    }
 </string>
           </argument>
         </arguments>
@@ -139,7 +157,10 @@ switch (global.GameType)                    //GR: GameRuler
   case 2:
     //oHard
   case 3:
-    //oInf
+    loaded = true
+    GR = instance_create(0,0,oInfGameRuler)
+    GR.parent = id
+    break
   case 4:
     //oCustom
   case 11:
@@ -180,6 +201,22 @@ switch (global.GameType)                    //GR: GameRuler
   draw_set_halign(fa_left)
   draw_set_valign(fa_top)
   draw_text_ext(5,37,drawStr,72,1111)
+  draw_set_blend_mode(bm_subtract)
+  draw_sprite_ext(sFlash,0,FlashX,0,6,6,0,2105376,1)
+  draw_set_blend_mode(bm_normal)
+  }
+else if !GR.prepared &amp;&amp; loadFading
+  {
+  draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,loadFade)
+  draw_sprite_ext(sSquareFaded,0,512,128,2,0.3,180,c_white,0.9)
+  draw_set_alpha(1)
+  draw_set_font(fImpact64)
+  draw_set_halign(fa_left)
+  draw_set_valign(fa_top)
+  draw_text_ext(5,37,drawStr,72,1111)
+  draw_set_blend_mode(bm_subtract)
+  draw_sprite_ext(sFlash,0,FlashX,0,6,6,0,2105376,1)
+  draw_set_blend_mode(bm_normal)
   }
 </string>
           </argument>

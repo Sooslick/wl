@@ -26,6 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>MinLen = 0
+NewLen = 0
 w1 = ''
 w2 = ''
 w3 = ''
@@ -46,7 +47,6 @@ TabuErrNum = -1
 LengthErr = false
 LengthErrTick = 0
 
-MinLenDec = false
 Shifted = false
 aps = 1                     //alpha per square
 </string>
@@ -93,13 +93,9 @@ if Rot
       w3 = w2
     w2 = w1
     w1 = string_char_at(w1,string_length(w1))
-    ShiftY = (string_length(w2) - MinLen)*32
-    MinLen = string_length(w2)
-    if MinLenDec
-      {
-      MinLen--
-      MinLenDec = false
-      }
+    ShiftY = (NewLen - MinLen)*64
+    x+= ShiftY div 2
+    MinLen = NewLen
     Shift = true
     NewWord = true
     Tabu = true
@@ -114,11 +110,13 @@ if Shift
   if ShiftY &gt; 0
     {
     y+= 2
+    x-= 1
     ShiftY-= 2
     }
   else if ShiftY &lt; 0
     {
     y-= 2
+    x+= 1
     ShiftY+= 2
     }
   else
@@ -325,8 +323,8 @@ if !Rot
       else
         {
         draw_set_alpha(1/(10-tmp))
-        draw_text_transformed(x-j+i*72, y-j-100, TabuList[| i],(5-tmp)/2+0.5,(5-tmp)/2+0.5,0)
-        draw_sprite_ext(sSquareTabu,0,x-j+i*72, y-j-100, (5-tmp)/2+0.5, (5-tmp)/2+0.5, 0,c_white,draw_get_alpha())
+        draw_text_transformed(x-j+i*72, y-j-100, TabuList[| i],(5-tmp/2)+0.5,(5-tmp/2)+0.5,0)
+        draw_sprite_ext(sSquareTabu,0,x-j+i*72, y-j-100, (5-tmp/2)+0.5, (5-tmp/2)+0.5, 0,c_white,draw_get_alpha())
         }
       tmp-= 10
       i++

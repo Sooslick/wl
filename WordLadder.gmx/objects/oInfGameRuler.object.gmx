@@ -75,7 +75,7 @@ ShiftAnimXTarget = 0
 TT = false               //using of ability TabuType flag
 TTNum = -1
 TTQty = 0
-TTReq = 1000              //linear increase
+TTReq = 228              //linear increase
 TTProg = 0               //prog: tabuqty + wordlen
 TTAnim = false
 TTAnimX = 0
@@ -97,6 +97,7 @@ for (i=1; i&lt;=TabuQty; i++)
 Cube = instance_create(800,600,oGameCube)
 Cube.parent = id
 Cube.MinLen = MinLen
+Cube.NewLen = MinLen
 Cube.w1 = prevWord
 Cube.w2 = ''
 Cube.w3 = ''
@@ -104,6 +105,8 @@ Cube.w4 = ''
 Cube.TabuList = TabuList
 
 Stat = instance_create(0,0,oGameStatCounter)
+Stat.parent = id
+Stat.Cube = Cube
 </string>
           </argument>
         </arguments>
@@ -332,13 +335,13 @@ draw_line_width(0,90,HintTimer,90,10)
 draw_set_color(c_white)
 draw_set_halign(fa_center)
 draw_text(800,1100,formatTimeString(Timer))
-//abilities
+/* //abilities              removed to stat drawer
 draw_set_halign(fa_right)
 draw_sprite_ext(sSquareFaded,0,1344,Cube.y-MinLen*32-12,1,0.3,0,c_white,0.66)
 draw_text(1595,Cube.y-MinLen*32-25,'Score: ' +string(Stat.pp))
 draw_text(1595,Cube.y-MinLen*32+45,'Shifts: '+string(ShiftQty))
 draw_text(1595,Cube.y-MinLen*32+115,'Unbans: '+string(TTQty))
-//hints
+*/ //hints
 
 //full list
 draw_set_halign(fa_left)
@@ -349,13 +352,13 @@ if prevAnim
 else
   cl = c_white
 
-draw_sprite_ext(sSquareFaded,0,256,Cube.y-MinLen*32+64,1,0.3,180,cl,0.66)
+draw_sprite_ext(sSquareFaded,0,256,800+64,1,0.3,180,cl,0.66)
 
 if prevOffset == -1
   for (i=words-1; i&gt;=0; i--)
     {
     if string_length(prevWordList[| i]) &gt;= MinLen
-      draw_text(5,Cube.y-MinLen*32+45+j*70,prevWordList[| i])
+      draw_text(5,800+45+j*70,prevWordList[| i])
     j++
     draw_set_alpha(draw_get_alpha()-0.08)
     }
@@ -364,7 +367,7 @@ else
   for (i=prevOffset; i&gt;=0; i--)
     {
     if string_length(prevWordList[| i]) &gt;= MinLen
-      draw_text(5,Cube.y-MinLen*32-25+j*70,prevWordList[| i])
+      draw_text(5,800-25+j*70,prevWordList[| i])
     j++
     draw_set_alpha(draw_get_alpha()-0.08)
     }
@@ -373,7 +376,7 @@ else
   for (i=prevOffset+1; i&lt;words; i++)
     {
     if string_length(prevWordList[| i]) &gt;= MinLen
-      draw_text(5,Cube.y-MinLen*32-25+j*70,prevWordList[| i])
+      draw_text(5,800-25+j*70,prevWordList[| i])
     j--
     draw_set_alpha(draw_get_alpha()-0.08)
     }
@@ -470,6 +473,7 @@ if TT
             <kind>1</kind>
             <string>ok = true
 Stat.attempts++
+global.profile[?'PSINPUTS']++
 
 //check len
 if string_length(currWord) &lt; MinLen
@@ -477,6 +481,7 @@ if string_length(currWord) &lt; MinLen
   ok = false
   Cube.LengthErr = true
   Stat.lens++
+  global.profile[?'PSSHORTTYPED']++
   }
   
 //check tabu
@@ -491,6 +496,7 @@ for (i=2; i&lt;=string_length(currWord); i++)
     Cube.TabuErr = true
     Cube.TabuErrNum = j
     Stat.tabus++
+    global.profile[?'PSBANTYPED']++
     break
     } 
   }
@@ -508,6 +514,7 @@ if ok &amp;&amp; prepared
     ok = false
     prevAnim = true
     Stat.prevs++
+    global.profile[?'PSREPTYPED']++
     }
     
 //check dict
@@ -526,7 +533,7 @@ if ok &amp;&amp; prepared
         //stats count
         words++
         global.profile[?'PSWORDS'] ++
-        global.profile[?'PSLETTERS'] += string_length(currWord)
+        global.profile[?'PSLETTERSA'] += string_length(currWord)
         Stat.words++
         Stat.letters += string_length(currWord)
         Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
@@ -543,6 +550,8 @@ if ok &amp;&amp; prepared
         if Shift
           {
           ShiftQty--
+          Stat.ShiftU = true
+          global.profile[?'PSSHIFTSU']++
           Shift = false
           }
         ShiftProg+= string_length(prevWord) + ds_list_size(TabuList)
@@ -551,6 +560,8 @@ if ok &amp;&amp; prepared
           ShiftProg-= ShiftReq
           ShiftReq+= MinLen
           ShiftQty++
+          Stat.ShiftA = true
+          global.profile[?'PSSHIFTSA']++
           }
         ShiftAnim = true
         ShiftAnimXTarget = ShiftProg / ShiftReq * 1600
@@ -560,6 +571,8 @@ if ok &amp;&amp; prepared
           TT = false
           TTNum = 0
           TTQty--
+          Stat.TTU = true
+          global.profile[?'PSUNBANSU']++
           }
         TTProg+= string_length(prevWord) + ds_list_size(TabuList) + (Timer div 1800)
         if TTProg &gt;= TTReq
@@ -567,6 +580,8 @@ if ok &amp;&amp; prepared
           TTProg-= TTReq
           TTReq+= TTReq div 42
           TTQty++
+          Stat.TTA = true
+          global.profile[?'PSUNBANSA']++
           }
         TTAnim = true
         TTAnimXTarget = TTProg / TTReq * 1600
@@ -580,7 +595,6 @@ if ok &amp;&amp; prepared
             DecProg-= DecReq
             DecQty++
             MinLen--
-            Cube.MinLenDec = true
             switch DecQty
               {
               case 2: case 3: DecReq = 42; break;
@@ -618,11 +632,14 @@ if ok &amp;&amp; prepared
           if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
             ds_list_add(TabuList,tmp)
           }
+        global.profile[?'PSBANNED']+= ds_list_size(TabuList)
         //HintRefresh
         HintTimeUp = false
         HintTooLong = false
         HintWrong = 0
         HintTimer+= 228
+        //Cube Post Operations 
+        Cube.NewLen = MinLen
         }
       else
         {
@@ -633,6 +650,7 @@ if ok &amp;&amp; prepared
           }
         Cube.LengthErr = true
         Stat.dicts++
+        global.profile[?'PSWRONGTYPED']++
         }
       }
     else
@@ -644,6 +662,7 @@ if ok &amp;&amp; prepared
         }
       Cube.LengthErr = true
       Stat.dicts++
+      global.profile[?'PSWRONGTYPED']++
       }
     }
   else
@@ -655,6 +674,7 @@ if ok &amp;&amp; prepared
       }
     Cube.LengthErr = true
     Stat.dicts++
+    global.profile[?'PSWRONGTYPED']++
     }
   }
 </string>
@@ -683,8 +703,11 @@ if ok &amp;&amp; prepared
   {     
   if keyboard_check(vk_backspace) 
     {    
-    if string_length(currWord) &gt; 1      
+    if string_length(currWord) &gt; 1 
+      {     
       currWord = string_copy(currWord,1,string_length(currWord)-1)
+      global.profile[?'PSLETTERSB']++
+      }
     Cube.TabuErr = false
     Cube.TabuErrNum = -1
     }
@@ -709,7 +732,10 @@ if ok &amp;&amp; prepared
     {
     keyboard_lastchar = string_upper(keyboard_lastchar)
     if (ord(keyboard_lastchar)&gt;64)&amp;&amp;(ord(keyboard_lastchar)&lt;91)
+      {
       currWord+= keyboard_lastchar
+      global.profile[?'PSLETTERS']++
+      }
     keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...
     }
   Cube.w1 = currWord  

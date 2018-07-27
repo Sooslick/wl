@@ -145,7 +145,8 @@ else if bBack.clicked
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_font(fImpact96)
+            <string>/*
+draw_set_font(fImpact96)
 draw_set_color(c_white)
 draw_set_halign(fa_center)
 draw_set_valign(fa_center)
@@ -154,6 +155,7 @@ draw_text(800,100,'STATS and ACHIEVEMENTS')
 
 draw_set_font(fDebug)
 draw_text(800,600,'Still working, stand by#Press BACK baton to return')
+*/
 </string>
           </argument>
         </arguments>

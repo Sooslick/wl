@@ -42,7 +42,81 @@ B1 = -1
 
 s = ''
 
+ShiftA = false
+ShiftATick = 0
+ShiftU = false
+ShiftUTick = 0
+TTA = false
+TTATick = 0
+TTU = false
+TTUTick = 0
+
 //TODO more stats
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if active
+  {
+  //todo hilight
+  }
+else
+  {
+  if ShiftA
+    {
+    ShiftATick += 16
+    if ShiftATick &gt;= 256
+      {
+      ShiftATick = 0
+      ShiftA = false
+      }
+    }
+  if ShiftU
+    {
+    ShiftUTick += 16
+    if ShiftUTick &gt;= 256
+      {
+      ShiftUTick = 0
+      ShiftU = false
+      }
+    }
+  if TTA
+    {
+    TTATick += 16
+    if TTATick &gt;= 256
+      {
+      TTATick = 0
+      TTA = false
+      }
+    }
+  if TTU
+    {
+    TTUTick += 16
+    if TTUTick &gt;= 256
+      {
+      TTUTick = 0
+      TTU = false
+      }
+    }
+  }
 </string>
           </argument>
         </arguments>
@@ -103,6 +177,8 @@ s+= '##TYPOS: ' + string(dicts)
 s+= '#REPEATS: ' + string(prevs)
 s+= '#TABOOS: ' + string(tabus)
 s+= '#TOOSHORTS: ' + string(lens)
+
+global.profile[?'PSENDS']++
 </string>
           </argument>
         </arguments>
@@ -134,6 +210,27 @@ s+= '#TOOSHORTS: ' + string(lens)
   draw_set_valign(fa_center)
   
   draw_text(100,600,s)
+  }
+else
+  {
+  draw_set_font(fImpact64)
+  draw_set_alpha(1)
+  draw_set_color(c_white)
+  draw_set_valign(fa_top)
+  draw_set_halign(fa_right)
+  draw_sprite_ext(sSquareFaded,0,1344,800-12,1,0.3,0,c_white,0.66)
+  draw_text(1595,800-25,'Score: ' +string(pp))
+  if ShiftA
+    draw_set_color(make_color_rgb(ShiftATick,255,ShiftATick))
+  else if ShiftU
+    draw_set_color(make_color_rgb(255,ShiftUTick,ShiftUTick))
+  draw_text(1595,800+45,'Shifts: '+string(parent.ShiftQty))
+  if TTA
+    draw_set_color(make_color_rgb(TTATick,255,TTATick))
+  else if TTU
+    draw_set_color(make_color_rgb(255,TTUTick,TTUTick))
+  else draw_set_color(c_white)
+  draw_text(1595,800+115,'Unbans: '+string(parent.TTQty))
   }
 </string>
           </argument>
