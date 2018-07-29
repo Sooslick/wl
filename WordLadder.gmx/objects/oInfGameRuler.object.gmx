@@ -140,7 +140,7 @@ Stat.Cube = Cube
     HintTooLong = true
   if Timer==666
     HintTimeUp = true
-  if Timer==0
+  if Timer&lt;=0
     {
     tmp = instance_create(0,0,oSquareTransition)
     tmp.parent = id
@@ -198,6 +198,7 @@ Stat.Cube = Cube
     with HintObj {event_user(0)}
     HintTimer += 666
     HintTimeUp = false
+    Stat.hints++
     }
   else if HintTooLong &amp;&amp; HintTimer==0
     {
@@ -207,6 +208,7 @@ Stat.Cube = Cube
     with HintObj {event_user(0)}
     HintTimer += 690
     HintTiiLong = false
+    Stat.hints++
     }
   else if HintWrong==1 &amp;&amp; HintTimer==0
     {
@@ -216,6 +218,7 @@ Stat.Cube = Cube
     with HintObj {event_user(0)}
     HintTimer += 720
     HintWrong = 2
+    Stat.hints++
     }
   }
 </string>
@@ -276,6 +279,7 @@ Stat.Cube = Cube
             <kind>1</kind>
             <string>//gameover Event
 with Stat {event_user(0)}
+instance_destroy(parent,true)
 instance_destroy(Cube,true)
 instance_destroy(self,true)
 </string>
@@ -303,7 +307,7 @@ instance_destroy(self,true)
             <string>//alpha background
 draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,0.5)
 //pre-sets
-draw_set_font(fImpact64)
+draw_set_halign(fa_center)
 draw_set_valign(fa_top)
 draw_set_alpha(1)
 //TabuAnim
@@ -333,8 +337,14 @@ draw_set_color(128)
 draw_line_width(0,90,HintTimer,90,10)
 //timer
 draw_set_color(c_white)
-draw_set_halign(fa_center)
-draw_text(800,1100,formatTimeString(Timer))
+draw_set_font(fTimer)
+s = formatTimeString(Timer)
+tmp = 800 - string_length(s)*17
+for (i=1; i&lt;=string_length(s); i++)
+  {
+  draw_text(tmp,1100,string_char_at(s,i))
+  tmp+=34
+  }
 /* //abilities              removed to stat drawer
 draw_set_halign(fa_right)
 draw_sprite_ext(sSquareFaded,0,1344,Cube.y-MinLen*32-12,1,0.3,0,c_white,0.66)
@@ -345,6 +355,7 @@ draw_text(1595,Cube.y-MinLen*32+115,'Unbans: '+string(TTQty))
 
 //full list
 draw_set_halign(fa_left)
+draw_set_font(fImpact64)
 j = 0
 
 if prevAnim
@@ -352,13 +363,13 @@ if prevAnim
 else
   cl = c_white
 
-draw_sprite_ext(sSquareFaded,0,256,800+64,1,0.3,180,cl,0.66)
+draw_sprite_ext(sSquareFaded,0,256,600+64,1,0.3,180,cl,0.66)
 
 if prevOffset == -1
   for (i=words-1; i&gt;=0; i--)
     {
     if string_length(prevWordList[| i]) &gt;= MinLen
-      draw_text(5,800+45+j*70,prevWordList[| i])
+      draw_text(5,600+45+j*70,prevWordList[| i])
     j++
     draw_set_alpha(draw_get_alpha()-0.08)
     }
@@ -367,7 +378,7 @@ else
   for (i=prevOffset; i&gt;=0; i--)
     {
     if string_length(prevWordList[| i]) &gt;= MinLen
-      draw_text(5,800-25+j*70,prevWordList[| i])
+      draw_text(5,600-25+j*70,prevWordList[| i])
     j++
     draw_set_alpha(draw_get_alpha()-0.08)
     }
@@ -376,7 +387,7 @@ else
   for (i=prevOffset+1; i&lt;words; i++)
     {
     if string_length(prevWordList[| i]) &gt;= MinLen
-      draw_text(5,800-25+j*70,prevWordList[| i])
+      draw_text(5,600-25+j*70,prevWordList[| i])
     j--
     draw_set_alpha(draw_get_alpha()-0.08)
     }
@@ -493,6 +504,7 @@ for (i=2; i&lt;=string_length(currWord); i++)
   if (j != -1) &amp;&amp; (j != TTNum)
     {
     ok = false 
+    Timer-= 150
     Cube.TabuErr = true
     Cube.TabuErrNum = j
     Stat.tabus++
@@ -512,6 +524,7 @@ if ok &amp;&amp; prepared
       HintTimer+= 228
       }
     ok = false
+    Timer-= 150
     prevAnim = true
     Stat.prevs++
     global.profile[?'PSREPTYPED']++
@@ -535,7 +548,7 @@ if ok &amp;&amp; prepared
         global.profile[?'PSWORDS'] ++
         global.profile[?'PSLETTERSA'] += string_length(currWord)
         Stat.words++
-        Stat.letters += string_length(currWord)
+        Stat.lettersa += string_length(currWord)
         Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
         //words changing
         prevWord = currWord
@@ -551,6 +564,7 @@ if ok &amp;&amp; prepared
           {
           ShiftQty--
           Stat.ShiftU = true
+          Stat.shiftsu++
           global.profile[?'PSSHIFTSU']++
           Shift = false
           }
@@ -561,6 +575,7 @@ if ok &amp;&amp; prepared
           ShiftReq+= MinLen
           ShiftQty++
           Stat.ShiftA = true
+          Stat.shiftsa++
           global.profile[?'PSSHIFTSA']++
           }
         ShiftAnim = true
@@ -569,9 +584,10 @@ if ok &amp;&amp; prepared
         if TT
           {
           TT = false
-          TTNum = 0
+          TTNum = -1
           TTQty--
           Stat.TTU = true
+          Stat.unbansu++
           global.profile[?'PSUNBANSU']++
           }
         TTProg+= string_length(prevWord) + ds_list_size(TabuList) + (Timer div 1800)
@@ -581,6 +597,7 @@ if ok &amp;&amp; prepared
           TTReq+= TTReq div 42
           TTQty++
           Stat.TTA = true
+          Stat.unbansa++
           global.profile[?'PSUNBANSA']++
           }
         TTAnim = true
@@ -633,9 +650,11 @@ if ok &amp;&amp; prepared
             ds_list_add(TabuList,tmp)
           }
         global.profile[?'PSBANNED']+= ds_list_size(TabuList)
+        Stat.banned+= ds_list_size(TabuList)
         //HintRefresh
         HintTimeUp = false
         HintTooLong = false
+        Think = 0
         HintWrong = 0
         HintTimer+= 228
         //Cube Post Operations 
@@ -648,6 +667,7 @@ if ok &amp;&amp; prepared
           HintWrong = 1
           HintTimer+= 228
           }
+        Timer-= 150
         Cube.LengthErr = true
         Stat.dicts++
         global.profile[?'PSWRONGTYPED']++
@@ -660,6 +680,7 @@ if ok &amp;&amp; prepared
         HintWrong = 1
         HintTimer+= 228
         }
+      Timer-= 150
       Cube.LengthErr = true
       Stat.dicts++
       global.profile[?'PSWRONGTYPED']++
@@ -672,6 +693,7 @@ if ok &amp;&amp; prepared
       HintWrong = 1
       HintTimer+= 228
       }
+    Timer-= 150
     Cube.LengthErr = true
     Stat.dicts++
     global.profile[?'PSWRONGTYPED']++
@@ -707,6 +729,7 @@ if ok &amp;&amp; prepared
       {     
       currWord = string_copy(currWord,1,string_length(currWord)-1)
       global.profile[?'PSLETTERSB']++
+      Stat.lettersb++
       }
     Cube.TabuErr = false
     Cube.TabuErrNum = -1
@@ -735,6 +758,7 @@ if ok &amp;&amp; prepared
       {
       currWord+= keyboard_lastchar
       global.profile[?'PSLETTERS']++
+      Stat.letters++
       }
     keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...
     }

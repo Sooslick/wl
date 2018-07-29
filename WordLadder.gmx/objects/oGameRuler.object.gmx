@@ -47,9 +47,9 @@ switch (global.GameType)
     RuleStr = 'ENDLESS MODE##Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'
   }
 
-BannedStr = "BANNED LETTERS##When you write the word, check it for banned letters! You can't use them.#These letters are randomly defined for each word and are displayed on the screen!"
-TimerStr = "TIMER##You have a time limitation! When time out game ends.#Timer is increased after successful typing the word and is decreased after fail instantly!"
-BonusStr = "GAME PROGRESS##Check a progress bar on top of the screen! When it's filled, the game grants you special abilities.#It may be a simple hint, word's length regression or ability to use one of banned letters!"
+BannedStr = "BANNED LETTERS##When you write the word, check it for banned letters! You can't use them.#These letters are randomly chosen for each word and are displayed on the screen!"
+TimerStr = "TIMER##Your time is limited! When time is out, game ends.#You recieve additional time after successfully typing the word and get an instant penalty after failing to do so!"
+BonusStr = "GAME PROGRESS##Check a progress bar on top of the screen! When it's full, the game grants you special abilities.#It may be a simple hint, word's length decrease or ability to use one of banned letters!"
 </string>
           </argument>
         </arguments>
@@ -196,12 +196,12 @@ switch (global.GameType)                    //GR: GameRuler
             <string>if !loaded
   {
   draw_sprite_ext(sSquareFaded,0,512,128,2,0.3,180,c_white,0.9)
-  draw_set_alpha(0.7)
+  draw_set_alpha(1)
   draw_set_font(fImpact64)
   draw_set_halign(fa_left)
   draw_set_valign(fa_top)
   draw_text_ext(5,37,drawStr,72,1111)
-  draw_set_blend_mode(bm_subtract)
+  draw_set_blend_mode(bm_add)
   draw_sprite_ext(sFlash,0,FlashX,0,6,6,0,2105376,1)
   draw_set_blend_mode(bm_normal)
   }
@@ -214,7 +214,7 @@ else if !GR.prepared &amp;&amp; loadFading
   draw_set_halign(fa_left)
   draw_set_valign(fa_top)
   draw_text_ext(5,37,drawStr,72,1111)
-  draw_set_blend_mode(bm_subtract)
+  draw_set_blend_mode(bm_add)
   draw_sprite_ext(sFlash,0,FlashX,0,6,6,0,2105376,1)
   draw_set_blend_mode(bm_normal)
   }

@@ -25,23 +25,33 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>pp = 0
-
+            <string>//game's counters
+pp = 0                      //score
 words = 0
-letters = 0
-attempts = 0
-ticks = 0
-
-tabus = 0
-lens = 0
+letters = 0                 //total
+lettersa = 0                //accepted
+lettersb = 0                //backspaced
+attempts = 0                //input attempts
+ticks = 0                   //gametime
+hints = 0                   //abilities
+shiftsa = 0
+shiftsu = 0
+unbansa = 0
+unbansu = 0
+banned = 0                  //banned letters total
+tabus = 0                   //fails
 dicts = 0
 prevs = 0
+lens = 0
 
+//tech active swithes
 active = false
 B1 = -1
-
 s = ''
+ShowPage = 0                //0: general;  1: letters;  2: abilities;  3: fails
+ShowPageTick = 0
 
+//in-game animations
 ShiftA = false
 ShiftATick = 0
 ShiftU = false
@@ -76,7 +86,14 @@ TTUTick = 0
             <kind>1</kind>
             <string>if active
   {
-  //todo hilight
+  ShowPageTick++
+  if ShowPageTick == 155
+    {
+    ShowPage++
+    event_user(1)
+    ShowPageTick = 0
+    }
+  //TODO hilights
   }
 else
   {
@@ -142,6 +159,67 @@ else
             <string>if B1 &gt; 0
   if B1.clicked
     action_another_room(rMenu)
+  else
+    {
+    ShowPage++
+    ShowPageTick = 0
+    event_user(1)
+    }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="11">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//ShowPage increment
+switch ShowPage
+  {
+  case 1:
+    s = 'LETTERS#'
+    s+= '#TYPED TOTAL: ' + string(letters)
+    s+= '#ACCEPTED: ' + string(lettersa)
+    s+= '#BACKSPACED: ' + string(lettersb)
+    s+= '#BANNED: ' + string(banned)
+    s+= '#INPUT ATTEMPTS: ' + string(attempts)
+    break
+  case 2:
+    s = 'SPECIAL ABILITIES#'
+    s+= '#HINTS SHOWN: ' + string(hints)
+    s+= '#SHIFTS ACQUIRED: ' + string(shiftsa)
+    s+= '#SHIFTS USED: ' + string(shiftsu)
+    s+= '#UNBANS ACQUIRED: ' + string(unbansa)
+    s+= '#UNBANS USED: ' + string(unbansu)
+    break
+  case 3:
+    s = 'WRONG WORDS#'
+    s+= '#TYPOS: ' + string(dicts)
+    s+= '#REPEATS: ' + string(prevs)
+    s+= '#TABOOS: ' + string(tabus)
+    s+= '#TOOSHORTS: ' + string(lens)
+    break
+  default:
+    s = 'OVERALL RATE#'
+    s+= '#PLAYTIME: ' + formatTimeString(ticks)
+    s+= '#ACCEPTED WORDS: ' + string(words)
+    s+= '#TOTAL LETTERS TYPED: ' + string(letters)
+    s+= '#SCORE: ' + string(pp)
+  }
 </string>
           </argument>
         </arguments>
@@ -169,14 +247,11 @@ B1 = instance_create(800,1100,oButton)
 B1.content = 'BACK'
 active = true
 
-s = 'PLAYTIME: ' + formatTimeString(ticks)
+s = 'OVERALL RATE#'
+s+= '#PLAYTIME: ' + formatTimeString(ticks)
 s+= '#ACCEPTED WORDS: ' + string(words)
-s+= '#TOTAL LETTERS: ' + string(letters)
-s+= '#INPUT ATTEMPTS: ' + string(attempts)
-s+= '##TYPOS: ' + string(dicts)
-s+= '#REPEATS: ' + string(prevs)
-s+= '#TABOOS: ' + string(tabus)
-s+= '#TOOSHORTS: ' + string(lens)
+s+= '#TOTAL LETTERS TYPED: ' + string(letters)
+s+= '#SCORE: ' + string(pp)
 
 global.profile[?'PSENDS']++
 </string>
@@ -218,19 +293,19 @@ else
   draw_set_color(c_white)
   draw_set_valign(fa_top)
   draw_set_halign(fa_right)
-  draw_sprite_ext(sSquareFaded,0,1344,800-12,1,0.3,0,c_white,0.66)
-  draw_text(1595,800-25,'Score: ' +string(pp))
+  draw_sprite_ext(sSquareFaded,0,1344,600-12,1,0.3,0,c_white,0.66)
+  draw_text(1595,600-25,'Score: ' +string(pp))
   if ShiftA
     draw_set_color(make_color_rgb(ShiftATick,255,ShiftATick))
   else if ShiftU
     draw_set_color(make_color_rgb(255,ShiftUTick,ShiftUTick))
-  draw_text(1595,800+45,'Shifts: '+string(parent.ShiftQty))
+  draw_text(1595,600+45,'Shifts: '+string(parent.ShiftQty))
   if TTA
     draw_set_color(make_color_rgb(TTATick,255,TTATick))
   else if TTU
     draw_set_color(make_color_rgb(255,TTUTick,TTUTick))
   else draw_set_color(c_white)
-  draw_text(1595,800+115,'Unbans: '+string(parent.TTQty))
+  draw_text(1595,600+115,'Unbans: '+string(parent.TTQty))
   }
 </string>
           </argument>

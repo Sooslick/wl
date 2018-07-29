@@ -89,6 +89,7 @@
     <font>fonts\fImpact96</font>
     <font>fonts\fImpact64</font>
     <font>fonts\fDebug</font>
+    <font>fonts\fTimer</font>
   </fonts>
   <objects name="objects">
     <object>objects\oLogo</object>
