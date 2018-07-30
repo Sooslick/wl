@@ -31,8 +31,11 @@ B1.content = 'DICT W'
 B2 = instance_create(300,450,oButton)
 B2.content = 'DICT R'
 
-B3 = instance_create(300,750,oButton)
+B3 = instance_create(300,700,oButton)
 B3.content = 'FADE'
+
+B4 = instance_create(300,950,oButton)
+B4.content = 'JSON'
 </string>
           </argument>
         </arguments>
@@ -106,6 +109,12 @@ else if B3.clicked
       }
     screen_save(fn)
     }
+  }
+else if B4.clicked
+  {
+  B4.clicked = false
+  s = json_encode(global.profile)
+  clipboard_set_text(s)
   }
 </string>
           </argument>

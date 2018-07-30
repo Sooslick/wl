@@ -107,6 +107,7 @@ Cube.TabuList = TabuList
 Stat = instance_create(0,0,oGameStatCounter)
 Stat.parent = id
 Stat.Cube = Cube
+Stat.GameTypeID = 30  //ENDLESS
 </string>
           </argument>
         </arguments>
@@ -252,7 +253,6 @@ Stat.Cube = Cube
     prepared = true
     Cube.Rot = true
     currWord = string_char_at(prevWord,string_length(prevWord))
-    global.profile[?'PSGAMES'] ++
     }
   }
 </string>
@@ -484,7 +484,6 @@ if TT
             <kind>1</kind>
             <string>ok = true
 Stat.attempts++
-global.profile[?'PSINPUTS']++
 
 //check len
 if string_length(currWord) &lt; MinLen
@@ -492,7 +491,6 @@ if string_length(currWord) &lt; MinLen
   ok = false
   Cube.LengthErr = true
   Stat.lens++
-  global.profile[?'PSSHORTTYPED']++
   }
   
 //check tabu
@@ -508,7 +506,6 @@ for (i=2; i&lt;=string_length(currWord); i++)
     Cube.TabuErr = true
     Cube.TabuErrNum = j
     Stat.tabus++
-    global.profile[?'PSBANTYPED']++
     break
     } 
   }
@@ -527,7 +524,6 @@ if ok &amp;&amp; prepared
     Timer-= 150
     prevAnim = true
     Stat.prevs++
-    global.profile[?'PSREPTYPED']++
     }
     
 //check dict
@@ -545,8 +541,6 @@ if ok &amp;&amp; prepared
         {
         //stats count
         words++
-        global.profile[?'PSWORDS'] ++
-        global.profile[?'PSLETTERSA'] += string_length(currWord)
         Stat.words++
         Stat.lettersa += string_length(currWord)
         Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
@@ -565,7 +559,6 @@ if ok &amp;&amp; prepared
           ShiftQty--
           Stat.ShiftU = true
           Stat.shiftsu++
-          global.profile[?'PSSHIFTSU']++
           Shift = false
           }
         ShiftProg+= string_length(prevWord) + ds_list_size(TabuList)
@@ -576,7 +569,6 @@ if ok &amp;&amp; prepared
           ShiftQty++
           Stat.ShiftA = true
           Stat.shiftsa++
-          global.profile[?'PSSHIFTSA']++
           }
         ShiftAnim = true
         ShiftAnimXTarget = ShiftProg / ShiftReq * 1600
@@ -588,7 +580,6 @@ if ok &amp;&amp; prepared
           TTQty--
           Stat.TTU = true
           Stat.unbansu++
-          global.profile[?'PSUNBANSU']++
           }
         TTProg+= string_length(prevWord) + ds_list_size(TabuList) + (Timer div 1800)
         if TTProg &gt;= TTReq
@@ -598,7 +589,6 @@ if ok &amp;&amp; prepared
           TTQty++
           Stat.TTA = true
           Stat.unbansa++
-          global.profile[?'PSUNBANSA']++
           }
         TTAnim = true
         TTAnimXTarget = TTProg / TTReq * 1600
@@ -649,7 +639,6 @@ if ok &amp;&amp; prepared
           if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
             ds_list_add(TabuList,tmp)
           }
-        global.profile[?'PSBANNED']+= ds_list_size(TabuList)
         Stat.banned+= ds_list_size(TabuList)
         //HintRefresh
         HintTimeUp = false
@@ -670,7 +659,6 @@ if ok &amp;&amp; prepared
         Timer-= 150
         Cube.LengthErr = true
         Stat.dicts++
-        global.profile[?'PSWRONGTYPED']++
         }
       }
     else
@@ -683,7 +671,6 @@ if ok &amp;&amp; prepared
       Timer-= 150
       Cube.LengthErr = true
       Stat.dicts++
-      global.profile[?'PSWRONGTYPED']++
       }
     }
   else
@@ -696,7 +683,6 @@ if ok &amp;&amp; prepared
     Timer-= 150
     Cube.LengthErr = true
     Stat.dicts++
-    global.profile[?'PSWRONGTYPED']++
     }
   }
 </string>
@@ -728,7 +714,6 @@ if ok &amp;&amp; prepared
     if string_length(currWord) &gt; 1 
       {     
       currWord = string_copy(currWord,1,string_length(currWord)-1)
-      global.profile[?'PSLETTERSB']++
       Stat.lettersb++
       }
     Cube.TabuErr = false
@@ -757,7 +742,6 @@ if ok &amp;&amp; prepared
     if (ord(keyboard_lastchar)&gt;64)&amp;&amp;(ord(keyboard_lastchar)&lt;91)
       {
       currWord+= keyboard_lastchar
-      global.profile[?'PSLETTERS']++
       Stat.letters++
       }
     keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...

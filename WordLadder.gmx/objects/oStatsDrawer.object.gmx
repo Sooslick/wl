@@ -8,6 +8,59 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
+    <event eventtype="0" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>SECTMAP = global.profile[?'PSSECTIONS']
+  s = 'ingame: '+formatTimeString(global.profile[?'PSINGAMETIME'])
+  s+= '#play: '+formatTimeString(global.profile[?'PSPLAYTIME'])
+  s+= '#online: '+formatTimeString(global.profile[?'PSONLINETIME'])
+  s+= '#games launched: '+string(global.profile[?'PSGAMES'])
+  s+= '#games ended: '+string(global.profile[?'PSENDS'])
+  s+= '#servers: '+string(global.profile[?'PSSERVERS'])
+  s+= '#RESETS: '+string(global.profile[?'PSRESETS'])
+  
+if !is_undefined(SECTMAP[?0])
+  {
+  SECTMAP = SECTMAP[?0]
+  s+= '##words: '+string(SECTMAP[?'PSWORDS'])
+  s+= '#inputs: '+string(SECTMAP[?'PSINPUTS'])
+  s+= '#letters typed: '+string(SECTMAP[?'PSLETTERS'])
+  s+= '#letters accepted: '+string(SECTMAP[?'PSLETTERSA'])
+  s+= '#letters backspaced: '+string(SECTMAP[?'PSLETTERSB'])
+  s+= '#hints shown: '+string(SECTMAP[?'PSHINTS'])
+  s+= '#shifts acquired: '+string(SECTMAP[?'PSSHIFTSA'])
+  s+= '#shifts used: '+string(SECTMAP[?'PSSHIFTSU'])
+  s+= '#banned letters: '+string(SECTMAP[?'PSBANNED'])
+  s+= '#unbans acquired: '+string(SECTMAP[?'PSUNBANSA'])
+  s+= '#unbans used: '+string(SECTMAP[?'PSUNBANSU'])
+  s+= '#banned typed: '+string(SECTMAP[?'PSBANTYPED'])
+  s+= '#too shorts: '+string(SECTMAP[?'PSSHORTTYPED'])
+  s+= '#wrong words: '+string(SECTMAP[?'PSWRONGTYPED'])
+  s+= '#repeated words: '+string(SECTMAP[?'PSREPTYPED'])
+  s+= '#average word length: '+string(SECTMAP[?'PSLENAVERAGE'])
+  }
+else
+  s+= '##Stat unavailable'
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -32,30 +85,7 @@ draw_set_halign(fa_left)
 draw_set_valign(fa_center)
 //MAIN DRAW   
 draw_set_alpha(1)
-//draw_text_transformed(x*csc,y*csc,content,dsc,dsc,0)
-draw_text_transformed(666,y+100, 'ingame: '+formatTimeString(global.profile[?'PSINGAMETIME']),1,1,0)
-draw_text_transformed(666,y+130,'play: '+formatTimeString(global.profile[?'PSPLAYTIME']),1,1,0)
-draw_text_transformed(666,y+160,'online: '+formatTimeString(global.profile[?'PSONLINETIME']),1,1,0)
-
-draw_text_transformed(666,y+200,'words: '+string(global.profile[?'PSWORDS']),1,1,0)
-draw_text_transformed(666,y+230,'inputs: '+string(global.profile[?'PSINPUTS']),1,1,0)
-draw_text_transformed(666,y+260,'letters typed: '+string(global.profile[?'PSLETTERS']),1,1,0)
-draw_text_transformed(666,y+290,'letters accepted: '+string(global.profile[?'PSLETTERSA']),1,1,0)
-draw_text_transformed(666,y+320,'letters backspaced: '+string(global.profile[?'PSLETTERSB']),1,1,0)
-draw_text_transformed(666,y+350,'hints shown: '+string(global.profile[?'PSHINTS']),1,1,0)
-draw_text_transformed(666,y+380,'shifts acquired: '+string(global.profile[?'PSSHIFTSA']),1,1,0)
-draw_text_transformed(666,y+410,'shifts used: '+string(global.profile[?'PSSHIFTSU']),1,1,0)
-draw_text_transformed(666,y+440,'banned letters: '+string(global.profile[?'PSBANNED']),1,1,0)
-draw_text_transformed(666,y+470,'unbans acquired: '+string(global.profile[?'PSUNBANSA']),1,1,0)
-draw_text_transformed(666,y+500,'unbans used: '+string(global.profile[?'PSUNBANSU']),1,1,0)
-draw_text_transformed(666,y+530,'banned typed: '+string(global.profile[?'PSBANTYPED']),1,1,0)
-draw_text_transformed(666,y+560,'too shorts: '+string(global.profile[?'PSSHORTTYPED']),1,1,0)
-draw_text_transformed(666,y+590,'wrong words: '+string(global.profile[?'PSWRONGTYPED']),1,1,0)
-draw_text_transformed(666,y+620,'repeated words: '+string(global.profile[?'PSREPTYPED']),1,1,0)
-draw_text_transformed(666,y+650,'games launched: '+string(global.profile[?'PSGAMES']),1,1,0)
-draw_text_transformed(666,y+680,'games ended: '+string(global.profile[?'PSGAMES']),1,1,0)
-draw_text_transformed(666,y+710,'servers: '+string(global.profile[?'PSSERVERS']),1,1,0)
-draw_text_transformed(666,y+800,'RESETS: '+string(global.profile[?'PSRESETS']),1,1,0)
+draw_text(600,600,s)
 </string>
           </argument>
         </arguments>
