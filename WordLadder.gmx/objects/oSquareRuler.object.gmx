@@ -295,6 +295,17 @@ else if cheat == 'RESET'
   chStop = false
   chReverse = false
   }
+else if ((cheat == 'EASTER') || (cheat == 'EASTEREGG'))
+  with parent {bEggClicked = true; event_perform(ev_mouse,ev_global_left_release)}
+  
+//refresh
+cheat = ''
+for (i=0; i&lt;ARRMAX; i++)
+  for (j=0; j&lt;ARRMAX; j++)
+    {
+    sqArr[i,j].clr = c_white    //change color
+    sqArr[i,j].spr = 0
+    }
 </string>
           </argument>
         </arguments>

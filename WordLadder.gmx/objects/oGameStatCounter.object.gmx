@@ -63,6 +63,8 @@ TTU = false
 TTUTick = 0
 
 //TODO more stats
+LenMap = ds_map_create()
+LenWord = ''
 </string>
           </argument>
         </arguments>
@@ -166,6 +168,41 @@ else
     ShowPageTick = 0
     event_user(1)
     }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="12">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//LenMap word add
+LenCurr = LenMap[?string_length(LenWord)]
+if is_undefined(LenCurr)
+  {
+  LenCurr = ds_map_create()
+  for (tmp=0; tmp&lt;26; tmp++)
+    ds_map_add(LenCurr, funcChrDecode(tmp), 0)
+  ds_map_add(LenMap, string_length(LenWord), LenCurr)
+  }
+LenCurr[?ord(string_char_at(LenWord,1))]++
+
+//debug
+clipboard_set_text(json_encode(LenMap))
 </string>
           </argument>
         </arguments>
@@ -282,9 +319,8 @@ CURRMAP[?'PSSHORTTYPED'] = lens
 CURRMAP[?'PSWRONGTYPED'] = dicts
 CURRMAP[?'PSREPTYPED'] = prevs
 CURRMAP[?'PSLENAVERAGE'] = 0
-//TODO
-//Length fields
 CURRMAP[?'PSLENGTHMAP'] = ds_map_create()
+ds_map_copy(CURRMAP[?'PSLENGTHMAP'], LenMap)
 
 //OVERALL GAMEMODE
 OVERMAP = SECTMAP[?GameTypeID]
@@ -315,6 +351,26 @@ else
   OVERMAP[?'PSREPTYPED']+= CURRMAP[?'PSREPTYPED']
   OVERMAP[?'PSLENAVERAGE'] = 0
   //TODO LETTERS
+  OVERMAP = OVERMAP[?'PSLENGTHMAP']
+  var src = ds_map_find_first(LenMap);      //src = key
+  var dest;                                 //dest = map
+  while (!is_undefined(src))
+    {
+    dest = OVERMAP[?src]
+    if is_undefined(dest)
+      {
+      dest = ds_map_create()
+      ds_map_copy(LenMap[?src],dest)
+      ds_map_add(OVERMAP,src,dest)
+      }
+    else
+      {
+      tmp = LenMap[?src]
+      for(i=0; i&lt;26; i++)
+        dest[?funcChrDecode(i)]+= tmp[?funcChrDecode(i)]
+      }
+    src = ds_map_find_next(LenMap,src)
+    }
   }
   
 //OVERALL
@@ -346,6 +402,26 @@ else
   OVERMAP[?'PSREPTYPED']+= CURRMAP[?'PSREPTYPED']
   OVERMAP[?'PSLENAVERAGE'] = 0
   //TODO LETTERS
+    OVERMAP = OVERMAP[?'PSLENGTHMAP']
+  var src = ds_map_find_first(LenMap);      //src = key
+  var dest;                                 //dest = map
+  while (!is_undefined(src))
+    {
+    dest = OVERMAP[?src]
+    if is_undefined(dest)
+      {
+      dest = ds_map_create()
+      ds_map_copy(LenMap[?src],dest)
+      ds_map_add(OVERMAP,src,dest)
+      }
+    else
+      {
+      tmp = LenMap[?src]
+      for(i=0; i&lt;26; i++)
+        dest[?funcChrDecode(i)]+= tmp[?funcChrDecode(i)]
+      }
+    src = ds_map_find_next(LenMap,src)
+    }
   }
 </string>
           </argument>

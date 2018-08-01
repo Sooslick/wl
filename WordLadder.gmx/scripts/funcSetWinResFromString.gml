@@ -1,5 +1,5 @@
-s = argument0
-s1 = ''
+var s = argument0;
+var s1 = '';
 for (i=1; i<=string_length(s); i++)
   {
   if string_char_at(s,i) == 'x'

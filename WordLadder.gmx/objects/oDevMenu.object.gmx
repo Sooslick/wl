@@ -60,6 +60,8 @@ B4.content = 'JSON'
             <kind>1</kind>
             <string>instance_destroy(B1,true)
 instance_destroy(B2,true)
+instance_destroy(B3,true)
+instance_destroy(B4,true)
 </string>
           </argument>
         </arguments>

@@ -1,9 +1,9 @@
-x1 = argument0
-y1 = argument1
-x2 = argument2
-y2 = argument3
+var x1 = argument0;
+var y1 = argument1;
+var x2 = argument2;
+var y2 = argument3;
 
-if global.config[?'Fullscreen']
+if window_get_fullscreen()
   {
   if ((display_mouse_get_x()-global.DRAW_HOFF) / global.DRAW_SCALE < x2) &&    
      ((display_mouse_get_x()-global.DRAW_HOFF) / global.DRAW_SCALE > x1) &&   

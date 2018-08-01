@@ -30,25 +30,27 @@ ResChanged = false
 RSelector = instance_create(300,280,oList)
 RSelector.val = string(global.WIN_WIDTH) + 'x' + string(global.WIN_HEIGHT)
 RSelector.num = -1
+var DGW = display_get_width();
+var DGH = display_get_height();
 if global.config[?'Widescreen']
   {
   ds_map_add(RSelector.arr,0,'1024x576')
-  ds_map_add(RSelector.arr,1,'1152x648')
-  ds_map_add(RSelector.arr,2,'1280x720') 
-  ds_map_add(RSelector.arr,3,'1366x768') 
-  ds_map_add(RSelector.arr,4,'1536x864') 
-  ds_map_add(RSelector.arr,5,'1600x900') 
-  ds_map_add(RSelector.arr,6,'1920x1080') //TODO: check win res to prevent clicking on 1080p
-  }                                             //when screen res is obossany 1024x768
+  if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=648) ds_map_add(RSelector.arr,1,'1152x648')
+  if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=720) ds_map_add(RSelector.arr,2,'1280x720') 
+  if (DGW&gt;=1366)&amp;&amp;(DGH&gt;=768) ds_map_add(RSelector.arr,3,'1366x768') 
+  if (DGW&gt;=1536)&amp;&amp;(DGH&gt;=864) ds_map_add(RSelector.arr,4,'1536x864') 
+  if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=900) ds_map_add(RSelector.arr,5,'1600x900') 
+  if (DGW&gt;=1920)&amp;&amp;(DGH&gt;=1080) ds_map_add(RSelector.arr,6,'1920x1080')
+  }                            
 else
   {
   ds_map_add(RSelector.arr,0,'800x600') 
-  ds_map_add(RSelector.arr,1,'1024x768') 
-  ds_map_add(RSelector.arr,2,'1152x864')
-  ds_map_add(RSelector.arr,3,'1280x960')
-  ds_map_add(RSelector.arr,4,'1400x1050') 
-  ds_map_add(RSelector.arr,5,'1440x1080') 
-  ds_map_add(RSelector.arr,6,'1600x1200') 
+  if (DGW&gt;=1024)&amp;&amp;(DGH&gt;=768) ds_map_add(RSelector.arr,1,'1024x768') 
+  if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=864) ds_map_add(RSelector.arr,2,'1152x864')
+  if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=960) ds_map_add(RSelector.arr,3,'1280x960')
+  if (DGW&gt;=1400)&amp;&amp;(DGH&gt;=1050) ds_map_add(RSelector.arr,4,'1400x1050') 
+  if (DGW&gt;=1440)&amp;&amp;(DGH&gt;=1080) ds_map_add(RSelector.arr,5,'1440x1080') 
+  if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=1200) ds_map_add(RSelector.arr,6,'1600x1200') 
   }
 
 //fullscreen
@@ -225,25 +227,27 @@ else if Wide.clicked
   {
   Wide.clicked = false
   ds_map_clear(RSelector.arr)
+  var DGW = display_get_width();
+  var DGH = display_get_height();
   if Wide.checked
     {
     ds_map_add(RSelector.arr,0,'1024x576')
-    ds_map_add(RSelector.arr,1,'1152x648')
-    ds_map_add(RSelector.arr,2,'1280x720') 
-    ds_map_add(RSelector.arr,3,'1366x768') 
-    ds_map_add(RSelector.arr,4,'1536x864') 
-    ds_map_add(RSelector.arr,5,'1600x900') 
-    ds_map_add(RSelector.arr,6,'1920x1080') //TODO: check win res to prevent clicking on 1080p
-    }                                             //when screen res is obossany 1024x768
+    if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=648) ds_map_add(RSelector.arr,1,'1152x648')
+    if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=720) ds_map_add(RSelector.arr,2,'1280x720') 
+    if (DGW&gt;=1366)&amp;&amp;(DGH&gt;=768) ds_map_add(RSelector.arr,3,'1366x768') 
+    if (DGW&gt;=1536)&amp;&amp;(DGH&gt;=864) ds_map_add(RSelector.arr,4,'1536x864') 
+    if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=900) ds_map_add(RSelector.arr,5,'1600x900') 
+    if (DGW&gt;=1920)&amp;&amp;(DGH&gt;=1080) ds_map_add(RSelector.arr,6,'1920x1080')
+    }                            
   else
     {
     ds_map_add(RSelector.arr,0,'800x600') 
-    ds_map_add(RSelector.arr,1,'1024x768') 
-    ds_map_add(RSelector.arr,2,'1152x864')
-    ds_map_add(RSelector.arr,3,'1280x960')
-    ds_map_add(RSelector.arr,4,'1400x1050') 
-    ds_map_add(RSelector.arr,5,'1440x1080') 
-    ds_map_add(RSelector.arr,6,'1600x1200') 
+    if (DGW&gt;=1024)&amp;&amp;(DGH&gt;=768) ds_map_add(RSelector.arr,1,'1024x768') 
+    if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=864) ds_map_add(RSelector.arr,2,'1152x864')
+    if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=960) ds_map_add(RSelector.arr,3,'1280x960')
+    if (DGW&gt;=1400)&amp;&amp;(DGH&gt;=1050) ds_map_add(RSelector.arr,4,'1400x1050') 
+    if (DGW&gt;=1440)&amp;&amp;(DGH&gt;=1080) ds_map_add(RSelector.arr,5,'1440x1080') 
+    if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=1200) ds_map_add(RSelector.arr,6,'1600x1200') 
     }
   }
 else if Master.clicked

@@ -37,7 +37,12 @@ if global.DictLoaded &lt;&gt; global.profile[?'PLOCALE']
   //pre-define filename
   switch global.profile[?'PLOCALE']
     {
-    case 0: lfn = "dict/EN.dat"; break
+    case 0: 
+      lfn[0] = "dict/EN.dat"; 
+      lfn[1] = "dict/EN_extra.dat"
+      lfn_pos = 0
+      lfn_max = 0
+      break
     //case 1:
     }
     
@@ -59,8 +64,17 @@ if global.DictLoaded &lt;&gt; global.profile[?'PLOCALE']
     
   LoadedHash = 'ZZ'
   //reading dict file    
-  f = file_bin_open(lfn,0)
-  finalSize = file_bin_size(f)
+  f = file_bin_open(lfn[0],0)
+  var fe_size = 0;
+  if file_exists(lfn[1]) 
+    {
+    //TODO FIX: ALL EXTRA FILES
+    fe = file_bin_open(lfn[1],0)
+    fe_size = file_bin_size(fe)
+    lfn_max++
+    }
+  //TODO check if file missing or broken
+  finalSize = file_bin_size(f) + fe_size
   currSize = file_bin_position(f)
   }
 else
@@ -74,15 +88,6 @@ tickTimeConst = 1000 / room_speed + 1
 loadRot = 0
 
 GR = -1         //GameRuler Object
-
-//if pre-loaded
-/*
-else
-  {
-  loaded = true
-  with (parent) {event_user(0)}
-  }
-  */
 </string>
           </argument>
         </arguments>
@@ -109,15 +114,23 @@ else
 if !loaded
   {
   timeEndTick = current_time + tickTimeConst
-  currSize = file_bin_position(f)
+  currSize = file_bin_position(f) //FIX FIX FIX FIX FIX
   
   while (current_time &lt; timeEndTick)
     {
-    if file_bin_position(f) &gt;= finalSize
+    if file_bin_position(f) &gt;= file_bin_size(f) //old finalSize
       {
-      loaded = true
+      //DEBUG-COSTYL
+      //FIX IT
       file_bin_close(f)
-      break
+      lfn_pos++
+      if lfn_pos &gt; lfn_max
+        {
+        loaded = true
+        break
+        }
+      else
+        f = fe
       }
     q = file_bin_read_byte(f)
     s = ''

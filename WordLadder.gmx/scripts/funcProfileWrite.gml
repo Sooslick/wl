@@ -68,7 +68,12 @@
           file_bin_write_byte(f,LENID)
           CURRLEN = LENMAP[?LENID]
           for (tmp=0; tmp<26; tmp++)
-            funcWriteLong(f,CURRLEN[?funcChrDecode(tmp)])
+            {
+            if is_undefined(CURRLEN[?funcChrDecode(tmp)])
+              funcWriteLong(f,0)
+            else
+              funcWriteLong(f,CURRLEN[?funcChrDecode(tmp)])
+            }
           LENID = ds_map_find_next(LENMAP,LENID)
           }
         SECTID = ds_map_find_next(SECTMAP,SECTID)

@@ -65,6 +65,7 @@
     <sprite>sprites\sCareful</sprite>
     <sprite>sprites\sLoading</sprite>
     <sprite>sprites\sFlash</sprite>
+    <sprite>sprites\sFadedCircle</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -115,6 +116,7 @@
       <object>objects\oProfileSelector</object>
       <object>objects\oSquare</object>
       <object>objects\oSquareRuler</object>
+      <object>objects\oAuthorsCube</object>
       <object>objects\oGameSolo</object>
     </objects>
     <objects name="GameGeneralGroup">

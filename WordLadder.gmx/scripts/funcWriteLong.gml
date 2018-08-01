@@ -1,7 +1,7 @@
 //argument 0: opened file
 //argument 1: long
-f = argument0
-l = argument1     
+var f = argument0;
+var l = argument1 ;    
     for (i=0;i<4;i++)
       {
       byte[i] = l mod 256

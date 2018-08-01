@@ -94,14 +94,15 @@ else if bAlert&lt;&gt;0
   {
   if bAlert.bYes.clicked
     {
-    global.PSINGAMETIME = 0
-    global.PSPLAYTIME = 0
-    global.PSONLINETIME = 0
-    global.PSWORDS = 0
-    global.PSLETTERS = 0
-    global.PSGAMES = 0
-    global.PSSERVERS = 0
-    global.PSRESETS++
+    global.profile[?'PSINGAMETIME'] = 0
+    global.profile[?'PSPLAYTIME'] = 0
+    global.profile[?'PSONLINETIME'] = 0
+    global.profile[?'PSGAMES'] = 0
+    global.profile[?'PSENDS'] = 0
+    global.profile[?'PSSERVERS'] = 0
+    global.profile[?'PSRESETS']++
+    ds_map_destroy(global.profile[?'PSSECTIONS'])
+    global.profile[?'PSSECTIONS'] = ds_map_create()
     instance_destroy(bAlert,true)
     bAlert = 0
     bReset.clickable = true
@@ -123,39 +124,6 @@ else if bBack.clicked
   parent.Header = 'PROFILE SETTINGS'
   instance_destroy(self,true)
   }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="8" enumb="64">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/*
-draw_set_font(fImpact96)
-draw_set_color(c_white)
-draw_set_halign(fa_center)
-draw_set_valign(fa_center)
-draw_set_alpha(1)
-draw_text(800,100,'STATS and ACHIEVEMENTS')
-
-draw_set_font(fDebug)
-draw_text(800,600,'Still working, stand by#Press BACK baton to return')
-*/
 </string>
           </argument>
         </arguments>

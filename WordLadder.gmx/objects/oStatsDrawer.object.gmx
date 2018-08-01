@@ -25,37 +25,41 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>SECTMAP = global.profile[?'PSSECTIONS']
-  s = 'ingame: '+formatTimeString(global.profile[?'PSINGAMETIME'])
-  s+= '#play: '+formatTimeString(global.profile[?'PSPLAYTIME'])
-  s+= '#online: '+formatTimeString(global.profile[?'PSONLINETIME'])
-  s+= '#games launched: '+string(global.profile[?'PSGAMES'])
-  s+= '#games ended: '+string(global.profile[?'PSENDS'])
-  s+= '#servers: '+string(global.profile[?'PSSERVERS'])
-  s+= '#RESETS: '+string(global.profile[?'PSRESETS'])
+            <string>Selected = 0
+ShiftY = 0
+
+var SECTMAP = global.profile[?'PSSECTIONS'];
+  s[0] = 'ingame: '+formatTimeString(global.profile[?'PSINGAMETIME'])
+  s[0]+= '#play: '+formatTimeString(global.profile[?'PSPLAYTIME'])
+  s[0]+= '#online: '+formatTimeString(global.profile[?'PSONLINETIME'])
+  s[0]+= '#games launched: '+string(global.profile[?'PSGAMES'])
+  s[0]+= '#games ended: '+string(global.profile[?'PSENDS'])
+  s[0]+= '#servers: '+string(global.profile[?'PSSERVERS'])
+  s[0]+= '#RESETS: '+string(global.profile[?'PSRESETS'])
   
 if !is_undefined(SECTMAP[?0])
   {
   SECTMAP = SECTMAP[?0]
-  s+= '##words: '+string(SECTMAP[?'PSWORDS'])
-  s+= '#inputs: '+string(SECTMAP[?'PSINPUTS'])
-  s+= '#letters typed: '+string(SECTMAP[?'PSLETTERS'])
-  s+= '#letters accepted: '+string(SECTMAP[?'PSLETTERSA'])
-  s+= '#letters backspaced: '+string(SECTMAP[?'PSLETTERSB'])
-  s+= '#hints shown: '+string(SECTMAP[?'PSHINTS'])
-  s+= '#shifts acquired: '+string(SECTMAP[?'PSSHIFTSA'])
-  s+= '#shifts used: '+string(SECTMAP[?'PSSHIFTSU'])
-  s+= '#banned letters: '+string(SECTMAP[?'PSBANNED'])
-  s+= '#unbans acquired: '+string(SECTMAP[?'PSUNBANSA'])
-  s+= '#unbans used: '+string(SECTMAP[?'PSUNBANSU'])
-  s+= '#banned typed: '+string(SECTMAP[?'PSBANTYPED'])
-  s+= '#too shorts: '+string(SECTMAP[?'PSSHORTTYPED'])
-  s+= '#wrong words: '+string(SECTMAP[?'PSWRONGTYPED'])
-  s+= '#repeated words: '+string(SECTMAP[?'PSREPTYPED'])
-  s+= '#average word length: '+string(SECTMAP[?'PSLENAVERAGE'])
+  s[1] = 'OVERALL'
+  s[1]+= '#words: '+string(SECTMAP[?'PSWORDS'])
+  s[1]+= '#inputs: '+string(SECTMAP[?'PSINPUTS'])
+  s[1]+= '#letters typed: '+string(SECTMAP[?'PSLETTERS'])
+  s[1]+= '#letters accepted: '+string(SECTMAP[?'PSLETTERSA'])
+  s[1]+= '#letters backspaced: '+string(SECTMAP[?'PSLETTERSB'])
+  s[1]+= '#hints shown: '+string(SECTMAP[?'PSHINTS'])
+  s[1]+= '#shifts acquired: '+string(SECTMAP[?'PSSHIFTSA'])
+  s[1]+= '#shifts used: '+string(SECTMAP[?'PSSHIFTSU'])
+  s[1]+= '#banned letters: '+string(SECTMAP[?'PSBANNED'])
+  s[1]+= '#unbans acquired: '+string(SECTMAP[?'PSUNBANSA'])
+  s[1]+= '#unbans used: '+string(SECTMAP[?'PSUNBANSU'])
+  s[1]+= '#banned typed: '+string(SECTMAP[?'PSBANTYPED'])
+  s[1]+= '#too shorts: '+string(SECTMAP[?'PSSHORTTYPED'])
+  s[1]+= '#wrong words: '+string(SECTMAP[?'PSWRONGTYPED'])
+  s[1]+= '#repeated words: '+string(SECTMAP[?'PSREPTYPED'])
+  s[1]+= '#average word length: '+string(SECTMAP[?'PSLENAVERAGE'])
   }
 else
-  s+= '##Stat unavailable'
+  s[1] = 'OVERALL#Stat unavailable'
 </string>
           </argument>
         </arguments>
@@ -79,13 +83,13 @@ else
           <argument>
             <kind>1</kind>
             <string>//DRAW PRE-SETS
-draw_set_font(fDebug)
+draw_set_font(fImpact64)
 draw_set_color(c_white)
 draw_set_halign(fa_left)
 draw_set_valign(fa_center)
 //MAIN DRAW   
 draw_set_alpha(1)
-draw_text(600,600,s)
+draw_text(600,600+ShiftY,s[Selected])
 </string>
           </argument>
         </arguments>

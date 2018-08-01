@@ -38,6 +38,7 @@ dict.parent = id
 
 RuleTick = 0
 FlashX = -10000
+FlashSurf = surface_create(1200,800)
 drawStr = 'LOADING'
 switch (global.GameType)
   {
@@ -73,7 +74,7 @@ BonusStr = "GAME PROGRESS##Check a progress bar on top of the screen! When it's 
           <argument>
             <kind>1</kind>
             <string>RuleTick++
-FlashX+=251
+FlashX+=233
 if FlashX &gt; 20000
   FlashX-= 44000
 if (RuleTick == 5) || (RuleTick == 10) || (RuleTick == 15)
@@ -195,28 +196,48 @@ switch (global.GameType)                    //GR: GameRuler
             <kind>1</kind>
             <string>if !loaded
   {
-  draw_sprite_ext(sSquareFaded,0,512,128,2,0.3,180,c_white,0.9)
-  draw_set_alpha(1)
+  draw_set_alpha(0.9)
   draw_set_font(fImpact64)
   draw_set_halign(fa_left)
   draw_set_valign(fa_top)
-  draw_text_ext(5,37,drawStr,72,1111)
-  draw_set_blend_mode(bm_add)
-  draw_sprite_ext(sFlash,0,FlashX,0,6,6,0,2105376,1)
-  draw_set_blend_mode(bm_normal)
+  if !surface_exists(FlashSurf)
+    draw_text_ext(5,37,drawStr,72,1111)
+  else
+    {
+    surface_set_target(FlashSurf)
+    draw_clear_alpha(0,0)
+    draw_sprite_ext(sSquareFaded,0,512,128,2,0.3,180,c_white,0.8)
+    draw_text_ext(5,37,drawStr,72,1111)
+    draw_set_alpha(1)
+    draw_set_blend_mode_ext(bm_dest_alpha,bm_one)
+    draw_sprite_ext(sFlash,0,FlashX,0,6,6,0,2105376,1)
+    draw_set_blend_mode(bm_normal)
+    surface_reset_target()
+    draw_surface(FlashSurf,0,0)
+    }
   }
 else if !GR.prepared &amp;&amp; loadFading
   {
   draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,loadFade)
-  draw_sprite_ext(sSquareFaded,0,512,128,2,0.3,180,c_white,0.9)
-  draw_set_alpha(1)
+  draw_set_alpha(0.9)
   draw_set_font(fImpact64)
   draw_set_halign(fa_left)
   draw_set_valign(fa_top)
-  draw_text_ext(5,37,drawStr,72,1111)
-  draw_set_blend_mode(bm_add)
-  draw_sprite_ext(sFlash,0,FlashX,0,6,6,0,2105376,1)
-  draw_set_blend_mode(bm_normal)
+  if !surface_exists(FlashSurf)
+    draw_text_ext(5,37,drawStr,72,1111)
+  else
+    {
+    surface_set_target(FlashSurf)
+    draw_clear_alpha(0,0)
+    draw_sprite_ext(sSquareFaded,0,512,128,2,0.3,180,c_white,0.8)
+    draw_text_ext(5,37,drawStr,72,1111)
+    draw_set_alpha(1)
+    draw_set_blend_mode_ext(bm_dest_alpha,bm_one)
+    draw_sprite_ext(sFlash,0,FlashX,0,6,6,0,2105376,1)
+    draw_set_blend_mode(bm_normal)
+    surface_reset_target()
+    draw_surface(FlashSurf,0,0)
+    }
   }
 </string>
           </argument>

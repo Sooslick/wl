@@ -25,7 +25,12 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_text(25,25,'press ESC')
+            <string>draw_set_font(fImpact64)
+draw_set_halign(fa_center)
+draw_set_valign(fa_center)
+draw_set_color(irandom_range(0,c_white))
+draw_set_alpha(random(1))
+draw_text_transformed(800,600,'EASTER EGG#Press ESC to return',random_range(0.5,2),random_range(0.5,2),random_range(-10,10))
 </string>
           </argument>
         </arguments>
@@ -48,7 +53,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_create(0,0,oMenuRuler)
+            <string>with parent {bEggClicked = true; event_perform(ev_mouse,ev_global_left_release)}
 instance_destroy(self,false)
 </string>
           </argument>

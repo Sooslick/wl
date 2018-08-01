@@ -68,6 +68,8 @@ bg = instance_create(0,0,oSquareRuler)
 bg.parent = id
 bg.b21 = b2Hide     //pointers to overlapping buttons
 bg.b22 = b2Accept
+//EasterEgg faked button
+bEggClicked = false
 </string>
           </argument>
         </arguments>
@@ -219,8 +221,30 @@ if Dead
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//check buttons pressed
-if bNewGame.clicked
+            <string>//check if Faked Easter Egg Button is pressed
+if bEggClicked
+    {
+    if instance_exists(oEasterEggRuler)       //same button: close menu
+      {
+      Header = 'RENAME THIS GAME'
+      instance_destroy(ActiveMenuPtr,true) 
+      ActiveMenuPtr = 0
+      b2Hide.clickable = true
+      b2Accept.clickable = true
+      }
+    else
+      {     
+      ActiveMenuPtr = instance_create(0,0,oEasterEggRuler)
+      ActiveMenuPtr.parent = id
+      Header = 'EASTER EGG' 
+      b2Hide.clickable = false
+      b2Accept.clickable = false
+      }
+    bEggClicked = false
+    }
+
+//check buttons pressed
+else if bNewGame.clicked
   {
   if ActiveMenuOpened                       //if button menu is opened
     {
@@ -404,18 +428,7 @@ else if b2Hide.clicked
 else if b2Accept.clicked
   {
   b2Accept.clicked = false
-  //bg.cheat.process TODO!
-  with (bg)
-    {
-    event_user(0)
-    cheat = ''
-    for (i=0; i&lt;ARRMAX; i++)
-      for (j=0; j&lt;ARRMAX; j++)
-        {
-        sqArr[i,j].clr = c_white    //change color
-        sqArr[i,j].spr = 0
-        }
-    }
+  with (bg) {event_user(0)}
   }
 </string>
           </argument>

@@ -50,9 +50,9 @@ Timer = 300 * MinLen
 Think = 0                   //one word clockwatch
 
 TabuList = ds_list_create()
-TabuQty = 1
+TabuQty = 0
 TabuQtyProg = 0
-TabuQtyMax = 10             //lv-ups: 10; 42; 42; 100; 666 -&gt; max.
+TabuQtyMax = 3             //lv-ups: 3; 10; 42; 42; 98; 98; 228; 666 -&gt; max. 9000
 TabuQtyAnim = false
 TabuQtyAnimX = 0
 TabuQtyAnimXTarget = 0
@@ -253,6 +253,7 @@ Stat.GameTypeID = 30  //ENDLESS
     prepared = true
     Cube.Rot = true
     currWord = string_char_at(prevWord,string_length(prevWord))
+    global.profile[?'PSGAMES']++
     }
   }
 </string>
@@ -482,53 +483,51 @@ if TT
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>ok = true
+            <string>if !prepared
+  exit
+  
+if Cube.Rot
+  exit
+  
 Stat.attempts++
 
 //check len
 if string_length(currWord) &lt; MinLen
   {
-  ok = false
   Cube.LengthErr = true
   Stat.lens++
+  exit
   }
   
 //check tabu
-if ok &amp;&amp; prepared
-{
 for (i=2; i&lt;=string_length(currWord); i++)
   {
   j = ds_list_find_index(TabuList, string_char_at(currWord,i))
   if (j != -1) &amp;&amp; (j != TTNum)
     {
-    ok = false 
     Timer-= 150
     Cube.TabuErr = true
     Cube.TabuErrNum = j
     Stat.tabus++
-    break
+    exit
     } 
   }
-}
 
 //check prevword
-if ok &amp;&amp; prepared
-  if ds_list_find_index(prevWordList,currWord) != -1
-    {
-    if HintWrong == 0
-      {
-      HintWrong = 1
-      HintTimer+= 228
-      }
-    ok = false
-    Timer-= 150
-    prevAnim = true
-    Stat.prevs++
-    }
+if ds_list_find_index(prevWordList,currWord) != -1
+{
+if HintWrong == 0                            
+   {
+  HintWrong = 1
+  HintTimer+= 228
+  }
+Timer-= 150
+prevAnim = true
+Stat.prevs++
+exit
+}                                                      
     
 //check dict
-if ok &amp;&amp; prepared
-  {
   //first lv find
   tmpm = ds_map_find_value(global.DictDS,string_char_at(currWord,1))
   if tmpm != -1
@@ -544,6 +543,8 @@ if ok &amp;&amp; prepared
         Stat.words++
         Stat.lettersa += string_length(currWord)
         Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
+        Stat.LenWord = currWord
+        with Stat {event_user(2)}
         //words changing
         prevWord = currWord
         MinLen = string_length(currWord)
@@ -551,7 +552,7 @@ if ok &amp;&amp; prepared
         Cube.Rot = true
         Cube.LengthErrTick = 0
         Cube.LengthErr = false
-        Timer+= string_length(currWord)*150 - Timer div 60
+        Timer+= (string_length(currWord)-1)*150 - Timer div 60
         currWord = string_char_at(currWord, string_length(currWord))
         //shift prog
         if Shift
@@ -606,9 +607,9 @@ if ok &amp;&amp; prepared
               {
               case 2: case 3: DecReq = 42; break;
               case 4: case 5: DecReq = 100; break;
-              case 6: DecReq = 666; break;
-              case 7: DecReq = 9000; break;
-              default: DecReq = 999999999
+              case 6: DecReq = 228; break;
+              case 7: DecReq = 666; break;
+              default: DecReq = 9000
               }
             }
           DecAnim = true
@@ -622,8 +623,9 @@ if ok &amp;&amp; prepared
           TabuQtyProg = 0
           switch TabuQty
             {
+            case 1: TabuQtyMax = 10; break;
             case 2: case 3: TabuQtyMax = 42; break;
-            case 4: case 5: TabuQtyMax = 100; break;
+            case 4: case 5: TabuQtyMax = 98; break;
             case 6: TabuQtyMax = 666; break;
             case 7: TabuQtyMax = 9000; break;
             default: TabuQtyMax = 999999999
@@ -684,7 +686,6 @@ if ok &amp;&amp; prepared
     Cube.LengthErr = true
     Stat.dicts++
     }
-  }
 </string>
           </argument>
         </arguments>
@@ -707,8 +708,12 @@ if ok &amp;&amp; prepared
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !keyboard_check(vk_enter)
+            <string>if !Cube.Rot
+{
+////////////////////////////
+if !keyboard_check(vk_enter)
   {     
+  //backspacing
   if keyboard_check(vk_backspace) 
     {    
     if string_length(currWord) &gt; 1 
@@ -719,6 +724,7 @@ if ok &amp;&amp; prepared
     Cube.TabuErr = false
     Cube.TabuErrNum = -1
     }
+  //switch Unban ability
   else if keyboard_check(vk_tab) &amp;&amp; TTQty &gt; 0
     {
     if TT
@@ -736,7 +742,15 @@ if ok &amp;&amp; prepared
       TTNum = 0
       }
     }
-  else if !Cube.Rot
+  //anykey: force EN layout
+  else if (keyboard_lastkey &gt;= 65) &amp;&amp; (keyboard_lastkey &lt;= 90)
+    {
+    currWord+= chr(keyboard_lastkey)
+    keyboard_lastkey = -1
+    Stat.letters++
+    }
+  //TODO: LOCALE!!!!! ! ! !
+  else
     {
     keyboard_lastchar = string_upper(keyboard_lastchar)
     if (ord(keyboard_lastchar)&gt;64)&amp;&amp;(ord(keyboard_lastchar)&lt;91)
@@ -762,6 +776,8 @@ if ok &amp;&amp; prepared
       }
     }
   }
+///////////////////////
+}
 </string>
           </argument>
         </arguments>

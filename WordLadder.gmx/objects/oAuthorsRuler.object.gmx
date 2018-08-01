@@ -8,7 +8,7 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
-    <event eventtype="8" enumb="64">
+    <event eventtype="0" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -25,20 +25,99 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_font(fImpact96)
-draw_set_color(c_white)
-draw_set_halign(fa_center)
-draw_set_valign(fa_center)
-draw_set_alpha(1)
-draw_text(800,100,'CREDITS')
+            <string>s[0] = 'CREDITS G'
+s[1] = 'GAME BY S'
+s[2] = 'SOOSLICK '
+s[3] = ' ART PROJ'
+s[4] = 'JECT    G'
+s[5] = 'GAME DIRE'
+s[6] = 'ECTOR:  P'
+s[7] = 'PETROV AL'
+s[8] = 'LEXEY    '
+s[9] = '   DESIGN'
+s[10] = 'NADEZHDA '
+s[11] = ' BALOBANO'
+s[12] = 'OVA     S'
+s[13] = 'SITE:    '
+s[14] = '  FLAMING'
+s[15] = 'GAMING   '
+s[16] = ' THANKS  '
+s[17] = ' FOR     '
+s[18] = ' PLAYING '
+s[19] = '        C'
+scurr = 0
+smax = 19
+stick = 0
+spos = 1
 
-draw_set_font(fDebug)
-draw_text(800,600,'Still working, stand by#Press ESC key or BACK baton')
-
-/*
-TODO: запилить анимацию фирменную скролла и вращения строк
-контент: разрабы и благодарности
-*/
+Cube = instance_create(800,600,oAuthorsCube)
+Cube.parent = id
+Cube.w1 = 'C'
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>instance_destroy(Cube,true)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>stick++
+if stick&gt;=3
+  {
+  stick = 0
+  spos++
+  if spos &gt; 10
+    {
+    spos = 2
+    scurr++
+    if scurr &gt; smax
+      scurr = 0
+    }
+  if spos == 10
+    {
+    Cube.Rot = true
+    stick = -32
+    }
+  else
+    Cube.w1+= string_char_at(s[scurr],spos)
+  }
 </string>
           </argument>
         </arguments>

@@ -1,16 +1,16 @@
-word = ''
-found = false
-wordlong = ''
-foundlong = false
-longlen = 0
-attempts = irandom_range(1, 100 div MinLen)
+var word = '';
+var found = false;
+var wordlong = '';
+var foundlong = false;
+var longlen = 0;
+var attempts = irandom_range(1, 100 div MinLen);
 //currword: from Ruler
 //MinLen: from Ruler
 //TabuList: from Ruler
 //prevWordList: from Ruler
 
 //select lv1 map
-m = global.DictDS[? string_char_at(currWord,1)]
+var m = global.DictDS[? string_char_at(currWord,1)];
 if m != -1
   {
   //for each lv2 map
@@ -26,21 +26,20 @@ if m != -1
         //check len
         if string_length(w) < MinLen
           continue
-        ok = true
         //check prev words
         if ds_list_find_index(prevWordList,w) != -1
-          ok = false
+          continue
         //check tabus
-        if ok
-          for (k=2; k<=string_length(w); k++)
+        var ok = true
+        for (k=2; k<=string_length(w); k++)
+          {
+          tmp = ds_list_find_index(TabuList, string_char_at(w,k))
+          if (tmp != -1)
             {
-            tmp = ds_list_find_index(TabuList, string_char_at(w,k))
-            if (tmp != -1)
-              {
-              ok = false 
-              break
-              } 
-            }
+            ok = false 
+            break
+            } 
+          }
         if !ok
           continue
         if string_length(w) > MinLen

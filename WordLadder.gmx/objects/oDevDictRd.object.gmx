@@ -28,9 +28,7 @@
             <string>//if !loaded
 
 //TODO locale
-L1 = 'A'
-L2 = 'B'
-ActiveL = 0     //0=L1  1=L2
+L = ''
 WordList = -1
 content = ''
 </string>
@@ -67,111 +65,11 @@ switch global.DictLoaded
   case 1: draw_text(0,0,'Loaded Dict: EN'); break
   default: draw_text(0,0,'No loaded Dict File'); break
   }
-
-draw_set_alpha(0.5)
-draw_rectangle(0+ActiveL*50,100,50+ActiveL*50,200,false)
-draw_set_alpha(1)
-draw_text(0,100,L1)
-draw_text(50,100,L2)  
+  
+draw_text(0,80,L)  
   
 draw_set_font(fDebug)
-draw_text_ext(128,0,content,25,1408)
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="50">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>ActiveL = 1
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="49">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>ActiveL = 0
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="39">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>ActiveL++
-if ActiveL &gt; 1
-  ActiveL = 0
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="37">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>ActiveL++
-if ActiveL &gt; 1
-  ActiveL = 0
+draw_text_ext(0,170,content,25,1600)
 </string>
           </argument>
         </arguments>
@@ -194,13 +92,42 @@ if ActiveL &gt; 1
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>keyboard_lastchar = string_upper(keyboard_lastchar)
-if funcChrCheck(keyboard_lastchar)
-      if ActiveL == 0
-        L1 = keyboard_lastchar
-      else
-        L2 = keyboard_lastchar
-keyboard_lastchar = ''
+            <string>if !keyboard_check(vk_enter)
+  {     
+  if keyboard_check(vk_backspace) 
+    {    
+    if string_length(L) &gt; 0   
+      L = string_copy(L,1,string_length(L)-1)
+    content = ''
+    }
+  else
+    {
+    keyboard_lastchar = string_upper(keyboard_lastchar)
+    if (ord(keyboard_lastchar)&gt;64)&amp;&amp;(ord(keyboard_lastchar)&lt;91)
+      L+= keyboard_lastchar
+    keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...
+    //content rewrite
+    content = ''
+    if string_length(L)&gt;1
+      {
+      var tmpm = ds_map_find_value(global.DictDS,string_char_at(L,1));
+      if tmpm != -1
+        {
+        var tmpl = ds_map_find_value(tmpm,string_char_at(L,2));
+        if tmpl != -1
+          {
+          var s;
+          for (var i=0; i&lt;ds_list_size(tmpl); i++)
+            {
+            s = tmpl[|i]
+            if string_copy(s,1,string_length(L)) == L
+              content+= s + ' '
+            }
+          }
+        }
+      } 
+    }
+  }
 </string>
           </argument>
         </arguments>
@@ -224,44 +151,6 @@ keyboard_lastchar = ''
           <argument>
             <kind>1</kind>
             <string>action_another_room(rMenu)
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="10" enumb="13">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>WordList = -1
-if global.DictLoaded != -1
-  {
-  //first lv find
-  tmpm = ds_map_find_value(global.DictDS,L1)
-  if tmpm != -1
-    {
-    //second lv find
-    tmpl = ds_map_find_value(tmpm,L2)
-    if tmpl != -1
-      WordList = tmpl
-    }
-  content = ''
-  for (i=0; i&lt;ds_list_size(WordList); i++)
-    content+= WordList[| i] + ' '
-  }
 </string>
           </argument>
         </arguments>
