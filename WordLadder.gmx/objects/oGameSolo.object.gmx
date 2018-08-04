@@ -28,11 +28,13 @@
             <string>//game settings presets
 P1 = instance_create(300,280,oButton)
 P1.content = 'SIMPLE'
+P1.clickable = false
 
 P2 = instance_create(300,440,oButton)
 with(P2)
   {
   content = 'COMPLICATED'
+  clickable = false
   event_user(0)
   }
 
@@ -40,8 +42,9 @@ P3 = instance_create(300,600,oButton)
 P3.content = 'ENDLESS'
 
 PCustom = instance_create(300,800,oButton)
-PCustom.content = 'Custom game'
+PCustom.content = 'CUSTOM GAME'
 PCustom.font = fImpact64
+PCustom.clickable = false
 
 PBack = instance_create(300,1000,oButton)
 PBack.content = 'BACK'

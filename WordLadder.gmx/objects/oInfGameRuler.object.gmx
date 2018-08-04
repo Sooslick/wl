@@ -39,6 +39,7 @@ prevAnimTick = 0
 BStart = instance_create(800,1000, oButton)
 BStart.content = 'BEGIN'
 
+MaxLen = 9
 MinLen = 4  
 for (i=1; i&lt;=MinLen; i++)
   {
@@ -251,8 +252,8 @@ Stat.GameTypeID = 30  //ENDLESS
     instance_destroy(BStart,true)
     BStart = -1
     prepared = true
-    Cube.Rot = true
     currWord = string_char_at(prevWord,string_length(prevWord))
+    Cube.w1 = currWord
     global.profile[?'PSGAMES']++
     }
   }
@@ -358,6 +359,11 @@ draw_text(1595,Cube.y-MinLen*32+115,'Unbans: '+string(TTQty))
 draw_set_halign(fa_left)
 draw_set_font(fImpact64)
 j = 0
+var xsc
+if MaxLen &gt;= 10
+  xsc = 9 / MaxLen - (MaxLen%10)/100
+else
+  xsc = 1
 
 if prevAnim
   cl = make_color_rgb(255,prevAnimTick*8,prevAnimTick*8)
@@ -370,8 +376,10 @@ if prevOffset == -1
   for (i=words-1; i&gt;=0; i--)
     {
     if string_length(prevWordList[| i]) &gt;= MinLen
-      draw_text(5,600+45+j*70,prevWordList[| i])
-    j++
+      {
+      draw_text_transformed(5,600+45+j*70,prevWordList[| i],xsc,1,0)
+      j++
+      }
     draw_set_alpha(draw_get_alpha()-0.08)
     }
 else
@@ -379,8 +387,10 @@ else
   for (i=prevOffset; i&gt;=0; i--)
     {
     if string_length(prevWordList[| i]) &gt;= MinLen
-      draw_text(5,600-25+j*70,prevWordList[| i])
-    j++
+      {
+      draw_text_transformed(5,600-25+j*70,prevWordList[| i],xsc,1,0)
+      j++
+      }
     draw_set_alpha(draw_get_alpha()-0.08)
     }
   draw_set_alpha(0.92)
@@ -388,17 +398,21 @@ else
   for (i=prevOffset+1; i&lt;words; i++)
     {
     if string_length(prevWordList[| i]) &gt;= MinLen
-      draw_text(5,600-25+j*70,prevWordList[| i])
-    j--
+      {
+      draw_text_transformed(5,600-25+j*70,prevWordList[| i],xsc,1,0)
+      j--
+      }
     draw_set_alpha(draw_get_alpha()-0.08)
     }
   }
 //TabuHilight
 if TT
   {
+  var xt = Cube.x;
+  if Shift xt+= 72
   draw_set_alpha(0.66)
   j = MinLen*32
-  draw_rectangle(Cube.x-j+TTNum*72,Cube.y-j-100,Cube.x-j+TTNum*72+66,Cube.y-j-34,false)
+  draw_rectangle(xt-j+TTNum*72,Cube.y-j-100,xt-j+TTNum*72+66,Cube.y-j-34,false)
   }
 </string>
           </argument>
@@ -548,6 +562,8 @@ exit
         //words changing
         prevWord = currWord
         MinLen = string_length(currWord)
+        if MinLen &gt; MaxLen
+          MaxLen = MinLen
         ds_list_add(prevWordList,currWord)
         Cube.Rot = true
         Cube.LengthErrTick = 0

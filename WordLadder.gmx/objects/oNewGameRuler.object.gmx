@@ -37,6 +37,7 @@ PClient = instance_create(300,440,oButton)
 with(PClient)
   {
   content = 'MULTIPLAYER'
+  clickable = false
   event_user(0)
   }
 //server
@@ -44,6 +45,7 @@ PServer = instance_create(300,760,oButton)
 with(PServer)
   {
   content = 'CREATE NEW ROOM'
+  clickable = false
   font = fImpact64
   event_user(0)
   }

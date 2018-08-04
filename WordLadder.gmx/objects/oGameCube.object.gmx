@@ -38,6 +38,7 @@ Rot = false                 //Otherclockwise animation
 RotDeg = 0
 Shift = false               //height correction anim
 ShiftY = 0
+ShiftX = 0
 NewWord = true              //new word approach animation
 NewWordX = 0
 Tabu = false
@@ -93,8 +94,13 @@ if Rot
       w3 = w2
     w2 = w1
     w1 = string_char_at(w1,string_length(w1))
-    ShiftY = (NewLen - MinLen)*64
-    x+= ShiftY div 2
+    ShiftY = (NewLen - MinLen)*32
+    ShiftX = ShiftY
+    x+= ShiftX
+    if ShiftY &gt; 0
+      y-= ShiftY
+    else
+      ShiftY = 0
     MinLen = NewLen
     Shift = true
     NewWord = true
@@ -103,21 +109,32 @@ if Rot
     Rot = false
     Shifted = false
     }
-  aps = 1 / (string_length(w2)-shoff-1 + string_length(w3)-1 + string_length(w4)*((90-RotDeg)/90) -2)
+  if w4 != ''
+    aps = 1 / (string_length(w2)-shoff-1 + string_length(w3)-1 + string_length(w4)*((90-RotDeg)/90) -2)
+  else
+    aps = 0.1
   }
 if Shift
   {
   if ShiftY &gt; 0
     {
     y+= 2
-    x-= 1
-    ShiftY-= 2
+    ShiftY-= 1
     }
   else if ShiftY &lt; 0
     {
     y-= 2
+    ShiftY+= 1
+    }
+  else if ShiftX &gt; 0
+    {
+    x-= 1
+    ShiftX-= 1
+    }
+  else if ShiftX &lt; 0
+    {
     x+= 1
-    ShiftY+= 2
+    ShiftX+= 1
     }
   else
     Shift = false
@@ -175,7 +192,7 @@ if LengthErr
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_font(fImpact64)
+            <string>draw_set_font(fCube)
 draw_set_color(c_white)
 draw_set_halign(fa_center)
 draw_set_valign(fa_center)
@@ -186,6 +203,10 @@ if Shifted
   shoff = 1
 else
   shoff = 0
+
+//fader circle
+//draw_sprite_ext(sFadedCircle,0,x,y,MinLen*2.28,MinLen*2.28,0,0,1)  
+//player never see hints with this circle  
 
 //w1
 j = MinLen*32 - 32
@@ -207,12 +228,20 @@ for (i=0; i&lt;tmp; i++)
   draw_sprite_ext(sSquareCenter,0, xd, yd, ApproachScale,ApproachScale,RotDeg,c_white,1)       
   draw_text_transformed(xd,yd,string_char_at(w1,i+1), 1,1,RotDeg)
   }
+//faded sq
 if (string_length(w1) &gt;= MinLen) &amp;&amp; !Rot
-  draw_sprite_ext(sSquareCenter,2, xd+64, yd, 1,1,RotDeg,c_white,1)   
+  draw_sprite_ext(sSquareCenter,2, xd+64, yd, 1,1,RotDeg,c_white,1)  
+//error 
 if LengthErr
   {
   a = (0.52 - (LengthErrTick*0.015))
   draw_sprite_ext(sPixel,0,x-j-32,yd-32,tmp*64,64,0,c_red,a)
+  }
+//newword fading
+if !Rot &amp;&amp; !Approach &amp;&amp; NewWord
+  {
+  draw_sprite_ext(sSquareFaded,0,x-j+NewWordX-32,y-j-32,0.25,0.25,RotDeg,c_black,1) 
+  draw_sprite_ext(sPixel,0,x-j+NewWordX+32,y-j-32,tmp*64-NewWordX,64,0,c_black,1)
   }
   
 if w2 != ''
@@ -287,16 +316,9 @@ while (draw_get_alpha() &gt; 0)
   draw_set_alpha(draw_get_alpha()-aps)
   draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,draw_get_alpha()) 
   draw_text_transformed(xd, yd, string_char_at(w4,string_length(w4)-i), 1,1,RotDeg+270)
-  } 
   i++
+  } 
 }  
-
-//Fading
-if !Rot &amp;&amp; !Approach &amp;&amp; NewWord
-  {
-  draw_sprite_ext(sSquareFaded,0,x-j+NewWordX-32,y-j-32,0.25,0.25,RotDeg,c_black,1) 
-  draw_sprite_ext(sPixel,0,x-j+NewWordX+32,y-j-32,MinLen*65,64,0,c_black,1)
-  }
 
 /*//DEBUG 
 draw_set_alpha(1)
@@ -308,6 +330,7 @@ draw_line(x,y-300,x,y+300)*/
 draw_set_alpha(1)
 if !Rot
   {
+  var xt = x + shoff * 72
   if Tabu
     {
     tmp = TabuProg
@@ -317,14 +340,14 @@ if !Rot
       if tmp &gt;= 10
         {
         draw_set_alpha(1)
-        draw_text(x-j+i*72, y-j-100, TabuList[| i])
-        draw_sprite(sSquareTabu,0,x-j+i*72, y-j-100)
+        draw_text(xt-j+i*72, y-j-100, TabuList[| i])
+        draw_sprite(sSquareTabu,0,xt-j+i*72, y-j-100)
         }
       else
         {
         draw_set_alpha(1/(10-tmp))
-        draw_text_transformed(x-j+i*72, y-j-100, TabuList[| i],(5-tmp/2)+0.5,(5-tmp/2)+0.5,0)
-        draw_sprite_ext(sSquareTabu,0,x-j+i*72, y-j-100, (5-tmp/2)+0.5, (5-tmp/2)+0.5, 0,c_white,draw_get_alpha())
+        draw_text_transformed(xt-j+i*72, y-j-100, TabuList[| i],(5-tmp/2)+0.5,(5-tmp/2)+0.5,0)
+        draw_sprite_ext(sSquareTabu,0,xt-j+i*72, y-j-100, (5-tmp/2)+0.5, (5-tmp/2)+0.5, 0,c_white,draw_get_alpha())
         }
       tmp-= 10
       i++
@@ -333,11 +356,11 @@ if !Rot
   else
     for (i=0; i&lt;ds_list_size(TabuList); i++)
       {
-      draw_text(x-j+i*72, y-j-100, TabuList[| i])
+      draw_text(xt-j+i*72, y-j-100, TabuList[| i])
       if TabuErrNum == i
-        draw_sprite(sSquareTabu,1,x-j+i*72, y-j-100)
+        draw_sprite(sSquareTabu,1,xt-j+i*72, y-j-100)
       else
-        draw_sprite(sSquareTabu,0,x-j+i*72, y-j-100)
+        draw_sprite(sSquareTabu,0,xt-j+i*72, y-j-100)
       }
   }
 </string>
