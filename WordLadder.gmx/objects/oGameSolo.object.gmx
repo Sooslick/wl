@@ -28,13 +28,13 @@
             <string>//game settings presets
 P1 = instance_create(300,280,oButton)
 P1.content = 'SIMPLE'
-P1.clickable = false
 
 P2 = instance_create(300,440,oButton)
 with(P2)
   {
   content = 'COMPLICATED'
-  clickable = false
+  if global.profile[?"GM1"] == 0
+    clickable = false
   event_user(0)
   }
 
@@ -97,7 +97,12 @@ instance_destroy(PBack,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if P3.clicked
+            <string>if P1.clicked
+  {
+  global.GameType = 1
+  action_another_room(rGame)
+  }
+if P3.clicked
   {
   global.GameType = 3
   action_another_room(rGame)

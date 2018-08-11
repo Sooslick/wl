@@ -17,6 +17,8 @@ N	Name String
 4	Total games ended
 4    	Total servers joined
 4	Total stat resets
+1	Simple Passed		//
+1	Complicated Passed	//
 
  SPECIFIED STAT
 1	M = Sections count

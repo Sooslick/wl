@@ -43,11 +43,11 @@ drawStr = 'LOADING'
 switch (global.GameType)
   {
   case 1:
-    RuleStr = 'SIMPLE RULES##Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'
+    RuleStr = 'SIMPLE RULES##Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'; break
   case 3:
-    RuleStr = 'ENDLESS MODE##Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'
+    RuleStr = 'ENDLESS MODE##Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'; break
   }
-
+TargetStr = "GREEN LETTERS##You're going to see green letters during game process. Use them to make words and progress!"
 BannedStr = "BANNED LETTERS##When you write the word, check it for banned letters! You can't use them.#These letters are randomly chosen for each word and are displayed on the screen!"
 TimerStr = "TIMER##Your time is limited! When time is out, game ends.#You recieve additional time after successfully typing the word and get an instant penalty after failing to do so!"
 BonusStr = "GAME PROGRESS##Check a progress bar on top of the screen! When it's full, the game grants you special abilities.#It may be a simple hint, word's length decrease or ability to use one of banned letters!"
@@ -81,14 +81,16 @@ if (RuleTick == 5) || (RuleTick == 10) || (RuleTick == 15)
   drawStr+= '.'
 else if RuleTick == 20
   drawStr = RuleStr
-else if RuleTick == 320
+else if RuleTick == 440
+  drawStr = TargetStr
+else if RuleTick == 740
   drawStr = BannedStr
-else if RuleTick == 560
-  drawStr = TimerStr
-else if RuleTick == 800
-  drawStr = BonusStr
 else if RuleTick == 1040
-  drawStr = RuleStr
+  drawStr = TimerStr
+else if RuleTick == 1340
+  drawStr = BonusStr
+else if RuleTick == 1640
+  RuleTick = 19
 if loaded &amp;&amp; loadFading
   if GR.prepared
     {
@@ -154,6 +156,8 @@ switch (global.GameType)                    //GR: GameRuler
     loaded = true
     GR = instance_create(0,0,oSimpleGameRuler)
     GR.parent = id
+    if RuleTick &lt; 19
+      RuleTick = 19
     break
   case 2:
     //oHard
@@ -161,6 +165,8 @@ switch (global.GameType)                    //GR: GameRuler
     loaded = true
     GR = instance_create(0,0,oInfGameRuler)
     GR.parent = id
+    if RuleTick &lt; 19
+      RuleTick = 19
     break
   case 4:
     //oCustom
@@ -194,7 +200,8 @@ switch (global.GameType)                    //GR: GameRuler
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !loaded
+            <string>draw_set_color(c_white)
+if !loaded
   {
   draw_set_alpha(0.9)
   draw_set_font(fImpact64)

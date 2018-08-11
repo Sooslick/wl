@@ -45,6 +45,8 @@ prevs = 0
 lens = 0
 avg = 0
 
+success = false
+
 //tech active swithes
 active = false
 B1 = -1
@@ -202,7 +204,7 @@ if is_undefined(LenCurr)
 LenCurr[?ord(string_char_at(LenWord,1))]++
 
 //debug
-clipboard_set_text(json_encode(LenMap))
+//clipboard_set_text(json_encode(LenMap))
 </string>
           </argument>
         </arguments>
@@ -454,6 +456,12 @@ else
   draw_set_valign(fa_center)
   
   draw_text(100,600,s)
+  if success
+    {
+    draw_set_font(fImpact96)
+    draw_set_halign(fa_center)
+    draw_text(800,100,'SUCCESS')
+    }
   }
 else
   {

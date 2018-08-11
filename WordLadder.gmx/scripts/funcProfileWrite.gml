@@ -5,7 +5,7 @@
     file_bin_write_byte(f,0)
     file_bin_write_byte(f,0)
     file_bin_write_byte(f,0)
-    file_bin_write_byte(f,3)        //4 bytes: version
+    file_bin_write_byte(f,4)        //4 bytes: version
     funcWriteLong(f,global.profile[?'PNETID'])
       
     //PLAYER NAME
@@ -25,6 +25,8 @@
     funcWriteLong(f,global.profile[?'PSENDS'])
     funcWriteLong(f,global.profile[?'PSSERVERS'])
     funcWriteLong(f,global.profile[?'PSRESETS'])
+    file_bin_write_byte(f,global.profile[?'GM1'])
+    file_bin_write_byte(f,global.profile[?'GM2'])
     
     //SECTIONS COUNT:
     file_bin_write_byte(f,ds_map_size(global.profile[?'PSSECTIONS']))

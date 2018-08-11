@@ -25,35 +25,27 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//solo
-PSolo = instance_create(300,280,oButton)
-with(PSolo)
-  {
-  content = 'SINGLEPLAYER'
-  event_user(0)
-  }
-//multi
-PClient = instance_create(300,440,oButton)
-with(PClient)
-  {
-  content = 'MULTIPLAYER'
-  clickable = false
-  event_user(0)
-  }
-//server
-PServer = instance_create(300,760,oButton)
-with(PServer)
-  {
-  content = 'HOW TO PLAY'
-  clickable = false
-  event_user(0)
-  }
+            <string>Req = 1
+Prog = 0
+Anim = false
+AnimX = 0
+AnimXTarget = 0
+
+colorInner = 128
+colorOuter = 64
+width = 16
+
+tfont = fCube
+tsc = 1
+content = ''
+
+visible = false
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="1" enumb="0">
+    <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -70,15 +62,19 @@ with(PServer)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_destroy(PSolo,true)
-instance_destroy(PClient,true)
-instance_destroy(PServer,true)
+            <string>if Anim
+    {
+    var tmp = (AnimXTarget - AnimX) / 5;
+    AnimX+= tmp
+    if abs(tmp) &lt;= 1
+      Anim = false
+    }
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -95,20 +91,18 @@ instance_destroy(PServer,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if PSolo.clicked
-  {
-  p = instance_create(0,0,oGameSolo)
-  p.parent = parent
-  parent.ActiveMenuPtr = p
-  parent.Header = 'SINGLEPLAYER'
-  instance_destroy(self,true)
-  }
+            <string>//tsc calc
+draw_set_font(tfont)
+var tw = string_height('Q')
+tsc = (width-2) / tw
+if tsc &gt; 1
+  tsc = 1
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -125,7 +119,18 @@ instance_destroy(PServer,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//draw_text(25,25,'NO')
+            <string>draw_set_alpha(1)
+draw_set_color(colorOuter)
+draw_line_width(0,y,1600,y,width)
+draw_set_color(colorInner)
+draw_line_width(0,y,AnimX,y,10)
+
+draw_set_font(tfont)
+draw_set_valign(fa_center)
+draw_set_halign(fa_right)
+draw_set_blend_mode(bm_add)
+draw_text_transformed(1580,y,content,tsc,tsc,0)
+draw_set_blend_mode(bm_normal)
 </string>
           </argument>
         </arguments>

@@ -68,6 +68,9 @@ bg = instance_create(0,0,oSquareRuler)
 bg.parent = id
 bg.b21 = b2Hide     //pointers to overlapping buttons
 bg.b22 = b2Accept
+motd = ""
+motd_ready = false
+http_get("http://sooslick.flaminggaming.ru/wl/getSplash.php")
 //EasterEgg faked button
 bEggClicked = false
 </string>
@@ -435,6 +438,37 @@ else if b2Accept.clicked
         </arguments>
       </action>
     </event>
+    <event eventtype="7" enumb="62">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if async_load[? "status"] != 0
+  exit
+
+var html = json_decode(async_load[? "result"])
+if html != -1
+  {
+  motd = html[?'CONTENT']
+  motd_ready = true
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -471,6 +505,15 @@ if Dead
   
 //black line
 draw_sprite_ext(sPixel,0,1600,0,global.DRAW_HOFF/global.DRAW_SCALE,1200,0,c_black,1)
+
+//splash
+if (motd_ready) &amp;&amp; (ActiveMenuPtr == 0)
+  {
+  draw_set_color(make_color_rgb(irandom_range(128,255), irandom_range(128,255), irandom_range(128,255)))
+  draw_set_alpha(random_range(0.66,0.99))
+  draw_set_halign(fa_center)
+  draw_text_transformed(333,333,motd,0.66,0.66,22)
+  }
 </string>
           </argument>
         </arguments>

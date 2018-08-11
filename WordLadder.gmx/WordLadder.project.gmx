@@ -82,6 +82,7 @@
     <script>scripts\funcSetWinResFromString.gml</script>
     <script>scripts\funcCheckGuiHover.gml</script>
     <script>scripts\funcNewTabuLetter.gml</script>
+    <script>scripts\funcNewTargetLetter.gml</script>
     <script>scripts\funcGetWord.gml</script>
     <script>scripts\funcReadLong.gml</script>
     <script>scripts\funcWriteLong.gml</script>
@@ -124,9 +125,11 @@
       <object>objects\oDictLoader</object>
       <object>objects\oGameRuler</object>
       <object>objects\oInfGameRuler</object>
+      <object>objects\oSimpleGameRuler</object>
       <object>objects\oGameCube</object>
       <object>objects\oGameStatCounter</object>
       <object>objects\oSquareHint</object>
+      <object>objects\oProgBar</object>
     </objects>
     <object>objects\oDevMenu</object>
     <object>objects\oDevDictRd</object>

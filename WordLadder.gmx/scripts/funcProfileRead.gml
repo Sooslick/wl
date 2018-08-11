@@ -11,7 +11,7 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
     v[1] = file_bin_read_byte(f)
     v[2] = file_bin_read_byte(f)
     v[3] = file_bin_read_byte(f)
-    if v[0] == 0 && v[1] == 0 && v[2] == 0 && v[3] == 3
+    if v[0] == 0 && v[1] == 0 && v[2] == 0 && v[3] == 4
         {
         //PLAYER NET ID
         global.profile[?'PNETID'] = funcReadLong(f)
@@ -38,6 +38,8 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
         global.profile[?'PSSERVERS'] = funcReadLong(f)
         global.profile[?'PSRESETS'] = funcReadLong(f)
         
+        global.profile[?'GM1'] = file_bin_read_byte(f)
+        global.profile[?'GM2'] = file_bin_read_byte(f)
         //STAT: sectons
         global.profile[?'PSSECTIONS'] = ds_map_create()
         var SECTIONS = file_bin_read_byte(f)
@@ -103,6 +105,9 @@ global.profile[?'PSENDS'] = 0
 global.profile[?'PSSERVERS'] = 0
 global.profile[?'PSRESETS'] = 0
     
+global.profile[?'GM1'] = 0
+global.profile[?'GM2'] = 0
+
 global.profile[?'PSSECTIONS'] = ds_map_create()
 
 global.SaveCorrupted = true
