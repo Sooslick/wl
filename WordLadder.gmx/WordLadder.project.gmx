@@ -66,6 +66,8 @@
     <sprite>sprites\sLoading</sprite>
     <sprite>sprites\sFlash</sprite>
     <sprite>sprites\sFadedCircle</sprite>
+    <sprite>sprites\sArrow</sprite>
+    <sprite>sprites\sArrowScroll</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -120,12 +122,14 @@
       <object>objects\oSquareRuler</object>
       <object>objects\oAuthorsCube</object>
       <object>objects\oGameSolo</object>
+      <object>objects\oFirstLaunchArrow</object>
     </objects>
     <objects name="GameGeneralGroup">
       <object>objects\oDictLoader</object>
       <object>objects\oGameRuler</object>
       <object>objects\oInfGameRuler</object>
       <object>objects\oSimpleGameRuler</object>
+      <object>objects\oHardGameRuler</object>
       <object>objects\oGameCube</object>
       <object>objects\oGameStatCounter</object>
       <object>objects\oSquareHint</object>

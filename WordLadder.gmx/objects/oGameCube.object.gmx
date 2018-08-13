@@ -31,6 +31,8 @@ w1 = ''
 w2 = ''
 w3 = ''
 w4 = ''
+TabuList = -1
+TargetList = -1
 
 Approach = true             //Approach Animation
 ApproachScale = 2.0
@@ -43,6 +45,8 @@ NewWord = true              //new word approach animation
 NewWordX = 0
 Tabu = false
 TabuProg = 0
+Target = false
+TargetProg = 0
 TabuErr = false
 TabuErrNum = -1
 LengthErr = false
@@ -152,13 +156,23 @@ if NewWord
   else
     NewWord = false
   }
-if Tabu
+if (Tabu) &amp;&amp; (TabuList != -1)
   {
   TabuProg++
   if TabuProg &gt;= ds_list_size(TabuList)*10
     {
     TabuProg = 0
     Tabu = false
+    Target = true
+    }
+  }
+if (Target) &amp;&amp; (TargetList != -1)
+  {
+  TargetProg++
+  if TargetProg &gt;= ds_list_size(TargetList)*10
+    {
+    TargetProg = 0
+    Target = false
     }
   }
 if LengthErr
@@ -326,11 +340,13 @@ draw_set_color(c_white)
 draw_line(x-400,y,x+400,y)
 draw_line(x,y-300,x,y+300)*/
 
+var xt = x + shoff * 72
 //TabuList
+if TabuList != -1
+{
 draw_set_alpha(1)
 if !Rot
   {
-  var xt = x + shoff * 72
   if Tabu
     {
     tmp = TabuProg
@@ -363,6 +379,44 @@ if !Rot
         draw_sprite(sSquareTabu,0,xt-j+i*72, y-j-100)
       }
   }
+}
+if TargetList != -1
+{
+//target list
+draw_set_alpha(1)
+draw_set_color(c_green)
+xt+= 10
+if !Rot &amp;&amp; !Tabu
+  {
+  var k = 0
+  if Target
+    {
+    tmp = TargetProg
+    while tmp &gt; 0
+      {
+      if tmp &gt;= 10
+        {
+        draw_set_alpha(1)
+        draw_text(xt-j+i*72, y-j-100, TargetList[| k])
+        }
+      else
+        {
+        draw_set_alpha(1/(10-tmp))
+        draw_text_transformed(xt-j+i*72, y-j-100, TargetList[| k],(5-tmp/2)+0.5,(5-tmp/2)+0.5,0)
+        }
+      tmp-= 10
+      i++
+      k++
+      }
+    }
+  else
+    for (k=0; k&lt;ds_list_size(TargetList); k++)
+      {
+      draw_text(xt-j+i*72, y-j-100, TargetList[| k])
+      i++
+      }
+  }
+}
 </string>
           </argument>
         </arguments>

@@ -25,49 +25,20 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//solo
-PSolo = instance_create(300,280,oButton)
-with(PSolo)
-  {
-  content = 'SINGLEPLAYER'
-  event_user(0)
-  }
-//multi
-PClient = instance_create(300,440,oButton)
-with(PClient)
-  {
-  content = 'MULTIPLAYER'
-  clickable = false
-  event_user(0)
-  }
-//how to play button (old var's name)
-PServer = instance_create(300,760,oButton)
-with(PServer)
-  {
-  content = 'HOW TO PLAY'
-  clickable = false
-  event_user(0)
-  }
-//htp hint
-if global.profile[?'PSGAMES'] == 0
-  {
-  HintArr = instance_create(0,0,oFirstLaunchArrow)
-  HintArr.pointer = PServer
-  with HintArr
-    {
-    xOff = 420
-    Rot = 180
-    event_user(0)
-    }
-  }
-else
-  HintArr = -1
+            <string>visible = false
+pointer = -1
+Rot = 0
+xOff = 0
+yOff = 0
+
+sc = 2
+animTick = 0
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="1" enumb="0">
+    <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -84,17 +55,14 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_destroy(PSolo,true)
-instance_destroy(PClient,true)
-instance_destroy(PServer,true)
-if HintArr != -1
-  instance_destroy(HintArr,true)
+            <string>animTick+= 0.12
+sc = 0.25*sin(animTick) + 2
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -111,14 +79,10 @@ if HintArr != -1
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if PSolo.clicked
-  {
-  p = instance_create(0,0,oGameSolo)
-  p.parent = parent
-  parent.ActiveMenuPtr = p
-  parent.Header = 'SINGLEPLAYER'
-  instance_destroy(self,true)
-  }
+            <string>//pointer defined
+x = pointer.x + xOff
+y = pointer.y + yOff
+visible = true
 </string>
           </argument>
         </arguments>
@@ -141,7 +105,7 @@ if HintArr != -1
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//draw_text(25,25,'NO')
+            <string>draw_sprite_ext(sArrow,0,x,y,sc,sc,Rot,c_white,1)
 </string>
           </argument>
         </arguments>

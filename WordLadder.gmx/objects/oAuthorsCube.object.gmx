@@ -77,11 +77,8 @@ aps = 1                     //alpha per square
   }
 if NewWord
   {
-  tmp = string_length(w1)
-  if NewWordX &lt; tmp*64
+  if NewWordX &lt; 576     //64 * 9 const MinLen
     NewWordX+= 16
-  else if NewWordX &gt; tmp*64
-    NewWordX-= 16
   else
     NewWord = false
   }
@@ -114,7 +111,7 @@ draw_set_valign(fa_center)
 draw_set_alpha(1)
 
 //fader
-draw_sprite_ext(sFadedCircle,0,x,y,MinLen*2,MinLen*2,0,0,1)
+draw_sprite_ext(sFadedCircle,0,x,y,MinLen*2.5,MinLen*2.5,0,0,1)
 
 //w1
 j = MinLen*32 - 32
@@ -199,7 +196,7 @@ while (draw_get_alpha() &gt; 0)
 if !Rot &amp;&amp; NewWord
   {
   draw_sprite_ext(sSquareFaded,0,x-j+NewWordX-32,y-j-32,0.25,0.25,RotDeg,c_black,1) 
-  draw_sprite_ext(sPixel,0,x-j+NewWordX+32,y-j-32,MinLen*65,64,0,c_black,1)
+  draw_sprite_ext(sPixel,0,x-j+NewWordX+32,y-j-32,tmp*64-NewWordX,64,0,c_black,1)
   }
 </string>
           </argument>

@@ -40,14 +40,14 @@ BStart = instance_create(800,1000, oButton)
 BStart.content = 'BEGIN'
 
 MaxLen = 9
-MinLen = 4  
+MinLen = 5
 for (i=1; i&lt;=MinLen; i++)
   {
   tmp = irandom_range(0,25) //todo CHECK LOCALE BLYA
   prevWord+= chr(funcChrDecode(tmp))
   }  
   
-Timer = 600 * MinLen
+Timer = 360 * MinLen
 Think = 0                   //one word clockwatch
 
 TabuList = ds_list_create()
@@ -72,7 +72,7 @@ TTPB.Req = 200                            //linear increase
 
 //PrgBarObjects
 TargetW = instance_create(0,15,oProgBar)
-TargetW.Req = 42        //words
+TargetW.Req = 159        //words
 TargetW.colorInner = c_green
 TargetW.colorOuter = c_green / 2
 TargetW.width = 30
@@ -80,7 +80,7 @@ TargetW.content = 'WORDS'
 TargetW.visible = true
 with TargetW {event_user(0)}
 TargetL = instance_create(0,50,oProgBar)
-TargetL.Req = 228       //letters
+TargetL.Req = 1111       //letters
 TargetL.colorInner = c_green
 TargetL.colorOuter = c_green / 2
 TargetL.width = 30
@@ -88,7 +88,7 @@ TargetL.content = 'LETTERS'
 TargetL.visible = true
 with TargetL {event_user(0)}
 TargetT = instance_create(0,85,oProgBar)
-TargetT.Req = 42        //antitabus
+TargetT.Req = 111        //antitabus
 TargetT.colorInner = c_green
 TargetT.colorOuter = c_green / 2
 TargetT.width = 30
@@ -103,16 +103,25 @@ TargetM.width = 30
 TargetM.content = 'LONGWORDS'
 TargetM.visible = true
 with TargetM {event_user(0)}
-TargetMLen = 10
+TargetMLen = 12
+TargetB = instance_create(0,155,oProgBar)
+TargetB.Req = 10        //extrabanneds
+TargetB.colorInner = c_green
+TargetB.colorOuter = c_green / 2
+TargetB.width = 30
+TargetB.content = '5 MORE BANNED'
+TargetB.visible = true
+with TargetB {event_user(0)}
 success = false
 
 //HARDMODE CORRECTION
-if global.profile[?'GM1'] &gt; 0
+if global.profile[?'GM2'] &gt; 0
   {
-  TargetW.Req = 100
-  TargetL.Req = 555
-  TargetT.Req = 66
-  TargetMLen = 11
+  TargetW.Req = 228
+  TargetL.Req = 1616
+  TargetT.Req = 146
+  TargetMLen = 13
+  TargetB.Req = 25
   }
 
 HintTimeUp = false
@@ -300,6 +309,7 @@ instance_destroy(TargetW,true)
 instance_destroy(TargetL,true)
 instance_destroy(TargetT,true)
 instance_destroy(TargetM,true)
+instance_destroy(TargetB,true)
 instance_destroy(self,true)
 </string>
           </argument>
@@ -572,7 +582,7 @@ exit
         Cube.Rot = true
         Cube.LengthErrTick = 0
         Cube.LengthErr = false
-        Timer+= (string_length(currWord)-1)*150 - Timer div 60
+        Timer+= (string_length(currWord)-1)*120 - Timer div 60
         currWord = string_char_at(currWord, string_length(currWord))
         //Target words
         TargetW.Prog++
@@ -583,6 +593,10 @@ exit
         TargetL.Anim = true
         TargetL.AnimXTarget = TargetL.Prog / TargetL.Req * 1600
         //TargetT.Prog+=   check code below
+        //target banneds
+        TargetB.Prog+= ds_list_size(TabuList) div 5
+        TargetB.Anim = true
+        TargetB.AnimXTarget = TargetB.Prog / TargetB.Req * 1600
         //target minlens
         if string_length(prevWord) &gt;= TargetMLen
           {
@@ -645,8 +659,8 @@ exit
                 {
                 case 2: case 3: DecPB.Req = 13; break;
                 case 4: case 5: DecPB.Req = 25; break;
-                case 6: DecPB.Req = 42; break;
-                case 7: DecPB.Req = 66; break;
+                case 6: case 7: DecPB.Req = 42; break;
+                case 8: case 9: DecPB.Req = 66; break;
                 default: DecPB.Req = 9000
                 }
               }
@@ -662,8 +676,8 @@ exit
           TabuQtyPB.Prog = 0
           switch TabuQty
             {
-            case 1: TabuQtyPB.Req = 10; break;
-            case 2: case 3: TabuQtyPB.Req = 22; break;
+            case 1: TabuQtyPB.Req = 11; break;
+            case 2: case 3: TabuQtyPB.Req = 25; break;
             case 4: case 5: TabuQtyPB.Req = 42; break;
             case 6: TabuQtyPB.Req = 66; break;
             case 7: TabuQtyPB.Req = 98; break;
@@ -683,6 +697,15 @@ exit
             TargetT.AnimXTarget = TargetT.Prog / TargetT.Req * 1600
             }
           }
+        //Tabu refresh
+        ds_list_clear(TabuList)
+        for (i=1; i&lt;=TabuQty; i++)
+          {
+          tmp = funcNewTabuLetter(4 + TabuQtyPB.Prog / 20)      //4% chance of vowel tabu
+          if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
+              ds_list_add(TabuList,tmp)
+          }
+        Stat.banned+= ds_list_size(TabuList)
         //target letters refresh
         TLProg++
         if TLProg &gt;= TLReq
@@ -701,18 +724,9 @@ exit
           arr[3] = 1
           var c = funcNewTargetLetter(arr);
           if ds_list_find_index(TargetList, c) == -1
-            ds_list_add(TargetList, c)
+            if ds_list_find_index(TabuList,c) == -1
+              ds_list_add(TargetList, c)
           }
-        //Tabu refresh
-        ds_list_clear(TabuList)
-        for (i=1; i&lt;=TabuQty; i++)
-          {
-          tmp = funcNewTabuLetter(2 + TabuQtyPB.Prog / 10)      //2% chance of vowel tabu
-          if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
-            if ds_list_find_index(TargetList, tmp) == -1
-              ds_list_add(TabuList,tmp)
-          }
-        Stat.banned+= ds_list_size(TabuList)
         //HintRefresh
         HintTimeUp = false
         HintTooLong = false
@@ -725,7 +739,8 @@ exit
         if (TargetW.Prog &gt;= TargetW.Req) &amp;&amp;
            (TargetL.Prog &gt;= TargetL.Req) &amp;&amp;
            (TargetT.Prog &gt;= TargetT.Req) &amp;&amp;
-           (TargetM.Prog &gt;= TargetM.Req)
+           (TargetM.Prog &gt;= TargetM.Req) &amp;&amp;
+           (TargetB.Prog &gt;= TargetB.Req)
            {
            success = true
            event_user(0)

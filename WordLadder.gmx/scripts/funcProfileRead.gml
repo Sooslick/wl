@@ -93,7 +93,7 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
     file_bin_close(f)
     }
 global.profile[?'PNETID'] = -1
-global.profile[?'PNAME'] = 'SAVE CORRUPTED'
+global.profile[?'PNAME'] = global.config[?'ProfileFile']
 global.profile[?'PLOCALE'] = 0
     
 global.profile[?'PSINGAMETIME'] = 0

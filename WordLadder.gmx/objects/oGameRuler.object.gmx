@@ -29,7 +29,7 @@
 tc.ingame = true 
    
 loaded = false
-loadFade = 0.5
+loadFade = 0.75
 loadFading = true
 //dictionary data struct
 //TODO: locale check
@@ -40,17 +40,32 @@ RuleTick = 0
 FlashX = -10000
 FlashSurf = surface_create(1200,800)
 drawStr = 'LOADING'
+RuleStr = 'Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'
+TargetStr = ''
+BannedStr = "BANNED LETTERS##When you write the word, check it for banned letters! You can't use them.#These letters are randomly chosen for each word and are displayed on the screen!"
+TimerStr = "TIMER##Your time is limited! When time is out, game ends.#You recieve additional time after successfully typing the word and get an instant penalty after failing to do so!"
+BonusStr = "GAME PROGRESS##You'll be able to use special abilities during the game. It may be a simple hint, word's length decrease or ability to use one of banned letters!#Watch the counters and keep them in mind!"
 switch (global.GameType)
   {
   case 1:
-    RuleStr = 'SIMPLE RULES##Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'; break
+    RuleStr = 'SIMPLE RULES##' + RuleStr; 
+    TargetStr = "SIMPLE RULES##To win the game, you need to complete a set of tasks; their progress bars can be seen on top of screen.#You're going to see green letters during game process. Use them to make words and progress!"
+    break
+  case 2:
+    RuleStr = 'COMPLICATED RULES##' + RuleStr
+    TargetStr = "COMPLICATED RULES##To win the game, you need to complete a set of tasks; their progress bars can be seen on top of screen.#You're going to see green letters during game process. Use them to make words and progress!"
+    break
   case 3:
-    RuleStr = 'ENDLESS MODE##Type words in squares on screen. Each word begins with last letter of previous word and cannot be shorter than previous word.#Word cannot contain banned letters.'; break
-  }
-TargetStr = "GREEN LETTERS##You're going to see green letters during game process. Use them to make words and progress!"
-BannedStr = "BANNED LETTERS##When you write the word, check it for banned letters! You can't use them.#These letters are randomly chosen for each word and are displayed on the screen!"
-TimerStr = "TIMER##Your time is limited! When time is out, game ends.#You recieve additional time after successfully typing the word and get an instant penalty after failing to do so!"
-BonusStr = "GAME PROGRESS##Check a progress bar on top of the screen! When it's full, the game grants you special abilities.#It may be a simple hint, word's length decrease or ability to use one of banned letters!"
+    RuleStr = 'ENDLESS MODE##' + RuleStr
+    TargetStr = 'ENDLESS MODE##You have no set restrictions and goals in this mode.#Type in words, watch the timer and try to score the most points!'
+    break
+  case 4:
+    RuleStr = 'CUSTOM GAME##' + RuleStr
+    TargetStr = "CUSTOM GAME##In this mode, you only submit to your own set restrictions.#Type in words, watch the timer and try to score the most points!"
+    break
+    }
+StrState = 0
+MouseLeft = false
 </string>
           </argument>
         </arguments>
@@ -80,17 +95,35 @@ if FlashX &gt; 20000
 if (RuleTick == 5) || (RuleTick == 10) || (RuleTick == 15)
   drawStr+= '.'
 else if RuleTick == 20
+  {
   drawStr = RuleStr
+  StrState = 1
+  }
 else if RuleTick == 440
+  {
   drawStr = TargetStr
+  StrState = 2
+  }
 else if RuleTick == 740
+  {
   drawStr = BannedStr
+  StrState = 3
+  }
 else if RuleTick == 1040
+  {
   drawStr = TimerStr
+  StrState = 4
+  }
 else if RuleTick == 1340
+  {
   drawStr = BonusStr
+  StrState = 5
+  }
 else if RuleTick == 1640
+  {
   RuleTick = 19
+  StrState = 0
+  }
 if loaded &amp;&amp; loadFading
   if GR.prepared
     {
@@ -99,6 +132,95 @@ if loaded &amp;&amp; loadFading
       {
       loadFade = 0
       loadFading = false
+      }
+    }
+if mouse_x &lt; 800
+  MouseLeft = true
+else
+  MouseLeft = false
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="56">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if !loaded || loadFading
+  if !MouseLeft
+    {
+    switch StrState
+      {
+      case 1:
+        RuleTick = 440
+        drawStr = TargetStr
+        StrState = 2
+        break
+      case 2:
+        RuleTick = 740
+        drawStr = BannedStr
+        StrState = 3
+        break
+      case 3:
+        RuleTick = 1040
+        drawStr = TimerStr
+        StrState = 4
+        break
+      case 4:
+        RuleTick = 1340
+        drawStr = BonusStr
+        StrState = 5
+        break
+      case 5:
+        RuleTick = 20
+        drawStr = RuleStr
+        StrState = 1
+        break
+      }
+    }
+  else
+    {
+    switch StrState
+      {
+      case 1:
+        RuleTick = 1340
+        drawStr = BonusStr
+        StrState = 5
+        break
+      case 2:
+        RuleTick = 20
+        drawStr = RuleStr
+        StrState = 1
+        break
+      case 3:
+        RuleTick = 440
+        drawStr = TargetStr
+        StrState = 2
+        break
+      case 4:
+        RuleTick = 740
+        drawStr = BannedStr
+        StrState = 3
+        break
+      case 5:
+        RuleTick = 1040
+        drawStr = TimerStr
+        StrState = 4
+        break
       }
     }
 </string>
@@ -150,23 +272,22 @@ TransitionEvent = 0
           <argument>
             <kind>1</kind>
             <string>//DictLoaded event
+loaded = true
+if RuleTick &lt; 19
+      RuleTick = 19
 switch (global.GameType)                    //GR: GameRuler
   {
   case 1:
-    loaded = true
     GR = instance_create(0,0,oSimpleGameRuler)
     GR.parent = id
-    if RuleTick &lt; 19
-      RuleTick = 19
     break
   case 2:
-    //oHard
+    GR = instance_create(0,0,oHardGameRuler)
+    GR.parent = id
+    break
   case 3:
-    loaded = true
     GR = instance_create(0,0,oInfGameRuler)
     GR.parent = id
-    if RuleTick &lt; 19
-      RuleTick = 19
     break
   case 4:
     //oCustom
@@ -201,31 +322,10 @@ switch (global.GameType)                    //GR: GameRuler
           <argument>
             <kind>1</kind>
             <string>draw_set_color(c_white)
-if !loaded
-  {
-  draw_set_alpha(0.9)
-  draw_set_font(fImpact64)
-  draw_set_halign(fa_left)
-  draw_set_valign(fa_top)
-  if !surface_exists(FlashSurf)
-    draw_text_ext(5,37,drawStr,72,1111)
-  else
-    {
-    surface_set_target(FlashSurf)
-    draw_clear_alpha(0,0)
-    draw_sprite_ext(sSquareFaded,0,512,128,2,0.3,180,c_white,0.8)
-    draw_text_ext(5,37,drawStr,72,1111)
-    draw_set_alpha(1)
-    draw_set_blend_mode_ext(bm_dest_alpha,bm_one)
-    draw_sprite_ext(sFlash,0,FlashX,0,6,6,0,2105376,1)
-    draw_set_blend_mode(bm_normal)
-    surface_reset_target()
-    draw_surface(FlashSurf,0,0)
-    }
-  }
-else if !GR.prepared &amp;&amp; loadFading
-  {
+if loaded &amp;&amp; loadFading
   draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,loadFade)
+if !loaded || loadFading
+  {
   draw_set_alpha(0.9)
   draw_set_font(fImpact64)
   draw_set_halign(fa_left)
@@ -238,6 +338,21 @@ else if !GR.prepared &amp;&amp; loadFading
     draw_clear_alpha(0,0)
     draw_sprite_ext(sSquareFaded,0,512,128,2,0.3,180,c_white,0.8)
     draw_text_ext(5,37,drawStr,72,1111)
+    for (var i=1; i&lt;=5; i++)
+      {
+      if i == StrState
+        draw_set_alpha(1)
+      else
+        draw_set_alpha(0.5)
+      draw_circle(100+i*35,760,15,false)
+      }
+    var op = 0;
+    if MouseLeft
+      op = 1
+    else
+      op = 0.5
+    draw_sprite_ext(sArrowScroll,0,98,760,1,1,180,c_white,op)
+    draw_sprite_ext(sArrowScroll,0,312,760,1,1,0,c_white,1.5-op)
     draw_set_alpha(1)
     draw_set_blend_mode_ext(bm_dest_alpha,bm_one)
     draw_sprite_ext(sFlash,0,FlashX,0,6,6,0,2105376,1)
