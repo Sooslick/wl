@@ -290,7 +290,9 @@ switch (global.GameType)                    //GR: GameRuler
     GR.parent = id
     break
   case 4:
-    //oCustom
+    GR = instance_create(0,0,oCustomGameRuler)
+    GR.parent = id
+    break
   case 11:
     //cli-serv
   case 12:
@@ -324,7 +326,7 @@ switch (global.GameType)                    //GR: GameRuler
             <string>draw_set_color(c_white)
 if loaded &amp;&amp; loadFading
   draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,loadFade)
-if !loaded || loadFading
+if !loaded || loadFade &gt; 0.749
   {
   draw_set_alpha(0.9)
   draw_set_font(fImpact64)
@@ -344,15 +346,15 @@ if !loaded || loadFading
         draw_set_alpha(1)
       else
         draw_set_alpha(0.5)
-      draw_circle(100+i*35,760,15,false)
+      draw_circle(680+i*40,760,15,false)
       }
     var op = 0;
     if MouseLeft
       op = 1
     else
       op = 0.5
-    draw_sprite_ext(sArrowScroll,0,98,760,1,1,180,c_white,op)
-    draw_sprite_ext(sArrowScroll,0,312,760,1,1,0,c_white,1.5-op)
+    draw_sprite_ext(sArrowScroll,0,660,760,1,1,180,c_white,op)
+    draw_sprite_ext(sArrowScroll,0,940,760,1,1,0,c_white,1.5-op)
     draw_set_alpha(1)
     draw_set_blend_mode_ext(bm_dest_alpha,bm_one)
     draw_sprite_ext(sFlash,0,FlashX,0,6,6,0,2105376,1)

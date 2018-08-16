@@ -76,7 +76,7 @@ else
   hover = 0
   hoverElement = -1
   for (i=0; i&lt;=ds_map_size(arr); i++)
-    if funcCheckGuiHover((x-256*dsc), (y+i*128-64*dsc), (x+256*dsc), (y+i*128+64*dsc))   //checking vpos 4 every line
+    if funcCheckGuiHover((x-256*dsc), (y+i*128*dsc-64*dsc), (x+256*dsc), (y+i*128*dsc+64*dsc))   //checking vpos 4 every line
       {
       hover = 1       
       hoverElement = i-1
@@ -163,30 +163,41 @@ draw_set_halign(fa_left)
 draw_set_valign(fa_center)
 draw_set_alpha(1)
 
+var tsc;
+
 //MAIN DRAW BUTTON  
 if !active
   {
+  tsc = (366 / string_width(val))
+  if tsc &gt; 1 tsc = 1
+  tsc*= dsc
   draw_set_alpha(hover+0.66)
   draw_sprite_ext(sList,hover,x,y,dsc,dsc,0,c_white,1)      //if list closed
-  draw_text_transformed((x-240),y,val,dsc,dsc,0)
+  draw_text_transformed((x-240*dsc),y,val,tsc,dsc,0)
   }
 else
   {
-  draw_sprite_ext(sList,2    ,x,y,dsc,dsc,0,c_white,1)      //if list opened
-  draw_text_transformed((x-240),y,val,dsc,dsc,0)
-  for (i=0;i&lt;ds_map_size(arr);i++)
+  tsc = 366 / string_width(val)
+  if tsc &gt; 1 tsc = 1
+  tsc*= dsc
+  draw_sprite_ext(sList,2,x,y,dsc,dsc,0,c_white,1)      //if list opened
+  draw_text_transformed((x-240*dsc),y,val,tsc,dsc,0)
+  for (i=0; i&lt;ds_map_size(arr); i++)
     {
     if hoverElement==i    
        {
        draw_set_alpha(1)                                          //list positions
-       draw_sprite_ext(sList,4,x,(y+128+i*128),dsc,dsc,0,c_white,1)
+       draw_sprite_ext(sList,4,x,(y+128*dsc+i*128*dsc),dsc,dsc,0,c_white,1)
        }
     else
        {
        draw_set_alpha(0.66)
-       draw_sprite_ext(sList,3,x,(y+128+i*128),dsc,dsc,0,c_white,1)
+       draw_sprite_ext(sList,3,x,(y+128*dsc+i*128*dsc),dsc,dsc,0,c_white,1)
        }
-    draw_text_transformed((x-240),(y+128+i*128),arr[?i],dsc,dsc,0)
+    tsc = 490 / string_width(arr[?i])
+    if tsc &gt; 1 tsc = 1
+    tsc*= dsc
+    draw_text_transformed((x-240*dsc),(y+128*dsc+i*128*dsc),arr[?i],tsc,dsc,0)
     }
   }
 </string>

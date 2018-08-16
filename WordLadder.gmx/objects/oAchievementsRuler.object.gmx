@@ -25,10 +25,46 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>bReset = instance_create(300,700,oButton)
+            <string>bm10 = instance_create(300,280,oButton)
+bm10.content = 'SIMPLE'
+bm10.dsc = 0.5
+bm10.tsc = 0.5
+bm11 = instance_create(300,350,oButton)
+bm11.content = 'LAST SIMPLE'
+bm11.dsc = 0.5
+bm11.tsc = 0.5
+with bm11 {event_user(0)}
+
+bm20 = instance_create(300,420,oButton)
+bm20.content = 'ADVANCED'
+bm20.dsc = 0.5
+bm20.tsc = 0.5
+bm21 = instance_create(300,490,oButton)
+bm21.content = 'LAST ADVANCED'
+bm21.dsc = 0.5
+bm21.tsc = 0.5
+with bm21 {event_user(0)}
+
+bm30 = instance_create(300,560,oButton)
+bm30.content = 'ENDLESS'
+bm30.dsc = 0.5
+bm30.tsc = 0.5
+bm31 = instance_create(300,630,oButton)
+bm31.content = 'LAST ENDLESS'
+bm31.dsc = 0.5
+bm31.tsc = 0.5
+with bm31 {event_user(0)}
+
+bm100 = instance_create(300,700,oButton)
+bm100.content = 'TODO'
+bm100.dsc = 0.5
+bm100.tsc = 0.5
+bm100.clickable = false
+
+bReset = instance_create(300,850,oButton)
 bReset.content = 'RESET'
 bAlert = 0
-bBack = instance_create(300,1000,oButton)
+bBack = instance_create(300,1020,oButton)
 bBack.content = 'BACK'
 
 stats = instance_create(60,100,oStatsDrawer)
@@ -57,6 +93,13 @@ stats = instance_create(60,100,oStatsDrawer)
             <string>instance_destroy(stats)
 instance_destroy(bBack)
 instance_destroy(bReset)
+instance_destroy(bm10)
+instance_destroy(bm11)
+instance_destroy(bm20)
+instance_destroy(bm21)
+instance_destroy(bm30)
+instance_destroy(bm31)
+instance_destroy(bm100)
 if bAlert&lt;&gt;0
   instance_destroy(bAlert)
 </string>
@@ -82,7 +125,38 @@ if bAlert&lt;&gt;0
           <argument>
             <kind>1</kind>
             <string>//check buttons pressed
-if bReset.clicked
+if bm10.clicked
+  {
+  bm10.clicked = false
+  stats.Selected = 2
+  }
+else if bm11.clicked
+  {
+  bm11.clicked = false
+  stats.Selected = 3
+  }
+else if bm20.clicked
+  {
+  bm20.clicked = false
+  stats.Selected = 4
+  }
+else if bm21.clicked
+  {
+  bm21.clicked = false
+  stats.Selected = 5
+  }
+else if bm30.clicked
+  {
+  bm30.clicked = false
+  stats.Selected = 6
+  }
+else if bm31.clicked
+  {
+  bm31.clicked = false
+  stats.Selected = 7
+  }
+//todo others
+else if bReset.clicked
   {
   bReset.clicked = false
   bReset.clickable = false

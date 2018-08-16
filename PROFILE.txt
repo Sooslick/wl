@@ -17,8 +17,8 @@ N	Name String
 4	Total games ended
 4    	Total servers joined
 4	Total stat resets
-1	Simple Passed		//
-1	Complicated Passed	//
+1	Simple Passed
+1	Complicated Passed
 
  SPECIFIED STAT
 1	M = Sections count
@@ -42,7 +42,8 @@ N	Name String
 4	short words
 4	wrong words
 4	repeated words
-4	float average word length
+4	total score			//
+4	best score			//
 1	K = Length Maps
 
  K x LENGTH MAPS

@@ -32,7 +32,7 @@ P1.content = 'SIMPLE'
 P2 = instance_create(300,440,oButton)
 with(P2)
   {
-  content = 'COMPLICATED'
+  content = 'ADVANCED'
   if global.profile[?"GM1"] == 0
     clickable = false
   event_user(0)
@@ -43,8 +43,7 @@ P3.content = 'ENDLESS'
 
 PCustom = instance_create(300,800,oButton)
 PCustom.content = 'CUSTOM GAME'
-PCustom.font = fImpact64
-PCustom.clickable = false
+with PCustom {event_user(0)}
 
 PBack = instance_create(300,1000,oButton)
 PBack.content = 'BACK'
@@ -112,6 +111,14 @@ else if P3.clicked
   global.GameType = 3
   action_another_room(rGame)
   }
+else if PCustom.clicked
+  {
+  p = instance_create(0,0,oCustomRuler)
+  p.parent = parent
+  parent.ActiveMenuPtr = p
+  parent.Header = 'CUSTOM GAME SETTINGS'
+  instance_destroy(self,true)
+  }
 else if PBack.clicked
   {
   p = instance_create(0,0,oNewGameRuler)
@@ -148,13 +155,13 @@ draw_set_font(fImpact64)
 draw_set_halign(fa_left)
 draw_set_valign(fa_top)
 if P1.hover &gt; 0
-  draw_text_ext(600,280,'simple',72,800)
+  draw_text_ext(600,250,'Type the words in squares and complete a simple task!',72,900)
 else if P2.hover &gt; 0
-  draw_text_ext(600,280,'rules text rules text text text rules rules test text',72,800)
+  draw_text_ext(600,250,'Check the capacity of your vocabulary and complete the same task again!',72,900)
 else if P3.hover &gt; 0
-  draw_text_ext(600,280,'the game is never the game is never the game is loading the game is',72,800)
-else if PCustom &gt; 0
-  draw_text_ext(600,280,'free skins za vashi donaty',72,800)
+  draw_text_ext(600,250,'How long will your vocabulary last? Try to score the most points!',72,900)
+else if PCustom.hover &gt; 0
+  draw_text_ext(600,250,'Play a customized game!',72,900)
 </string>
           </argument>
         </arguments>

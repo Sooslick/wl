@@ -185,7 +185,10 @@ else if hover
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//content set func, called after set content string
+            <string>//debug-costyl
+draw_set_font(font)
+
+//content set func, called after set content string
 tsc = 490 / string_width(content)
 if tsc &gt; 1
   tsc = 1       //reset scale if it not necessary

@@ -45,6 +45,8 @@ prevs = 0
 lens = 0
 avg = 0
 
+sc = 1
+
 success = false
 
 //tech active swithes
@@ -92,7 +94,7 @@ LenWord = ''
             <string>if active
   {
   ShowPageTick++
-  if ShowPageTick == 155
+  if ShowPageTick == 180
     {
     ShowPage++
     event_user(1)
@@ -166,7 +168,10 @@ else
     action_another_room(rMenu)
   else
     {
-    ShowPage++
+    if mouse_x &gt; 800
+      ShowPage++
+    else
+      ShowPage--
     ShowPageTick = 0
     event_user(1)
     }
@@ -228,6 +233,10 @@ LenCurr[?ord(string_char_at(LenWord,1))]++
           <argument>
             <kind>1</kind>
             <string>//ShowPage increment
+if ShowPage &lt; 0
+  ShowPage = 0
+else if ShowPage &gt; 5
+  ShowPage = 0
 switch ShowPage
   {
   case 1:
@@ -237,6 +246,7 @@ switch ShowPage
     s+= '#BACKSPACED: ' + string(lettersb)
     s+= '#BANNED: ' + string(banned)
     s+= '#INPUT ATTEMPTS: ' + string(attempts)
+    sc = 1
     break
   case 2:
     s = 'SPECIAL ABILITIES#'
@@ -245,6 +255,7 @@ switch ShowPage
     s+= '#SHIFTS USED: ' + string(shiftsu)
     s+= '#UNBANS ACQUIRED: ' + string(unbansa)
     s+= '#UNBANS USED: ' + string(unbansu)
+    sc = 1
     break
   case 3:
     s = 'WRONG WORDS#'
@@ -252,6 +263,53 @@ switch ShowPage
     s+= '#REPEATS: ' + string(prevs)
     s+= '#TABOOS: ' + string(tabus)
     s+= '#TOOSHORTS: ' + string(lens)
+    sc = 1
+    break
+  case 4:
+    s = "WORD'S LENGTH#"
+    var lines = 2
+    var src = ds_map_find_first(LenMap);      //src = key
+    var dest;                                 //dest = map
+    var qty;
+    while (!is_undefined(src))
+      {
+      qty = 0;
+      dest = LenMap[?src]
+      for(i=0; i&lt;26; i++)
+        qty+= dest[?funcChrDecode(i)]
+      s+= '#' + string(src) + ': ' + string(qty)
+      lines++
+      src = ds_map_find_next(LenMap,src)
+      }
+    if lines &gt; 6
+      sc = 6 / lines
+    else
+      sc = 1
+    break
+  case 5:
+    s = "WORD THAT START WITH#"
+    var pos = 0;
+    for(i=0; i&lt;26; i++)
+      {
+      var src = ds_map_find_first(LenMap);
+      var dest;
+      var qty = 0;
+      while (!is_undefined(src))
+        {
+        dest = LenMap[?src]
+        qty+= dest[?funcChrDecode(i)]
+        src = ds_map_find_next(LenMap,src)
+        }
+      if pos == 0
+        s+= '#'
+      else
+        s+= ' | '
+      s+= chr(funcChrDecode(i)) + ': ' + string(qty)
+      pos++
+      if pos &gt; 2
+        pos = 0
+      }
+    sc = 0.6
     break
   default:
     s = 'OVERALL RATE#'
@@ -259,6 +317,7 @@ switch ShowPage
     s+= '#ACCEPTED WORDS: ' + string(words)
     s+= '#TOTAL LETTERS TYPED: ' + string(letters)
     s+= '#SCORE: ' + string(pp)
+    sc = 1
   }
 </string>
           </argument>
@@ -455,13 +514,28 @@ else
   draw_set_halign(fa_left)
   draw_set_valign(fa_center)
   
-  draw_text(100,600,s)
+  draw_text_transformed(100,600,s,sc,sc,0)
   if success
     {
     draw_set_font(fImpact96)
     draw_set_halign(fa_center)
     draw_text(800,100,'SUCCESS')
     }
+  for (var i=0; i&lt;=5; i++)
+      {
+      if i == ShowPage
+        draw_set_alpha(1)
+      else
+        draw_set_alpha(0.5)
+      draw_circle(680+i*40,990,15,false)
+      }
+    var op = 0;
+    if mouse_x &lt; 800
+      op = 1
+    else
+      op = 0.5
+    draw_sprite_ext(sArrowScroll,0,640,990,1,1,180,c_white,op)
+    draw_sprite_ext(sArrowScroll,0,920,990,1,1,0,c_white,1.5-op)
   }
 else
   {

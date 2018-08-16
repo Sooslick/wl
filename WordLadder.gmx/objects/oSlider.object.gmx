@@ -128,8 +128,8 @@ else
             <kind>1</kind>
             <string>if clicked
   {
-  currval = ((window_mouse_get_x()-global.DRAW_HOFF) / global.DRAW_SCALE  - (minx*dsc)) /
-  ((maxx*dsc) - (minx*dsc)) * (maxval - minval)
+  currval = ((window_mouse_get_x()-global.DRAW_HOFF) / global.DRAW_SCALE  - (minx)) /
+  (maxx - minx) * (maxval - minval)
   if currval &lt; minval
     currval = minval
   else if currval &gt; maxval
@@ -157,11 +157,17 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//content set func, called after set content string
+            <string>//debug-costyl
+draw_set_font(font)
+
+//content set func, called after set content string
 tsc = 512 / string_width(content)
 if tsc &gt; 1
   tsc = 1       //reset scale if it not necessary
 tsc*= dsc   //draw scalability
+
+maxx = x + 224*dsc
+minx = x - 224*dsc
 </string>
           </argument>
         </arguments>
@@ -190,9 +196,11 @@ draw_set_color(c_white)
 draw_set_halign(fa_center)
 draw_set_valign(fa_center)
 
+var posx = (currval-minval)/(maxval-minval) * (maxx-minx) + minx
+
 //DRAW SLIDER RECT
 draw_set_alpha(0.8)
-draw_rectangle((x-256)*dsc,(y-64)*dsc,((currval-minval)/(maxval-minval)*(maxx-minx)+minx)*dsc,(y+64)*dsc,false)
+draw_rectangle((x-256*dsc),(y-64*dsc),posx,(y+64*dsc),false)
 
 //MAIN DRAW BUTTON  
 draw_set_alpha(1)
@@ -200,7 +208,7 @@ draw_sprite_ext(sButton,hover,x,y,dsc,dsc,0,c_white,1)
 draw_set_alpha(a)
 draw_text_transformed(x,y,content,tsc,dsc,0)
 draw_set_alpha(1)
-draw_sprite_ext(sSlider,hover,(currval-minval)/(maxval-minval)*(maxx-minx)+minx,y,dsc,dsc,0,c_white,1)
+draw_sprite_ext(sSlider,hover,posx,y,dsc,dsc,0,c_white,1)
 </string>
           </argument>
         </arguments>
@@ -223,7 +231,7 @@ draw_sprite_ext(sSlider,hover,(currval-minval)/(maxval-minval)*(maxx-minx)+minx,
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>// empty line for disable self-drawing
+            <string>//empty line to override default drawevent
 </string>
           </argument>
         </arguments>

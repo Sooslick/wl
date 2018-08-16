@@ -97,20 +97,25 @@
     <font>fonts\fCube</font>
   </fonts>
   <objects name="objects">
-    <object>objects\oLogo</object>
-    <object>objects\oButton</object>
-    <object>objects\oSlider</object>
-    <object>objects\oCheckBox</object>
-    <object>objects\oConfirmButton</object>
-    <object>objects\oForm</object>
-    <object>objects\oList</object>
-    <object>objects\oTimeCounter</object>
-    <object>objects\oSquareTransition</object>
-    <object>objects\oStatsDrawer</object>
+    <objects name="GameGeneralGroup">
+      <object>objects\oDictLoader</object>
+      <object>objects\oGameRuler</object>
+      <object>objects\oInfGameRuler</object>
+      <object>objects\oSimpleGameRuler</object>
+      <object>objects\oHardGameRuler</object>
+      <object>objects\oCustomGameRuler</object>
+      <object>objects\oGameCube</object>
+      <object>objects\oGameStatCounter</object>
+      <object>objects\oSquareHint</object>
+      <object>objects\oProgBar</object>
+    </objects>
     <objects name="MainMenuGroup">
       <object>objects\oAchievementsRuler</object>
+      <object>objects\oAuthorsCube</object>
       <object>objects\oAuthorsRuler</object>
       <object>objects\oEasterEggRuler</object>
+      <object>objects\oFirstLaunchArrow</object>
+      <object>objects\oGameSolo</object>
       <object>objects\oMenuRuler</object>
       <object>objects\oNewGameRuler</object>
       <object>objects\oOptionsRuler</object>
@@ -120,23 +125,20 @@
       <object>objects\oProfileSelector</object>
       <object>objects\oSquare</object>
       <object>objects\oSquareRuler</object>
-      <object>objects\oAuthorsCube</object>
-      <object>objects\oGameSolo</object>
-      <object>objects\oFirstLaunchArrow</object>
+      <object>objects\oStatsDrawer</object>
+      <object>objects\oCustomRuler</object>
     </objects>
-    <objects name="GameGeneralGroup">
-      <object>objects\oDictLoader</object>
-      <object>objects\oGameRuler</object>
-      <object>objects\oInfGameRuler</object>
-      <object>objects\oSimpleGameRuler</object>
-      <object>objects\oHardGameRuler</object>
-      <object>objects\oGameCube</object>
-      <object>objects\oGameStatCounter</object>
-      <object>objects\oSquareHint</object>
-      <object>objects\oProgBar</object>
-    </objects>
-    <object>objects\oDevMenu</object>
+    <object>objects\oLogo</object>
+    <object>objects\oButton</object>
+    <object>objects\oCheckBox</object>
+    <object>objects\oConfirmButton</object>
+    <object>objects\oForm</object>
+    <object>objects\oList</object>
+    <object>objects\oSlider</object>
+    <object>objects\oSquareTransition</object>
+    <object>objects\oTimeCounter</object>
     <object>objects\oDevDictRd</object>
+    <object>objects\oDevMenu</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>

@@ -73,34 +73,26 @@ TTPB.Req = 200                            //linear increase
 //PrgBarObjects
 TargetW = instance_create(0,15,oProgBar)
 TargetW.Req = 42        //words
-TargetW.colorInner = c_green
-TargetW.colorOuter = c_green / 2
 TargetW.width = 30
 TargetW.content = 'WORDS'
 TargetW.visible = true
 with TargetW {event_user(0)}
 TargetL = instance_create(0,50,oProgBar)
 TargetL.Req = 228       //letters
-TargetL.colorInner = c_green
-TargetL.colorOuter = c_green / 2
 TargetL.width = 30
 TargetL.content = 'LETTERS'
 TargetL.visible = true
 with TargetL {event_user(0)}
 TargetT = instance_create(0,85,oProgBar)
 TargetT.Req = 42        //antitabus
-TargetT.colorInner = c_green
-TargetT.colorOuter = c_green / 2
 TargetT.width = 30
-TargetT.content = 'GREENLETTERS'
+TargetT.content = 'GREEN LETTERS'
 TargetT.visible = true
 with TargetT {event_user(0)}
 TargetM = instance_create(0,120,oProgBar)
 TargetM.Req = 10        //minlens
-TargetM.colorInner = c_green
-TargetM.colorOuter = c_green / 2
 TargetM.width = 30
-TargetM.content = 'LONGWORDS'
+TargetM.content = 'LONG WORDS'
 TargetM.visible = true
 with TargetM {event_user(0)}
 TargetMLen = 10
@@ -148,7 +140,7 @@ Cube.TargetList = TargetList
 Stat = instance_create(0,0,oGameStatCounter)
 Stat.parent = id
 Stat.Cube = Cube
-Stat.GameTypeID = 10  //ENDLESS
+Stat.GameTypeID = 10  //SIMPLE
 </string>
           </argument>
         </arguments>
@@ -679,6 +671,7 @@ exit
           if cnt &gt; 0
             {
             TargetT.Prog+= cnt
+            Stat.pp+= ceil(cnt*words / 10)
             TargetT.Anim = true
             TargetT.AnimXTarget = TargetT.Prog / TargetT.Req * 1600
             }

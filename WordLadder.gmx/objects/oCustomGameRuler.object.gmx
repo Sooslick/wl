@@ -39,80 +39,120 @@ prevAnimTick = 0
 BStart = instance_create(800,1000, oButton)
 BStart.content = 'BEGIN'
 
+//startgame params from global.custom
+switch global.custom[?'Banned']
+  {
+  case 0:
+    BanArr[0] = 3
+    BanArr[1] = 10
+    BanArr[2] = 42
+    BanArr[3] = 42
+    BanArr[4] = 66
+    BanArr[5] = 100
+    BanArr[6] = 228
+    BanArr[7] = 9000
+    BanArr[8] = 999999999
+    break
+  case 1:
+    BanArr[0] = 3
+    BanArr[1] = 10
+    BanArr[2] = 24
+    BanArr[3] = 42
+    BanArr[4] = 42
+    BanArr[5] = 66
+    BanArr[6] = 100
+    BanArr[7] = 100
+    BanArr[8] = 999999999
+    break
+  case 2:
+    BanArr[0] = 3
+    BanArr[1] = 10
+    BanArr[2] = 22
+    BanArr[3] = 35
+    BanArr[4] = 42
+    BanArr[5] = 66
+    BanArr[6] = 84
+    BanArr[7] = 98
+    BanArr[8] = 999999999
+    break
+  }
+Vowel = global.custom[?'Vowels']
+switch global.custom[?'Dec']
+  {
+  case 0:
+    DecArr[0] = 3
+    DecArr[1] = 10
+    DecArr[2] = 24
+    DecArr[3] = 42
+    DecArr[4] = 66
+    DecArr[5] = 98
+    DecArr[6] = 100
+    break
+  case 1:
+    DecArr[0] = 10
+    DecArr[1] = 42
+    DecArr[2] = 42
+    DecArr[3] = 66
+    DecArr[4] = 66
+    DecArr[5] = 98
+    DecArr[6] = 228
+    break
+  case 2:
+    DecArr[0] = 9000
+    DecArr[1] = 9999
+    DecArr[2] = 99999
+    DecArr[3] = 999999
+    DecArr[4] = 9999999
+    DecArr[5] = 99999999
+    DecArr[6] = 999999999
+    break
+  }
+EnableHints = global.custom[?'Hints']
+SecPerLetter = global.custom[?'Sec'] * 30
+switch global.custom[?'StartTimer']
+  {
+  case -1: Timer = 150 * global.custom[?'StartLen']; break;
+  case 0: Timer = 900; break;
+  case 1: Timer = 1200; break;
+  case 2: Timer = 1500; break;
+  case 3: Timer = 1800; break;
+  }
+
 MaxLen = 9
-MinLen = 5
+MinLen = global.custom[?'StartLen']
 for (i=1; i&lt;=MinLen; i++)
   {
   tmp = irandom_range(0,25) //todo CHECK LOCALE BLYA
   prevWord+= chr(funcChrDecode(tmp))
   }  
   
-Timer = 360 * MinLen
 Think = 0                   //one word clockwatch
 
 TabuList = ds_list_create()
 TabuQty = 0
 TabuQtyPB = instance_create(0,10,oProgBar)
-TabuQtyPB.Req = 3                        //lv-ups: 3; 10; 42; 42; 98; 98; 228; 666 -&gt; max. 9000
+TabuQtyPB.Req = BanArr[TabuQty]                        //lv-ups: BanArr
 
 DecPB = instance_create(0,30,oProgBar)
-DecQty = 1                              //prog: tabuqty + wordlen  - 10
-DecPB.Req = 10                          //lv-ups: 10; 42; 42; 100; 100; 666 -&gt; max
+DecQty = 0                              //prog: tabuqty + wordlen  - 10
+DecPB.Req = DecArr[DecQty]
 
 Shift = false                           //using of ability flag
 ShiftQty = 0
 ShiftPB = instance_create(0,50,oProgBar)//prog: tabuqty + wordlen
-ShiftPB.Req = 100                       //linear increase
+if global.custom[?'Shift']
+  ShiftPB.Req = 100                       //linear increase
+else
+  ShiftPB.Req = 999999999
 
 TT = false                              //using of ability TabuType flag
 TTNum = -1
 TTQty = 0                               //prog: tabuqty + wordlen
 TTPB = instance_create(0,70,oProgBar)
-TTPB.Req = 200                            //linear increase
-
-//PrgBarObjects
-TargetW = instance_create(0,15,oProgBar)
-TargetW.Req = 159        //words
-TargetW.width = 30
-TargetW.content = 'WORDS'
-TargetW.visible = true
-with TargetW {event_user(0)}
-TargetL = instance_create(0,50,oProgBar)
-TargetL.Req = 1111       //letters
-TargetL.width = 30
-TargetL.content = 'LETTERS'
-TargetL.visible = true
-with TargetL {event_user(0)}
-TargetT = instance_create(0,85,oProgBar)
-TargetT.Req = 111        //antitabus
-TargetT.width = 30
-TargetT.content = 'GREEN LETTERS'
-TargetT.visible = true
-with TargetT {event_user(0)}
-TargetM = instance_create(0,120,oProgBar)
-TargetM.Req = 10        //minlens
-TargetM.width = 30
-TargetM.content = 'LONG WORDS'
-TargetM.visible = true
-with TargetM {event_user(0)}
-TargetMLen = 12
-TargetB = instance_create(0,155,oProgBar)
-TargetB.Req = 10        //extrabanneds
-TargetB.width = 30
-TargetB.content = '5 OR MORE BANNED'
-TargetB.visible = true
-with TargetB {event_user(0)}
-success = false
-
-//HARDMODE CORRECTION
-if global.profile[?'GM2'] &gt; 0
-  {
-  TargetW.Req = 228
-  TargetL.Req = 1616
-  TargetT.Req = 146
-  TargetMLen = 13
-  TargetB.Req = 25
-  }
+if global.custom[?'Unban']
+  TTPB.Req = 200                            //linear increase
+else
+  TTPB.Req = 999999999
 
 HintTimeUp = false
 HintTooLong = false
@@ -129,9 +169,12 @@ for (i=1; i&lt;=TabuQty; i++)
   
 //targetlist + fill
 TargetList = ds_list_create()
-TLQty = 0
-TLReq = 1
-TLProg = 0                   //max 10^ TLQty / TLQty^TLQty^TLQty
+switch global.custom[?'Green']
+  {
+  case 0: TLQty = 2; break;
+  case 1: TLQty = 1; break;
+  case 2: TLQty = 0
+  }
 
 Cube = instance_create(800,600,oGameCube)
 Cube.parent = id
@@ -147,7 +190,7 @@ Cube.TargetList = TargetList
 Stat = instance_create(0,0,oGameStatCounter)
 Stat.parent = id
 Stat.Cube = Cube
-Stat.GameTypeID = 20  //ADVANCED
+Stat.GameTypeID = 40  //CUSTOM
 </string>
           </argument>
         </arguments>
@@ -175,12 +218,12 @@ Stat.GameTypeID = 20  //ADVANCED
   Stat.ticks++
   Timer--
   Think++
-  if HintTimer &gt; 0
-    HintTimer--
-  if Think==3333
-    HintTooLong = true
-  if Timer==666
-    HintTimeUp = true
+    if HintTimer &gt; 0
+      HintTimer--
+    if Think==3333
+      HintTooLong = true
+    if Timer==666
+      HintTimeUp = true
   if Timer&lt;=0
     {
     tmp = instance_create(0,0,oSquareTransition)
@@ -198,37 +241,39 @@ Stat.GameTypeID = 20  //ADVANCED
       prevAnim = false
       }
     }
-    
-  if HintTimeUp &amp;&amp; HintTimer==0
-    {
-    HintObj = instance_create(0,0,oSquareHint)
-    HintObj.HINT_WORD = funcGetWord()
-    HintObj.HINT_LENGTH = MinLen*4
-    with HintObj {event_user(0)}
-    HintTimer += 666
-    HintTimeUp = false
-    Stat.hints++
-    }
-  else if HintTooLong &amp;&amp; HintTimer==0
-    {
-    HintObj = instance_create(0,0,oSquareHint)
-    HintObj.HINT_WORD = funcGetWord()
-    HintObj.HINT_LENGTH = MinLen*4
-    with HintObj {event_user(0)}
-    HintTimer += 690
-    HintTiiLong = false
-    Stat.hints++
-    }
-  else if HintWrong==1 &amp;&amp; HintTimer==0
-    {
-    HintObj = instance_create(0,0,oSquareHint)
-    HintObj.HINT_WORD = funcGetWord()
-    HintObj.HINT_LENGTH = MinLen*4
-    with HintObj {event_user(0)}
-    HintTimer += 720
-    HintWrong = 2
-    Stat.hints++
-    }
+  if EnableHints
+      {  
+      if HintTimeUp &amp;&amp; HintTimer==0
+        {
+        HintObj = instance_create(0,0,oSquareHint)
+        HintObj.HINT_WORD = funcGetWord()
+        HintObj.HINT_LENGTH = MinLen*4
+        with HintObj {event_user(0)}
+        HintTimer += 666
+        HintTimeUp = false
+        Stat.hints++
+        }
+      else if HintTooLong &amp;&amp; HintTimer==0
+        {
+        HintObj = instance_create(0,0,oSquareHint)
+        HintObj.HINT_WORD = funcGetWord()
+        HintObj.HINT_LENGTH = MinLen*4
+        with HintObj {event_user(0)}
+        HintTimer += 690
+        HintTiiLong = false
+        Stat.hints++
+        }
+      else if HintWrong==1 &amp;&amp; HintTimer==0
+        {
+        HintObj = instance_create(0,0,oSquareHint)
+        HintObj.HINT_WORD = funcGetWord()
+        HintObj.HINT_LENGTH = MinLen*4
+        with HintObj {event_user(0)}
+        HintTimer += 720
+        HintWrong = 2
+        Stat.hints++
+        }
+      }
   }
 </string>
           </argument>
@@ -287,19 +332,9 @@ Stat.GameTypeID = 20  //ADVANCED
           <argument>
             <kind>1</kind>
             <string>//gameover Event
-if success
-  {
-  Stat.success = true
-  global.profile[?'GM2'] = 1
-  }
 with Stat {event_user(0)}
 instance_destroy(parent,true)
 instance_destroy(Cube,true)
-instance_destroy(TargetW,true)
-instance_destroy(TargetL,true)
-instance_destroy(TargetT,true)
-instance_destroy(TargetM,true)
-instance_destroy(TargetB,true)
 instance_destroy(self,true)
 </string>
           </argument>
@@ -533,7 +568,7 @@ for (i=2; i&lt;=string_length(currWord); i++)
 if ds_list_find_index(prevWordList,currWord) != -1
 {
 if HintWrong == 0                            
-   {
+  {
   HintWrong = 1
   HintTimer+= 228
   }
@@ -572,28 +607,8 @@ exit
         Cube.Rot = true
         Cube.LengthErrTick = 0
         Cube.LengthErr = false
-        Timer+= (string_length(currWord)-1)*120 - Timer div 60
+        Timer+= (string_length(currWord)-1)*SecPerLetter - Timer div 60
         currWord = string_char_at(currWord, string_length(currWord))
-        //Target words
-        TargetW.Prog++
-        TargetW.Anim = true
-        TargetW.AnimXTarget = TargetW.Prog / TargetW.Req * 1600
-        //target letters
-        TargetL.Prog+= string_length(prevWord)
-        TargetL.Anim = true
-        TargetL.AnimXTarget = TargetL.Prog / TargetL.Req * 1600
-        //TargetT.Prog+=   check code below
-        //target banneds
-        TargetB.Prog+= ds_list_size(TabuList) div 5
-        TargetB.Anim = true
-        TargetB.AnimXTarget = TargetB.Prog / TargetB.Req * 1600
-        //target minlens
-        if string_length(prevWord) &gt;= TargetMLen
-          {
-          TargetM.Prog++
-          TargetM.Anim = true
-          TargetM.AnimXTarget = TargetM.Prog / TargetM.Req * 1600
-          }
         //shift prog
         if Shift
           {
@@ -634,8 +649,6 @@ exit
         TTPB.Anim = true
         TTPB.AnimXTarget = TTPB.Prog / TTPB.Req * 1600
         //length dec calc
-        if TargetM.Prog &gt;= TargetM.Req
-          {
           tmp = string_length(prevWord) + ds_list_size(TabuList) - 9
           if tmp &gt; 0
             {
@@ -645,34 +658,18 @@ exit
               DecPB.Prog-= DecPB.Req
               DecQty++
               MinLen--
-              switch DecQty
-                {
-                case 2: case 3: DecPB.Req = 13; break;
-                case 4: case 5: DecPB.Req = 25; break;
-                case 6: case 7: DecPB.Req = 42; break;
-                case 8: case 9: DecPB.Req = 66; break;
-                default: DecPB.Req = 9000
-                }
+              DecPB.Req = DecArr[DecQty]
               }
             DecPB.Anim = true
             DecPB.AnimXTarget = DecPB.Prog / DecPB.Req * 1600
             }
-          }
         //tabu calc
         TabuQtyPB.Prog++
         if TabuQtyPB.Prog &gt;= TabuQtyPB.Req
           {
           TabuQty++
           TabuQtyPB.Prog = 0
-          switch TabuQty
-            {
-            case 1: TabuQtyPB.Req = 11; break;
-            case 2: case 3: TabuQtyPB.Req = 25; break;
-            case 4: case 5: TabuQtyPB.Req = 42; break;
-            case 6: TabuQtyPB.Req = 66; break;
-            case 7: TabuQtyPB.Req = 98; break;
-            default: TabuQtyPB.Req = 999999999
-            }
+          TabuQtyPB.Req = BanArr[TabuQty]
           }
         TabuQtyPB.Anim = true
         TabuQtyPB.AnimXTarget = TabuQtyPB.Prog / TabuQtyPB.Req * 1600
@@ -681,38 +678,26 @@ exit
           {
           var cnt = string_count(TargetList[| i],prevWord) ;
           if cnt &gt; 0
-            {
-            TargetT.Prog+= cnt
             Stat.pp+= ceil(cnt*words / 10)
-            TargetT.Anim = true
-            TargetT.AnimXTarget = TargetT.Prog / TargetT.Req * 1600
-            }
           }
         //Tabu refresh
         ds_list_clear(TabuList)
         for (i=1; i&lt;=TabuQty; i++)
           {
-          tmp = funcNewTabuLetter(4 + TabuQtyPB.Prog / 20)      //4% chance of vowel tabu
+          tmp = funcNewTabuLetter(Vowel + TabuQtyPB.Prog / 20)      //Vowel% chance of vowel tabu
           if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
               ds_list_add(TabuList,tmp)
           }
         Stat.banned+= ds_list_size(TabuList)
         //target letters refresh
-        TLProg++
-        if TLProg &gt;= TLReq
-          {
-          TLQty++
-          TLProg = 0
-          TLReq = power(10, TLQty) / TLQty
-          }
         ds_list_clear(TargetList)
         for (i=0; i&lt;TLQty; i++)
           {
           var arr;
-          arr[0] = TLProg / TLReq * 1.111
-          arr[1] = arr[0]*2.5
-          arr[2] = 0.04 / arr[0]
-          arr[3] = 0.8
+          arr[0] = 1
+          arr[1] = 1.1
+          arr[2] = 1.22
+          arr[3] = 1.444
           var c = funcNewTargetLetter(arr);
           if ds_list_find_index(TargetList, c) == -1
             if ds_list_find_index(TabuList,c) == -1
@@ -726,16 +711,6 @@ exit
         HintTimer+= 228
         //Cube Post Operations 
         Cube.NewLen = MinLen
-        //Check passed
-        if (TargetW.Prog &gt;= TargetW.Req) &amp;&amp;
-           (TargetL.Prog &gt;= TargetL.Req) &amp;&amp;
-           (TargetT.Prog &gt;= TargetT.Req) &amp;&amp;
-           (TargetM.Prog &gt;= TargetM.Req) &amp;&amp;
-           (TargetB.Prog &gt;= TargetB.Req)
-           {
-           success = true
-           event_user(0)
-           }
         }
       else
         {

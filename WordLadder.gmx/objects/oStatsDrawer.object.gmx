@@ -28,7 +28,6 @@
             <string>Selected = 0
 ShiftY = 0
 
-var SECTMAP = global.profile[?'PSSECTIONS'];
   s[0] = 'ingame: '+formatTimeString(global.profile[?'PSINGAMETIME'])
   s[0]+= '#play: '+formatTimeString(global.profile[?'PSPLAYTIME'])
   s[0]+= '#online: '+formatTimeString(global.profile[?'PSONLINETIME'])
@@ -36,30 +35,46 @@ var SECTMAP = global.profile[?'PSSECTIONS'];
   s[0]+= '#games ended: '+string(global.profile[?'PSENDS'])
   s[0]+= '#servers: '+string(global.profile[?'PSSERVERS'])
   s[0]+= '#RESETS: '+string(global.profile[?'PSRESETS'])
-  
-if !is_undefined(SECTMAP[?0])
+ 
+for (var i=1; i&lt;=7; i++)
+{
+///////////////////////////// 
+var SECTMAP = global.profile[?'PSSECTIONS'];
+var gm;
+switch i
   {
-  SECTMAP = SECTMAP[?0]
-  s[1] = 'OVERALL'
-  s[1]+= '#words: '+string(SECTMAP[?'PSWORDS'])
-  s[1]+= '#inputs: '+string(SECTMAP[?'PSINPUTS'])
-  s[1]+= '#letters typed: '+string(SECTMAP[?'PSLETTERS'])
-  s[1]+= '#letters accepted: '+string(SECTMAP[?'PSLETTERSA'])
-  s[1]+= '#letters backspaced: '+string(SECTMAP[?'PSLETTERSB'])
-  s[1]+= '#hints shown: '+string(SECTMAP[?'PSHINTS'])
-  s[1]+= '#shifts acquired: '+string(SECTMAP[?'PSSHIFTSA'])
-  s[1]+= '#shifts used: '+string(SECTMAP[?'PSSHIFTSU'])
-  s[1]+= '#banned letters: '+string(SECTMAP[?'PSBANNED'])
-  s[1]+= '#unbans acquired: '+string(SECTMAP[?'PSUNBANSA'])
-  s[1]+= '#unbans used: '+string(SECTMAP[?'PSUNBANSU'])
-  s[1]+= '#banned typed: '+string(SECTMAP[?'PSBANTYPED'])
-  s[1]+= '#too shorts: '+string(SECTMAP[?'PSSHORTTYPED'])
-  s[1]+= '#wrong words: '+string(SECTMAP[?'PSWRONGTYPED'])
-  s[1]+= '#repeated words: '+string(SECTMAP[?'PSREPTYPED'])
-  s[1]+= '#average word length: '+string(SECTMAP[?'PSLENAVERAGE'])
+  case 1: gm = 0; s[i] = 'OVERALL#'; break
+  case 2: gm = 10; s[i] = 'SIMPLE#'; break
+  case 3: gm = 11; s[i] = 'LAST SIMPLE#'; break
+  case 4: gm = 20; s[i] = 'ADVANCED#'; break
+  case 5: gm = 21; s[i] = 'LAST ADVANCED#'; break
+  case 6: gm = 30; s[i] = 'ENDLESS#'; break
+  case 7: gm = 31; s[i] = 'LAST ENDLESS#'; break
+  }
+if !is_undefined(SECTMAP[?gm])
+  {
+  SECTMAP = SECTMAP[?gm]
+  s[i]+= '#words: '+string(SECTMAP[?'PSWORDS'])
+  s[i]+= '#inputs: '+string(SECTMAP[?'PSINPUTS'])
+  s[i]+= '#letters typed: '+string(SECTMAP[?'PSLETTERS'])
+  s[i]+= '#letters accepted: '+string(SECTMAP[?'PSLETTERSA'])
+  s[i]+= '#letters backspaced: '+string(SECTMAP[?'PSLETTERSB'])
+  s[i]+= '#hints shown: '+string(SECTMAP[?'PSHINTS'])
+  s[i]+= '#shifts acquired: '+string(SECTMAP[?'PSSHIFTSA'])
+  s[i]+= '#shifts used: '+string(SECTMAP[?'PSSHIFTSU'])
+  s[i]+= '#banned letters: '+string(SECTMAP[?'PSBANNED'])
+  s[i]+= '#unbans acquired: '+string(SECTMAP[?'PSUNBANSA'])
+  s[i]+= '#unbans used: '+string(SECTMAP[?'PSUNBANSU'])
+  s[i]+= '#banned typed: '+string(SECTMAP[?'PSBANTYPED'])
+  s[i]+= '#too shorts: '+string(SECTMAP[?'PSSHORTTYPED'])
+  s[i]+= '#wrong words: '+string(SECTMAP[?'PSWRONGTYPED'])
+  s[i]+= '#repeated words: '+string(SECTMAP[?'PSREPTYPED'])
+  s[i]+= '#detalisation: todo'
   }
 else
-  s[1] = 'OVERALL#Stat unavailable'
+  s[i]+= '#Stat unavailable'
+///////////////////////////////////
+}
 </string>
           </argument>
         </arguments>
