@@ -113,6 +113,15 @@ bHints.checked = true
 bHints.dsc = 0.84
 with bHints {event_user(0)}
 
+bType = instance_create(300,760,oList)
+ds_map_add(bType.arr,0,'Cooperative')
+ds_map_add(bType.arr,1,'Competitive')
+bType.val = 'Cooperative'
+bType.num = 0
+bType.dsc = 0.84
+bType.hintMsg = 'Game type'
+bType.StartDepth = -9                            //AAAAAAAAAAAAAAAA
+
 //bBack
 bBack = instance_create(300,1000,oButton)
 bBack.content = 'BACK'
@@ -153,6 +162,7 @@ instance_destroy(bSec,true)
 instance_destroy(bGreen,true)
 instance_destroy(bBack,true)
 instance_destroy(bGo,true)
+instance_destroy(bType,true)
 </string>
           </argument>
         </arguments>
@@ -191,6 +201,7 @@ instance_destroy(bGo,true)
     bGreen.clickable = true
     bBack.clickable = true
     bGo.clickable = true
+    bType.clickable = true
     }
   else
     {
@@ -206,6 +217,7 @@ instance_destroy(bGo,true)
     bGreen.clickable = false
     bBack.clickable = false
     bGo.clickable = false
+    bType.clickable = false
     }
   }
   
@@ -225,6 +237,7 @@ else if bBan.clicked
     bGreen.clickable = true
     bBack.clickable = true
     bGo.clickable = true
+    bType.clickable = true
     }
   else
     {
@@ -240,6 +253,7 @@ else if bBan.clicked
     bGreen.clickable = false
     bBack.clickable = false
     bGo.clickable = false
+    bType.clickable = false
     }
   }
   
@@ -259,6 +273,7 @@ else if bDec.clicked
     bGreen.clickable = true
     bBack.clickable = true
     bGo.clickable = true
+    bType.clickable = true
     }
   else
     {
@@ -274,6 +289,7 @@ else if bDec.clicked
     bGreen.clickable = false
     bBack.clickable = false
     bGo.clickable = false
+    bType.clickable = false
     }
   }
   
@@ -293,6 +309,7 @@ else if bStartTimer.clicked
     bGreen.clickable = true
     bBack.clickable = true
     bGo.clickable = true
+    bType.clickable = true
     }
   else
     {
@@ -308,6 +325,7 @@ else if bStartTimer.clicked
     bGreen.clickable = false
     bBack.clickable = false
     bGo.clickable = false
+    bType.clickable = false
     }
   }
   
@@ -327,6 +345,7 @@ else if bSec.clicked
     bGreen.clickable = true
     bBack.clickable = true
     bGo.clickable = true
+    bType.clickable = true
     }
   else
     {
@@ -342,6 +361,7 @@ else if bSec.clicked
     bGreen.clickable = false
     bBack.clickable = false
     bGo.clickable = false
+    bType.clickable = false
     }
   }
   
@@ -361,6 +381,7 @@ else if bGreen.clicked
     bSec.clickable = true
     bBack.clickable = true
     bGo.clickable = true
+    bType.clickable = true
     }
   else
     {
@@ -376,8 +397,45 @@ else if bGreen.clicked
     bSec.clickable = false
     bBack.clickable = false
     bGo.clickable = false
+    bType.clickable = false
     }
   }
+  
+else if bType.clicked
+  {
+  if !bType.active
+    {
+    bType.clicked = false
+    bStartLen.clickable = true
+    bBan.clickable = true
+    bVowel.clickable = true
+    bDec.clickable = true
+    bUnban.clickable = true
+    bShift.clickable = true
+    bHints.clickable = true
+    bStartTimer.clickable = true
+    bSec.clickable = true
+    bBack.clickable = true
+    bGo.clickable = true
+    bGreen.clickable = true
+    }
+  else
+    {
+    bType.clicked = false
+    bStartLen.clickable = false
+    bBan.clickable = false
+    bVowel.clickable = false
+    bDec.clickable = false
+    bUnban.clickable = false
+    bShift.clickable = false
+    bHints.clickable = false
+    bStartTimer.clickable = false
+    bSec.clickable = false
+    bBack.clickable = false
+    bGo.clickable = false
+    bGreen.clickable = false
+    }
+  }  
   
 else if bVowel.clicked
   bVowel.clicked = false
@@ -404,7 +462,7 @@ else if bGo.clicked
   global.custom[?'StartTimer'] = bStartTimer.num
   global.custom[?'Sec'] = bSec.num + 3
   global.custom[?'Green'] = bGreen.num
-  global.GameType = 4
+  global.GameType = bType.num+10
   action_another_room(rGame)
   }
 </string>

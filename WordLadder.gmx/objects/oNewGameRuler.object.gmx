@@ -37,7 +37,6 @@ PClient = instance_create(300,440,oButton)
 with(PClient)
   {
   content = 'MULTIPLAYER'
-  clickable = false
   event_user(0)
   }
 //how to play button (old var's name)
@@ -117,6 +116,14 @@ if HintArr != -1
   p.parent = parent
   parent.ActiveMenuPtr = p
   parent.Header = 'SINGLEPLAYER'
+  instance_destroy(self,true)
+  }
+else if PClient.clicked
+  {
+  p = instance_create(0,0,oGameMulti)
+  p.parent = parent
+  parent.ActiveMenuPtr = p
+  parent.Header = 'MULTIPLAYER'
   instance_destroy(self,true)
   }
 </string>

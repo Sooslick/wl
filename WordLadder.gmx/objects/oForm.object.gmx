@@ -34,6 +34,10 @@ contentSaved = content
 active = false  //form focus
 clicked = false //enter pressed
 clickable = true
+hint = false
+hintTick = 0
+hintMsg = ''
+StartDepth = 1
 
 dsc = 1                     //draw scale
 tsc = 1
@@ -71,6 +75,12 @@ cursortick = 0
           a = 1    
         else
           a = 0.66   
+        hintTick++
+        if hintTick &gt; 42
+          {
+          hint = true   
+          depth = StartDepth - 2
+          } 
         }
 else
         {
@@ -81,7 +91,10 @@ else
           if clickable      
             a = 0.66   
           else
-            a = 0.33   
+            a = 0.33 
+        hint = false
+        hintTick = 0
+        depth = StartDepth  
         }
         
 if !keyboard_check(vk_backspace)
@@ -193,6 +206,8 @@ tsc = 490 / string_width(content)
 if tsc &gt; 1
   tsc = 1       //reset scale if it not necessary
 tsc*= dsc   //draw scalability
+
+StartDepth = depth
 </string>
           </argument>
         </arguments>
@@ -231,6 +246,27 @@ if cursor &amp;&amp; active
   draw_text_transformed((x-244),y,content+'|',tsc,dsc,0)
 else
   draw_text_transformed((x-244),y,content,tsc,dsc,0)
+  
+//hint drawing
+if hint &amp;&amp; (hintMsg!='') &amp;&amp; clickable &amp;&amp; !active
+  {
+  var my;
+  if window_get_fullscreen()
+    my = (display_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
+  else
+    my = (window_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
+  draw_set_font(fHint)
+  draw_set_halign(fa_left)
+  draw_set_valign(fa_top)
+  var h = string_height_ext(hintMsg, 50, 500) + 12;
+  draw_set_alpha(0.75)
+  draw_set_color(0)
+  draw_rectangle(x - 256*dsc, my - h*dsc, x + 256*dsc, my, false)
+  draw_set_alpha(1)
+  draw_set_color(c_white)
+  h-= 6
+  draw_text_ext_transformed(x - 250*dsc, my - h*dsc, hintMsg, 50,500, dsc, dsc, 0)
+  }
 </string>
           </argument>
         </arguments>

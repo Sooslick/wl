@@ -26,15 +26,11 @@
           <argument>
             <kind>1</kind>
             <string>tc = instance_create(0,0,oTimeCounter)
-tc.ingame = true 
+tc.ingame = true
    
 loaded = false
 loadFade = 0.75
 loadFading = true
-//dictionary data struct
-//TODO: locale check
-dict = instance_create(0,0,oDictLoader)
-dict.parent = id
 
 RuleTick = 0
 FlashX = -10000
@@ -47,6 +43,9 @@ TimerStr = "TIMER##Your time is limited! When time is out, game ends.#You reciev
 BonusStr = "GAME PROGRESS##You'll be able to use special abilities during the game. It may be a simple hint, word's length decrease or ability to use one of banned letters!#Watch the counters and keep them in mind!"
 switch (global.GameType)
   {
+  case 0:
+    drawStr = 'CONNECTING'
+    break
   case 1:
     RuleStr = 'SIMPLE RULES##' + RuleStr; 
     TargetStr = "SIMPLE RULES##To win the game, you need to complete a set of tasks; their progress bars can be seen on top of screen.#You're going to see green letters during game process. Use them to make words and progress!"
@@ -63,9 +62,39 @@ switch (global.GameType)
     RuleStr = 'CUSTOM GAME##' + RuleStr
     TargetStr = "CUSTOM GAME##In this mode, you only submit to your own set restrictions.#Type in words, watch the timer and try to score the most points!"
     break
+  case 10:
+    RuleStr = 'COOPERATIVE GAME##' + RuleStr
+    TargetStr = 'COOPERATIVE GAME##In this mode all players pick the words at once.#Enter your own faster than others and earn the most points!'
+    break
+  case 11:
+    RuleStr = 'COMPETITIVE GAME##' + RuleStr
+    TargetStr = 'COMPETITIVE GAME##The players write their words by turns.#Game is over when no one can write a word anymore. The player with highest score wins!'
+    break;
     }
 StrState = 0
 MouseLeft = false
+
+  //dictionary data struct
+  //TODO: locale check
+  dict = instance_create(0,0,oDictLoader)
+  dict.parent = id
+
+//connetion code
+//server
+if global.GameType &gt; 5
+  {
+  Net = instance_create(0,0,oGameServer)
+  Net.parent = id
+  with dict {event_user(0)}
+  }
+//client
+else if global.GameType == 0
+  {
+  Net = instance_create(0,0,oGameClient)
+  Net.parent = id
+  }
+else
+  with dict {event_user(0)}
 </string>
           </argument>
         </arguments>
@@ -88,7 +117,8 @@ MouseLeft = false
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>RuleTick++
+            <string>if global.GameType != 0
+  RuleTick++
 FlashX+=233
 if FlashX &gt; 20000
   FlashX-= 44000
@@ -124,8 +154,10 @@ else if RuleTick == 1640
   RuleTick = 19
   StrState = 0
   }
+  
+//game start
 if loaded &amp;&amp; loadFading
-  if GR.prepared
+  if GR.prepared || GR.prestart
     {
     loadFade-= 0.025
     if loadFade &lt;= 0
@@ -228,6 +260,59 @@ else
         </arguments>
       </action>
     </event>
+    <event eventtype="7" enumb="12">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//game type recieved
+switch (global.GameType)
+  {
+  case 0:
+    drawStr = 'CONNECTING'
+    break
+  case 1:
+    RuleStr = 'SIMPLE RULES##' + RuleStr; 
+    TargetStr = "SIMPLE RULES##To win the game, you need to complete a set of tasks; their progress bars can be seen on top of screen.#You're going to see green letters during game process. Use them to make words and progress!"
+    break
+  case 2:
+    RuleStr = 'COMPLICATED RULES##' + RuleStr
+    TargetStr = "COMPLICATED RULES##To win the game, you need to complete a set of tasks; their progress bars can be seen on top of screen.#You're going to see green letters during game process. Use them to make words and progress!"
+    break
+  case 3:
+    RuleStr = 'ENDLESS MODE##' + RuleStr
+    TargetStr = 'ENDLESS MODE##You have no set restrictions and goals in this mode.#Type in words, watch the timer and try to score the most points!'
+    break
+  case 4:
+    RuleStr = 'CUSTOM GAME##' + RuleStr
+    TargetStr = "CUSTOM GAME##In this mode, you only submit to your own set restrictions.#Type in words, watch the timer and try to score the most points!"
+    break
+  case 10:
+    RuleStr = 'COOPERATIVE GAME##' + RuleStr
+    TargetStr = 'COOPERATIVE GAME##In this mode all players pick the words at once.#Enter your own faster than others and earn the most points!'
+    break
+  case 11:
+    RuleStr = 'COMPETITIVE GAME##' + RuleStr
+    TargetStr = 'COMPETITIVE GAME##The players write their words by turns.#Game is over when no one can write a word anymore. The player with highest score wins!'
+    break;
+    }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="7" enumb="11">
       <action>
         <libid>1</libid>
@@ -293,13 +378,21 @@ switch (global.GameType)                    //GR: GameRuler
     GR = instance_create(0,0,oCustomGameRuler)
     GR.parent = id
     break
+  case 10:
+    GR = instance_create(0,0,oCoopGameRuler)
+    GR.parent = id
+    GR.Net = Net
+    Net.GR = GR
+    break
   case 11:
-    //cli-serv
-  case 12:
-    break;
+    GR = instance_create(0,0,oPtpGameRuler)
+    GR.parent = id
+    GR.Net = Net
+    Net.GR = GR
+    break
   default:
-    //todo: err msg
-    action_another_room(rMenu)
+    loaded = false
+    //"wait" msg?
   }
 </string>
           </argument>
@@ -363,29 +456,6 @@ if !loaded || loadFade &gt; 0.749
     draw_surface(FlashSurf,0,0)
     }
   }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="10" enumb="114">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>room_speed = 10
 </string>
           </argument>
         </arguments>

@@ -25,8 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>prestart = false
-prepared = false
+            <string>prepared = false
+prestart = false
 prevWord = ''
 currWord = ''
 prevWordList = ds_list_create()
@@ -38,6 +38,7 @@ prevAnimTick = 0
 
 BStart = instance_create(800,1000, oButton)
 BStart.content = 'BEGIN'
+BTimer = 900
 
 //startgame params from global.custom
 switch global.custom[?'Banned']
@@ -190,7 +191,7 @@ Cube.TargetList = TargetList
 Stat = instance_create(0,0,oGameStatCounter)
 Stat.parent = id
 Stat.Cube = Cube
-Stat.GameTypeID = 40  //CUSTOM
+Stat.GameTypeID = 100  //COOP
 </string>
           </argument>
         </arguments>
@@ -275,6 +276,8 @@ Stat.GameTypeID = 40  //CUSTOM
         }
       }
   }
+else if prestart
+  BTimer--
 </string>
           </argument>
         </arguments>
@@ -303,10 +306,10 @@ Stat.GameTypeID = 40  //CUSTOM
     {
     instance_destroy(BStart,true)
     BStart = -1
-    prepared = true
-    currWord = string_char_at(prevWord,string_length(prevWord))
-    Cube.w1 = currWord
-    global.profile[?'PSGAMES']++
+    with Net {event_user(0)}
+    //currWord = string_char_at(prevWord,string_length(prevWord))
+    //Cube.w1 = currWord
+    //global.profile[?'PSGAMES']++
     }
   }
 </string>
@@ -372,7 +375,10 @@ draw_line_width(0,90,HintTimer,90,10)*/
 //timer
 draw_set_color(c_white)
 draw_set_font(fTimer)
-s = formatTimeString(Timer)
+if prepared
+  s = formatTimeString(Timer)
+else
+  s = formatTimeString(BTimer)
 tmp = 800 - string_length(s)*17
 for (i=1; i&lt;=string_length(s); i++)
   {

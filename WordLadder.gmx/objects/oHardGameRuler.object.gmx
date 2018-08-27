@@ -25,7 +25,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//loaded = false
+            <string>prestart = false
 prepared = false
 prevWord = ''
 currWord = ''

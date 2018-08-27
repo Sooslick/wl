@@ -25,8 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//loaded = false
-prepared = false
+            <string>prepared = false
+prestart = false
 prevWord = ''
 currWord = ''
 prevWordList = ds_list_create()

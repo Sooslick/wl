@@ -19,6 +19,8 @@ N	Name String
 4	Total stat resets
 1	Simple Passed
 1	Complicated Passed
+1	Player Lv		//
+4	Player XP		//
 
  SPECIFIED STAT
 1	M = Sections count

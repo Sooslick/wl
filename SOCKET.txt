@@ -1,0 +1,75 @@
+SOCKET HEADERS
+
+0	client -> server	Init info
+1	server -> client	Init info
+2	server -> client	Ping
+3	client -> server	Ping
+4	server -> client	Ping broadcast
+5	client -> server	Player Info			//useless; works as Player Info broadcast request
+6	server -> client	Player Info broadcast
+7	server -> client	JSON Game Rules map set
+8	client -> server	Game Rules map set request
+9	client -> server	Click "Ready"
+10	server -> client	"Ready" broadcast
+11	server -> client	"Ready" timer sync
+12	server -> client	Game Start signal / Game Timer sync
+
+..	client -> server	Chat line
+..	server -> client	Chat broadcast
+_________________________________________
+
+0:
+s8		Header
+s32		Game Version
+s32		PNETID
+String		Name
+
+1:
+s8		Header
+s8		GameType
+s8		Locale
+
+2:
+s8		Header
+s32		Timestamp
+
+3:
+s8		Header
+s32		Server timestamp
+s32		Client timestamp
+
+4:
+s8		Header
+s8	P	Players
+Pxs32		Ping [ms]
+
+5:
+s8		Header
+
+6:
+s8		Header
+s8	P	Players
+Pxs32		PNETID
+Pxstring	Name
+
+7:
+s8		Header
+string		global.custom JSON
+
+8:
+s8		Header
+
+9:
+s8		Header
+
+10:
+s8		Header
+s8		Ready
+
+11:
+s8		Header
+s8		Prestart Timer
+
+12:
+s8		Header
+s32		Game Timer

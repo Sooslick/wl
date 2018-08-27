@@ -95,6 +95,7 @@
     <font>fonts\fDebug</font>
     <font>fonts\fTimer</font>
     <font>fonts\fCube</font>
+    <font>fonts\fHint</font>
   </fonts>
   <objects name="objects">
     <objects name="GameGeneralGroup">
@@ -104,10 +105,13 @@
       <object>objects\oSimpleGameRuler</object>
       <object>objects\oHardGameRuler</object>
       <object>objects\oCustomGameRuler</object>
+      <object>objects\oCoopGameRuler</object>
       <object>objects\oGameCube</object>
       <object>objects\oGameStatCounter</object>
       <object>objects\oSquareHint</object>
       <object>objects\oProgBar</object>
+      <object>objects\oGameClient</object>
+      <object>objects\oGameServer</object>
     </objects>
     <objects name="MainMenuGroup">
       <object>objects\oAchievementsRuler</object>
@@ -127,6 +131,8 @@
       <object>objects\oSquareRuler</object>
       <object>objects\oStatsDrawer</object>
       <object>objects\oCustomRuler</object>
+      <object>objects\oMultiRuler</object>
+      <object>objects\oGameMulti</object>
     </objects>
     <object>objects\oLogo</object>
     <object>objects\oButton</object>

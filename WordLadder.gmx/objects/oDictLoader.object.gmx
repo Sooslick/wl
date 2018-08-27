@@ -26,16 +26,136 @@
           <argument>
             <kind>1</kind>
             <string>loaded = false
-//TODO: check loaded state in gameruler
-//if !loaded
+init = false
+
 locale = global.profile[?'PLOCALE']
 
 //TODO: clear hashmap IF loaded
 
-if global.DictLoaded &lt;&gt; global.profile[?'PLOCALE']
+tickTimeConst = 1000 / room_speed + 1
+loadRot = 0
+
+GR = -1         //GameRuler Object
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>loadRot+= 10
+if init
+    {
+    if !loaded
+      {
+      timeEndTick = current_time + tickTimeConst
+      currSize = file_bin_position(f) //FIX FIX FIX FIX FIX
+      
+      while (current_time &lt; timeEndTick)
+        {
+        if file_bin_position(f) &gt;= file_bin_size(f) //old finalSize
+          {
+          //DEBUG-COSTYL
+          //FIX IT
+          file_bin_close(f)
+          lfn_pos++
+          if lfn_pos &gt; lfn_max
+            {
+            loaded = true
+            break
+            }
+          else
+            f = fe
+          }
+        q = file_bin_read_byte(f)
+        s = ''
+        //todo locale check!
+        //word too shoft
+        if q&lt;2
+          {
+          for (i=1; i&lt;=q; i++)
+            file_bin_read_byte(f)
+          continue
+          }
+        else
+          for (i=1; i&lt;=q; i++)
+            s+= chr(funcChrDecode(file_bin_read_byte(f)))
+        
+        if (string_char_at(s,1) == string_char_at(LoadedHash,1)) &amp;&amp;  
+           (string_char_at(s,2) == string_char_at(LoadedHash,2))
+                ds_list_add(tmpl,s) 
+        else
+          {
+          //get first lv map  
+          tmpm = global.DictDS
+          c = string_char_at(s,1)
+          if ds_map_exists(tmpm,c)
+            tmpm = tmpm[? c]
+          else
+            continue
+        
+          //get sec lv map 
+          c = string_char_at(s,2) 
+          if ds_map_exists(tmpm,c)
+            tmpl = tmpm[? c]
+          else
+            continue   
+          
+          //put word
+          ds_list_add(tmpl,s) 
+          LoadedHash = string_char_at(s,1) + string_char_at(s,2)
+          }
+        }
+      }
+    else
+      {
+      global.DictLoaded = locale
+      with (parent) {event_user(0)}
+      instance_destroy(self,true)
+      }
+    }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//locale setup
+if global.DictLoaded &lt;&gt; locale
   {
   //pre-define filename
-  switch global.profile[?'PLOCALE']
+  switch locale
     {
     case 0: 
       lfn[0] = "dict/EN.dat"; 
@@ -47,6 +167,7 @@ if global.DictLoaded &lt;&gt; global.profile[?'PLOCALE']
     }
     
   //pre-define hashmaps
+  //TODO destroy prev
   global.DictDS = ds_map_create()
   //TODO: check locale!
   //first level hashmaps
@@ -84,100 +205,7 @@ else
   finalSize = 1
   currSize = 1
   }
-tickTimeConst = 1000 / room_speed + 1
-loadRot = 0
-
-GR = -1         //GameRuler Object
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="3" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>loadRot+= 10
-if !loaded
-  {
-  timeEndTick = current_time + tickTimeConst
-  currSize = file_bin_position(f) //FIX FIX FIX FIX FIX
-  
-  while (current_time &lt; timeEndTick)
-    {
-    if file_bin_position(f) &gt;= file_bin_size(f) //old finalSize
-      {
-      //DEBUG-COSTYL
-      //FIX IT
-      file_bin_close(f)
-      lfn_pos++
-      if lfn_pos &gt; lfn_max
-        {
-        loaded = true
-        break
-        }
-      else
-        f = fe
-      }
-    q = file_bin_read_byte(f)
-    s = ''
-    //todo locale check!
-    //word too shoft
-    if q&lt;2
-      {
-      for (i=1; i&lt;=q; i++)
-        file_bin_read_byte(f)
-      continue
-      }
-    else
-      for (i=1; i&lt;=q; i++)
-        s+= chr(funcChrDecode(file_bin_read_byte(f)))
-    
-    if (string_char_at(s,1) == string_char_at(LoadedHash,1)) &amp;&amp;  
-       (string_char_at(s,2) == string_char_at(LoadedHash,2))
-            ds_list_add(tmpl,s) 
-    else
-      {
-      //get first lv map  
-      tmpm = global.DictDS
-      c = string_char_at(s,1)
-      if ds_map_exists(tmpm,c)
-        tmpm = tmpm[? c]
-      else
-        continue
-    
-      //get sec lv map 
-      c = string_char_at(s,2) 
-      if ds_map_exists(tmpm,c)
-        tmpl = tmpm[? c]
-      else
-        continue   
-      
-      //put word
-      ds_list_add(tmpl,s) 
-      LoadedHash = string_char_at(s,1) + string_char_at(s,2)
-      }
-    }
-  }
-else
-  {
-  global.DictLoaded = locale
-  with (parent) {event_user(0)}
-  instance_destroy(self,true)
-  }
+init = true
 </string>
           </argument>
         </arguments>
@@ -200,22 +228,28 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_color(c_red)
+            <string>//loading progbar
+draw_set_color(c_red)
 draw_line_width(0,10,1600,10,16)
-draw_set_color(c_white)
-draw_line_width(0,10,currSize/finalSize*1600,10,10)
-if !loaded
-  {
-  draw_sprite_ext(sLoading,0,1500,80,2,2,loadRot,c_white,1)
-  draw_sprite_ext(sLoading,0,1500,80,1,1,-loadRot*2,c_white,1)
-  draw_set_color(c_red)
-  draw_line_width(0,10,1600,10,16)
-  draw_set_color(c_white)
-  draw_line_width(0,10,currSize/finalSize*1600,10,10)
-  
-  //debug
-  //draw_text(800,80,s)
-  }
+
+if init
+    {
+    //loading progbar current
+    draw_set_color(c_white)
+    draw_line_width(0,10,currSize/finalSize*1600,10,10)
+    //loading rotator
+    if !loaded
+      {
+      draw_sprite_ext(sLoading,0,1500,80,2,2,loadRot,c_white,1)
+      draw_sprite_ext(sLoading,0,1500,80,1,1,-loadRot*2,c_white,1)
+      }
+    }
+else
+    {
+    //connecting rotator
+    draw_sprite_ext(sLoading,0,1500,80,2,2,loadRot,c_white,1)
+    draw_sprite_ext(sLoading,0,1500,80,1,1,-loadRot*2,c_white,1)
+    }
 </string>
           </argument>
         </arguments>

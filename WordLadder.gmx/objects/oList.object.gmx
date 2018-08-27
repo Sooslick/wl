@@ -32,7 +32,10 @@ hoverElement = -1   //-1: main, 0..N: elements
 active = false      //if true = opened
 clicked = false     //element clicked
 clickable = true
-//a = 1               //alpha
+hint = false
+hintTick = 0
+hintMsg = ''
+StartDepth = 0
 
 dsc = 1                     //draw scale
 
@@ -67,9 +70,20 @@ num = 0
           {
           hover = 1            //check cursor pos     //not by mouse enter/leave event
           hoverElement = -1
+          hintTick++
+          if hintTick &gt; 42
+            {
+            hint = true   
+            depth = StartDepth - 2
+            } 
           }
   else
+          {
           hover = 0
+          hint = false
+          hintTick = 0
+          depth = StartDepth
+          }
   }      
 else
   {
@@ -199,6 +213,27 @@ else
     tsc*= dsc
     draw_text_transformed((x-240*dsc),(y+128*dsc+i*128*dsc),arr[?i],tsc,dsc,0)
     }
+  }
+  
+//hint drawing
+if hint &amp;&amp; (hintMsg!='') &amp;&amp; clickable &amp;&amp; !active
+  {
+  var my;
+  if window_get_fullscreen()
+    my = (display_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
+  else
+    my = (window_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
+  draw_set_font(fHint)
+  draw_set_halign(fa_left)
+  draw_set_valign(fa_top)
+  var h = string_height_ext(hintMsg, 50, 500) + 12;
+  draw_set_alpha(0.75)
+  draw_set_color(0)
+  draw_rectangle(x - 256*dsc, my - h*dsc, x + 256*dsc, my, false)
+  draw_set_alpha(1)
+  draw_set_color(c_white)
+  h-= 6
+  draw_text_ext_transformed(x - 250*dsc, my - h*dsc, hintMsg, 50,500, dsc, dsc, 0)
   }
 </string>
           </argument>

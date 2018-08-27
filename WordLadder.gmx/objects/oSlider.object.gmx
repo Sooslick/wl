@@ -32,6 +32,10 @@ a = 1           //draw alpha
 content = ''    //draw string; set after create call
 clickable = true   
 clicked = false
+hint = false
+hintTick = 0
+hintMsg = ''
+StartDepth = 1
 
 dsc = 1                     //draw scale
 tsc = 1
@@ -69,7 +73,13 @@ currval = 100
         if clickable      
           a = 1    
         else
-          a = 0.66            
+          a = 0.66   
+        hintTick++
+        if hintTick &gt; 42
+          {
+          hint = true   
+          depth = StartDepth - 2
+          }          
         }
 else
         {
@@ -78,6 +88,9 @@ else
           a = 0.66   
         else
           a = 0.33 
+        hint = false
+        hintTick = 0
+        depth = StartDepth
         }
 </string>
           </argument>
@@ -168,6 +181,8 @@ tsc*= dsc   //draw scalability
 
 maxx = x + 224*dsc
 minx = x - 224*dsc
+
+StartDepth = depth
 </string>
           </argument>
         </arguments>
@@ -209,6 +224,27 @@ draw_set_alpha(a)
 draw_text_transformed(x,y,content,tsc,dsc,0)
 draw_set_alpha(1)
 draw_sprite_ext(sSlider,hover,posx,y,dsc,dsc,0,c_white,1)
+
+//hint drawing
+if hint &amp;&amp; (hintMsg!='') &amp;&amp; clickable &amp;&amp; !clicked
+  {
+  var my;
+  if window_get_fullscreen()
+    my = (display_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
+  else
+    my = (window_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
+  draw_set_font(fHint)
+  draw_set_halign(fa_left)
+  draw_set_valign(fa_top)
+  var h = string_height_ext(hintMsg, 50, 500) + 12;
+  draw_set_alpha(0.75)
+  draw_set_color(0)
+  draw_rectangle(x - 256*dsc, my - h*dsc, x + 256*dsc, my, false)
+  draw_set_alpha(1)
+  draw_set_color(c_white)
+  h-= 6
+  draw_text_ext_transformed(x - 250*dsc, my - h*dsc, hintMsg, 50,500, dsc, dsc, 0)
+  }
 </string>
           </argument>
         </arguments>
