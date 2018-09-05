@@ -38,12 +38,51 @@ PlsArrIP[0] = 'localhost'
 PlsArrPing[0] = 0               
 PlsArrName[0] = global.profile[?'PNAME']
 PlsArrID[0] = global.profile[?'PNETID']
+PlsArrWord[0] = ''
+PlsArrScore[0] = 0
+PlsArrShift[0] = false
+PlsArrUnban[0] = -1
 //stat fields
 
 PingTimestamp = 0
 PingTimer = 30
 
+BRestart = -1
+
+ChatActive = false
+Chat = instance_create(800,200,oGameChat)
+Chat.parent = id
+
 //TODO Api request
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 17)  
+buffer_write(buffer_send, buffer_string, 'Server shut down')  
+for (i=1; i&lt;Players; i++)
+    network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+    
+network_destroy(server)
 </string>
           </argument>
         </arguments>
@@ -90,13 +129,57 @@ if PingTimer == 0
   //prestart timer sync
   if GR != -1
     {
-    buffer_seek(buffer_send, buffer_seek_start, 0);
-    buffer_write(buffer_send, buffer_s8, 11)
-    buffer_write(buffer_send, buffer_s8, GR.BTimer)
-    for (var i=1; i&lt;Players; i++)
-      network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+    if !GR.prepared
+      {
+      buffer_seek(buffer_send, buffer_seek_start, 0);
+      buffer_write(buffer_send, buffer_s8, 11)
+      buffer_write(buffer_send, buffer_s32, GR.BTimer)
+      for (var i=1; i&lt;Players; i++)
+        network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+      }
+    //start timer sync
+    else
+      {
+      buffer_seek(buffer_send, buffer_seek_start, 0);
+      buffer_write(buffer_send, buffer_s8, 12)
+      buffer_write(buffer_send, buffer_s32, GR.Timer)
+      for (var i=1; i&lt;Players; i++)
+        network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+      }
     }
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="56">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if BRestart != -1
+  if BRestart.clicked
+    {
+    buffer_seek(buffer_send, buffer_seek_start, 0);
+    buffer_write(buffer_send, buffer_s8, 19)
+    for (var i=1; i&lt;Players; i++)
+        network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+    network_destroy(server)
+    action_another_room(rGame)
+    }
 </string>
           </argument>
         </arguments>
@@ -133,11 +216,22 @@ if type = network_type_connect
   PlsArrIP[Players] = ip; 
   PlsArrName[Players] = '[ connecting ]'
   PlsArrPing[Players] = 999
+  PlsArrWord[Players] = ''
+  PlsArrScore[Players] = 0
+  PlsArrShift[Players] = false
+  PlsArrUnban[Players] = -1
   Players++
   parent.tc.online = true
   }
 else if type = network_type_data
   {  
+  for (var i=0; i &lt; Players; i++)
+    if eid == PlsArrSock[i]
+      {
+      eid = i
+      break
+      }
+  
   var header = buffer_read(msg_buff, buffer_s8); 
   switch(header)
     {
@@ -156,6 +250,7 @@ else if type = network_type_data
       buffer_write(buffer_send, buffer_s8, 1)
       buffer_write(buffer_send, buffer_s8, global.GameType)
       buffer_write(buffer_send, buffer_s8, global.profile[?'PLOCALE'])
+      buffer_write(buffer_send, buffer_s8, eid)
       network_send_packet( eid, buffer_send, buffer_tell(buffer_send) );
       break
     
@@ -200,6 +295,7 @@ else if type = network_type_data
         for (var i=1; i&lt;Players; i++)
           network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
         //send game info only for eid
+        //send word history
         }
       else
         {
@@ -224,8 +320,361 @@ else if type = network_type_data
           }
         }
       break
+    
+    //player input
+    case 13:
+      buffer_read(msg_buff, buffer_s8)      //TT
+      buffer_read(msg_buff, buffer_bool)    //shift
+      var enter = buffer_read(msg_buff, buffer_bool);
+      var word = buffer_read(msg_buff, buffer_string);
+      PlsArrWord[eid] = word
+      if enter &amp;&amp; checkWord(word,GR)
+          {
+          GR.currWord = word
+          GR.Cube.w1 = word
+          PlsArrScore[eid]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(GR.currWord)
+          buffer_seek(buffer_send, buffer_seek_start, 0);
+          buffer_write(buffer_send, buffer_s8, 14)
+          buffer_write(buffer_send, buffer_s8, eid)
+          buffer_write(buffer_send, buffer_bool, true)
+          buffer_write(buffer_send, buffer_string, word)
+          for (var i=1; i&lt;Players; i++)
+            network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+          with GR {event_user(1)}
+          for (var i=0; i&lt;Players; i++)
+            PlsArrWord[i] = ''
+          }
+      else
+          {
+          buffer_seek(buffer_send, buffer_seek_start, 0);
+          buffer_write(buffer_send, buffer_s8, 14)
+          buffer_write(buffer_send, buffer_s8, eid)
+          buffer_write(buffer_send, buffer_bool, false)
+          buffer_write(buffer_send, buffer_string, word)
+          for (var i=1; i&lt;Players; i++)
+            network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+          }
+      break 
+    
+    //chat str
+    case 20:
+      Chat.GotStr = PlsArrName[eid] + ': ' + buffer_read(msg_buff, buffer_string);
+      with Chat {event_user(0)}
+      buffer_seek(buffer_send, buffer_seek_start, 0);
+      buffer_write(buffer_send, buffer_s8, 20)
+      buffer_write(buffer_send, buffer_string, Chat.GotStr)
+      for (var i=1; i&lt;Players; i++)
+            network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+      break
     }
   }
+else if type = network_type_disconnect
+  {
+  for (var i=0; i&lt;Players; i++)
+    if sock == PlsArrSock[i]
+      {
+      eid = i
+      break
+      }
+    
+  buffer_seek(buffer_send, buffer_seek_start, 0);
+  buffer_write(buffer_send, buffer_s8, 18)
+  buffer_write(buffer_send, buffer_s8, eid)
+  for (var i=1; i&lt;Players; i++)
+    network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+  
+  for (var i = eid; i &lt; Players-1; i++)
+    {
+    PlsArrSock[i] = PlsArrSock[i+1]
+    PlsArrIP[i] = PlsArrIP[i+1]
+    PlsArrPing[i] = PlsArrPing[i+1]
+    PlsArrName[i] = PlsArrName[i+1]
+    PlsArrID[i] = PlsArrID[i+1]
+    PlsArrWord[i] = PlsArrWord[i+1]
+    PlsArrScore[i] = PlsArrScore[i+1]
+    PlsArrShift[i] = PlsArrShift[i+1]
+    PlsArrUnban[i] = PlsArrUnban[i+1]
+    }
+  Players--
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="15">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>chat event</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Chat.GotStr = PlsArrName[0] + ': ' + Chat.PendingStr
+      with Chat {event_user(0)}
+      buffer_seek(buffer_send, buffer_seek_start, 0);
+      buffer_write(buffer_send, buffer_s8, 20)
+      buffer_write(buffer_send, buffer_string, Chat.GotStr)
+      for (var i=1; i&lt;Players; i++)
+            network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="14">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Gameover event</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>BRestart = instance_create(1328,1100,oButton)
+BRestart.content = 'RESTART'
+
+//Stat passed from GameRuler in endgame event
+var bestpl = -1;
+var bestsc = -1;
+for (var i=0; i&lt;Players; i++)
+  if PlsArrScore[i] &gt; bestsc
+    {
+    bestpl = i
+    bestsc = PlsArrScore[i]
+    }
+var s = 'BEST PLAYER:#';
+s+= PlsArrName[bestpl]
+s+= '##SCORE:#'
+s+= string(PlsArrScore[bestpl])
+Stat.s = s
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="13">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Ban &amp; Green broadcast</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 15)            //header
+buffer_write(buffer_send, buffer_s8, GR.MinLen)     //length
+
+var B = ds_list_size(GR.TabuList);
+var G = ds_list_size(GR.TargetList);
+var S = '';
+for (var i=0; i&lt;B; i++)
+  S+= GR.TabuList[|i]
+for (var i=0; i&lt;G; i++)
+  S+= GR.TargetList[|i]
+
+buffer_write(buffer_send, buffer_s8, B)             //Banned qty
+buffer_write(buffer_send, buffer_s8, G)             //Greens Qty
+buffer_write(buffer_send, buffer_string, S)         //Banned + Greens char sequence
+for (var i=1; i&lt;Players; i++)
+  network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="12">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>pressed enter</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>PlsArrScore[0]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(GR.currWord)
+buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 14)
+buffer_write(buffer_send, buffer_s8, 0)
+buffer_write(buffer_send, buffer_bool, true)
+buffer_write(buffer_send, buffer_string, GR.currWord)
+for (var i=1; i&lt;Players; i++)
+  network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+with GR {event_user(1)}
+GR.waiting = false
+for (var i=0; i&lt;Players; i++)
+  PlsArrWord[i] = ''
+
+buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 16)
+buffer_write(buffer_send, buffer_s8, Players)
+for (var i=0; i&lt;Players; i++)
+  buffer_write(buffer_send, buffer_s32, PlsArrScore[i])
+for (var i=1; i&lt;Players; i++)
+  network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="11">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>input event</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 14)
+buffer_write(buffer_send, buffer_s8, 0)
+buffer_write(buffer_send, buffer_bool, false)
+buffer_write(buffer_send, buffer_string, GR.currWord)
+for (var i=1; i&lt;Players; i++)
+  network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
 </string>
           </argument>
         </arguments>
@@ -309,9 +758,8 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if parent.loaded
-{
-//////////////////
+            <string>if !parent.loaded
+  exit
 
 draw_set_font(fCube)
 draw_set_color(c_white)
@@ -319,31 +767,35 @@ draw_set_alpha(1)
 draw_set_halign(fa_right)
 draw_set_valign(fa_bottom)
 
-draw_text(1595,565,'Players: ' + string(Players))
+draw_text(1595,550,'Players: ' + string(Players))
 
 //ping column
-var s = '';
 for (var i=0; i&lt;Players; i++)
-  s+= string(PlsArrPing[i]) + '#'
-draw_text(1595,500,s)
+  draw_text(1595,485-i*65,string(PlsArrPing[i]))
 
 //name column
-s = '';
 for (var i=0; i&lt;Players; i++)
-  s+= PlsArrName[i] + '#'
-draw_text(1500,500,s)
+  draw_text(1500,485-i*65,PlsArrName[i])
+  
+//score column
+draw_set_alpha(0.8)
+for (var i=0; i&lt;Players; i++)
+  draw_text(1100,485-i*65,string(PlsArrScore[i]))
+  
+//word column
+draw_set_alpha(0.6)
+for (var i=0; i&lt;Players; i++)
+  draw_text(1000,485-i*65,PlsArrWord[i])
 
 //prestart string
-if !GR.prepared
-  {
-  s = 'Waiting for players#Ready: ' + string(Ready) + ' / ' + string(Players)
-  draw_set_halign(fa_center)
-  draw_set_valign(fa_center)
-  draw_text(800, 400, s)
-  }
-
-//////////////////////
-}
+if GR != -1
+  if !GR.prepared
+    {
+    s = 'Waiting for players#Ready: ' + string(Ready) + ' / ' + string(Players)
+    draw_set_halign(fa_center)
+    draw_set_valign(fa_center)
+    draw_text(800, 400, s)
+    }
 </string>
           </argument>
         </arguments>

@@ -342,7 +342,7 @@ switch ShowPage
           <argument>
             <kind>1</kind>
             <string>//gameover event
-B1 = instance_create(800,1100,oButton)
+B1 = instance_create(800,1100,oButton)  //TODO checlk gamemode
 B1.content = 'BACK'
 active = true
 
@@ -544,7 +544,7 @@ else
   draw_set_color(c_white)
   draw_set_valign(fa_top)
   draw_set_halign(fa_right)
-  draw_sprite_ext(sSquareFaded,0,1344,600-12,1,0.3,0,c_white,0.66)
+  draw_sprite_ext(sSquareFaded,0,1344,588,1,0.3,0,c_white,0.66)
   draw_text(1595,575,'Score: ' +string(pp))
   if ShiftA
     draw_set_color(make_color_rgb(ShiftATick,255,ShiftATick))

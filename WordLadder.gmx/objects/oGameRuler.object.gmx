@@ -81,6 +81,7 @@ MouseLeft = false
 
 //connetion code
 //server
+Net = -1
 if global.GameType &gt; 5
   {
   Net = instance_create(0,0,oGameServer)
@@ -479,7 +480,11 @@ if !loaded || loadFade &gt; 0.749
           <argument>
             <kind>1</kind>
             <string>if loaded
+  {
+  if Net != -1
+    instance_destroy(Net,true)
   action_another_room(rMenu)
+  }
 </string>
           </argument>
         </arguments>

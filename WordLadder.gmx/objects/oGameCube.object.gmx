@@ -373,7 +373,7 @@ if !Rot
     for (i=0; i&lt;ds_list_size(TabuList); i++)
       {
       draw_text(xt-j+i*72, y-j-100, TabuList[| i])
-      if TabuErrNum == i
+      if (TabuErrNum == i) &amp;&amp; (TabuErr)
         draw_sprite(sSquareTabu,1,xt-j+i*72, y-j-100)
       else
         draw_sprite(sSquareTabu,0,xt-j+i*72, y-j-100)

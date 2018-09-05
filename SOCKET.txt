@@ -11,23 +11,36 @@ SOCKET HEADERS
 8	client -> server	Game Rules map set request
 9	client -> server	Click "Ready"
 10	server -> client	"Ready" broadcast
-11	server -> client	"Ready" timer sync
+11	server -> client	prestart Timer sync
 12	server -> client	Game Start signal / Game Timer sync
+13	client -> server	Input event
+14	server -> client	Word accept broadcast / fail check
+15	server -> client	New word info: len, banned, green
+16	server -> client	Score broadcast
+17	server -> client	Force disconnect
+18	server -> client	Disconnection broadcast
+19	server -> client	Restart broadcast
+20	<->			Chat line
 
-..	client -> server	Chat line
-..	server -> client	Chat broadcast
+..	server -> client	Full word history
+..	server -> client	ability info: shifts, unbans
 _________________________________________
+
+Socket:
+Data	Var	Descriptoin &
+Type	Name	Comments
 
 0:
 s8		Header
 s32		Game Version
 s32		PNETID
-String		Name
+string		Name
 
 1:
 s8		Header
 s8		GameType
 s8		Locale
+s8		Player ID
 
 2:
 s8		Header
@@ -68,8 +81,48 @@ s8		Ready
 
 11:
 s8		Header
-s8		Prestart Timer
+s32		Timer [ticks]
 
 12:
 s8		Header
-s32		Game Timer
+s32		Game Timer [ticks]
+
+13:
+s8		Header
+s8		Unban Num
+bool		Using Shift
+bool		Enter is pressed
+string		Word
+
+14:
+s8		Header
+s8		Player
+bool		Success
+string		Word
+
+15:
+s8		Header
+s8		Word Length
+s8		Banned Qty
+s8		Greens Qty
+string		Banned & Greens char sequence
+
+16:
+s8		Header
+s8	P	Players
+Pxs32		Score
+
+17:
+s8		Header
+string		Disconnect msg
+
+18:
+s8		Header
+s8		Player ID
+
+19:
+s8		Header
+
+20:
+s8		Header
+string		Chat String

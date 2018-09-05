@@ -30,6 +30,7 @@ client = network_create_socket(network_socket_tcp);
 network_connect(client, global.IP, 27015);
 buffer_send = buffer_create(64, buffer_grow, 1);
 
+PID = -1
 GR = -1
 timeout = 300
 connected = false
@@ -40,6 +41,40 @@ Ready = 0
 PlsArrPing[0] = 0               
 PlsArrName[0] = ''
 PlsArrID[0] = 0
+PlsArrWord[0] = ''
+PlsArrScore[0] = 0
+PlsArrShift[0] = false
+PlsArrUnban[0] = -1
+
+RestartTimer = 150
+Restarting = false
+
+ChatActive = false
+Chat = instance_create(800,200,oGameChat)
+Chat.parent = id
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>network_destroy(client)
 </string>
           </argument>
         </arguments>
@@ -70,6 +105,13 @@ if timeout &lt;= 0
     action_another_room(rMenu)
     //todo msg
     }
+    
+if Restarting
+  {
+  RestartTimer--
+  if RestartTimer &lt;= 0
+    action_another_room(rGame)
+  }
 </string>
           </argument>
         </arguments>
@@ -120,6 +162,7 @@ else if type == network_type_data
     case 1:
       global.GameType = buffer_read(msg_buff, buffer_s8)
       parent.dict.locale = buffer_read(msg_buff, buffer_s8)
+      PID = buffer_read(msg_buff, buffer_s8)
       with parent {event_user(2)}
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 5)           //plr info request
@@ -150,6 +193,10 @@ else if type == network_type_data
         {
         PlsArrID[i] = buffer_read(msg_buff, buffer_s32);
         PlsArrName[i] = buffer_read(msg_buff, buffer_string);
+        PlsArrWord[i] = ''
+        PlsArrScore[i] = 0
+        PlsArrShift[i] = false
+        PlsArrUnban[i] = -1
         }
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 8)           //rules map request
@@ -172,7 +219,7 @@ else if type == network_type_data
     //sync prestart timer
     case 11:
       if GR != -1
-        GR.BTimer = buffer_read(msg_buff, buffer_s8);
+        GR.BTimer = buffer_read(msg_buff, buffer_s32);
       break
       
     //sync game timer or game start signal
@@ -183,8 +230,235 @@ else if type == network_type_data
         GR.Timer = buffer_read(msg_buff, buffer_s32);
         }
       break
+      
+    //word checked by server
+    case 14:
+      if GR != -1
+          {
+          var pid = buffer_read(msg_buff, buffer_s8);     //player typed the word
+          if pid == PID
+            GR.waiting = false   
+          if buffer_read(msg_buff, buffer_bool)
+            {
+            GR.currWord = buffer_read(msg_buff, buffer_string)      //AAA
+            GR.Cube.w1 = GR.currWord
+            with GR {event_user(1)}
+            GR.waiting = true
+            for (var i=0; i&lt;Players; i++)
+              PlsArrWord[i] = ''
+            }
+          else
+            PlsArrWord[pid] = buffer_read(msg_buff, buffer_string)      //AAAA
+          }
+      break
+      
+    //refresh Ban &amp; Green Lists
+    case 15:
+      if GR != -1
+          {
+          GR.MinLen = buffer_read(msg_buff, buffer_s8);
+          GR.Cube.NewLen = GR.MinLen
+          var B = buffer_read(msg_buff, buffer_s8);
+          var G = buffer_read(msg_buff, buffer_s8);
+          var S = buffer_read(msg_buff, buffer_string);
+          ds_list_clear(GR.TabuList)
+          for (var i=1; i&lt;=B; i++)
+            ds_list_add(GR.TabuList,string_char_at(S,i))
+          ds_list_clear(GR.TargetList)
+          for (var i=B+1; i&lt;=B+G; i++)
+            ds_list_add(GR.TargetList,string_char_at(S,i))
+          GR.waiting = false
+          }
+      break
+      
+    //refresh scoretable
+    case 16:
+      Players = buffer_read(msg_buff, buffer_s8);
+      for (var i=0; i&lt;Players; i++)
+        PlsArrScore[i] = buffer_read(msg_buff, buffer_s32);
+      break
+      
+    //disconnected
+    case 17:
+      network_destroy(client)
+      action_another_room(rMenu)
+      //todo msg
+      break
+      
+    //someone disconnected
+    case 18:
+      var pid = buffer_read(msg_buff, buffer_s8);
+      for (var i = pid; i &lt; Players-1; i++)
+        {
+        PlsArrPing[i] = PlsArrPing[i+1]
+        PlsArrName[i] = PlsArrName[i+1]
+        PlsArrID[i] = PlsArrID[i+1]
+        PlsArrWord[i] = PlsArrWord[i+1]
+        PlsArrScore[i] = PlsArrScore[i+1]
+        PlsArrShift[i] = PlsArrShift[i+1]
+        PlsArrUnban[i] = PlsArrUnban[i+1]
+        }
+      Players--
+      break
+      
+    //restart signal
+    case 19:
+      RestartTimer = 150
+      Restarting = true
+      network_destroy(client)
+      break
+      
+    //chat event
+    case 20:
+      Chat.GotStr = buffer_read(msg_buff, buffer_string);
+      with Chat {event_user(0)}
+      break
     }                
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="15">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>send chat</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 20)
+buffer_write(buffer_send, buffer_string, Chat.PendingStr)
+network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="12">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Enter pressed</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 13)
+buffer_write(buffer_send, buffer_s8, GR.TTNum)
+buffer_write(buffer_send, buffer_bool, GR.Shift)
+buffer_write(buffer_send, buffer_bool, true)
+buffer_write(buffer_send, buffer_string, GR.currWord)
+network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="11">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Input event</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 13)
+buffer_write(buffer_send, buffer_s8, GR.TTNum)
+buffer_write(buffer_send, buffer_bool, GR.Shift)
+buffer_write(buffer_send, buffer_bool, false)
+buffer_write(buffer_send, buffer_string, GR.currWord)
+network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
 </string>
           </argument>
         </arguments>
@@ -252,9 +526,8 @@ network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if parent.loaded
-{
-//////////////////
+            <string>if !parent.loaded
+  exit
 
 draw_set_font(fCube)
 draw_set_color(c_white)
@@ -262,31 +535,42 @@ draw_set_alpha(1)
 draw_set_halign(fa_right)
 draw_set_valign(fa_bottom)
 
-draw_text(1595,560,'Players: ' + string(Players))
+draw_text(1595,565,'Players: ' + string(Players))
 
 //ping column
-var s = '';
 for (var i=0; i&lt;Players; i++)
-  s+= string(PlsArrPing[i]) + '#'
-draw_text(1595,500,s)
+  draw_text(1595,500-i*65,string(PlsArrPing[i]))
 
 //name column
-s = '';
 for (var i=0; i&lt;Players; i++)
-  s+= PlsArrName[i] + '#'
-draw_text(1540,500,s)
+  draw_text(1520,500-i*65,PlsArrName[i])
+  
+//score column
+for (var i=0; i&lt;Players; i++)
+  draw_text(1245,500-i*65,string(PlsArrScore[i]))
+
+//word column
+for (var i=0; i&lt;Players; i++)
+  draw_text(1000,500-i*65,PlsArrWord[i])
 
 //prestart string
 if !GR.prepared
   {
-  s = 'Waiting for players#Ready: ' + string(Ready) + ' / ' + string(Players)
+  var s = 'Waiting for players#Ready: ' + string(Ready) + ' / ' + string(Players);
   draw_set_halign(fa_center)
   draw_set_valign(fa_center)
   draw_text(800, 400, s)
   }
 
-///////////////////////
-}
+if Restarting
+  {
+  draw_set_halign(fa_center)
+  draw_set_valign(fa_center)
+  draw_set_font(fImpact96)
+  var s = 'Restarting in#';
+  s+= formatTimeString(RestartTimer)
+  draw_text(800, 600, s)
+  }
 </string>
           </argument>
         </arguments>

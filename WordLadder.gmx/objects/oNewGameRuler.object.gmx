@@ -44,7 +44,6 @@ PServer = instance_create(300,760,oButton)
 with(PServer)
   {
   content = 'HOW TO PLAY'
-  clickable = false
   event_user(0)
   }
 //htp hint
@@ -126,6 +125,8 @@ else if PClient.clicked
   parent.Header = 'MULTIPLAYER'
   instance_destroy(self,true)
   }
+else if PServer.clicked
+  action_another_room(rHTP)
 </string>
           </argument>
         </arguments>

@@ -71,6 +71,8 @@ bg.b22 = b2Accept
 motd = ""
 motd_ready = false
 http_get("http://sooslick.flaminggaming.ru/wl/getSplash.php")
+checkVersionStr = ''
+http_get("http://sooslick.flaminggaming.ru/wl/getVersion.php")
 //EasterEgg faked button
 bEggClicked = false
 </string>
@@ -461,8 +463,21 @@ else if b2Accept.clicked
 var html = json_decode(async_load[? "result"])
 if html != -1
   {
-  motd = html[?'CONTENT']
-  motd_ready = true
+  if !is_undefined(html[?'CONTENT'])
+    {
+    motd = html[?'CONTENT']
+    motd_ready = true
+    exit
+    }
+  if !is_undefined(html[?'VERSION'])
+    {
+    var v = real(html[?'VERSION'])
+    if global.GameVersion &gt; v
+      checkVersionStr = 'Server outdated'
+    else if global.GameVersion &lt; v
+      checkVersionStr = 'GAME OUTDATED'
+    exit
+    }
   }
 </string>
           </argument>
@@ -497,7 +512,10 @@ draw_text(800,100,Header)
 //Profile name TODO: fade out
 draw_set_font(fImpact64)
 draw_set_halign(fa_right)
-draw_text(1580,1150,'Profile: '+ global.config[?'ProfileFile'])
+if checkVersionStr == ''
+  draw_text(1580,1150,'Profile: '+ global.config[?'ProfileFile'])
+else
+  draw_text(1580,1150,checkVersionStr)
 
 //Fade out
 if Dead

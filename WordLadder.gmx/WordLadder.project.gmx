@@ -58,6 +58,7 @@
     <sprite>sprites\sSquareFaded</sprite>
     <sprite>sprites\sEnglish</sprite>
     <sprite>sprites\sPixel</sprite>
+    <sprite>sprites\sPixel2</sprite>
     <sprites name="OldLogo">
       <sprite>sprites\LogoBlack</sprite>
       <sprite>sprites\LogoWhite</sprite>
@@ -88,6 +89,7 @@
     <script>scripts\funcGetWord.gml</script>
     <script>scripts\funcReadLong.gml</script>
     <script>scripts\funcWriteLong.gml</script>
+    <script>scripts\checkWord.gml</script>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
@@ -105,6 +107,7 @@
       <object>objects\oSimpleGameRuler</object>
       <object>objects\oHardGameRuler</object>
       <object>objects\oCustomGameRuler</object>
+      <object>objects\oHowToPlay</object>
       <object>objects\oCoopGameRuler</object>
       <object>objects\oGameCube</object>
       <object>objects\oGameStatCounter</object>
@@ -112,6 +115,7 @@
       <object>objects\oProgBar</object>
       <object>objects\oGameClient</object>
       <object>objects\oGameServer</object>
+      <object>objects\oGameChat</object>
     </objects>
     <objects name="MainMenuGroup">
       <object>objects\oAchievementsRuler</object>
@@ -152,6 +156,7 @@
     <room>rooms\rFirst</room>
     <room>rooms\rGame</room>
     <room>rooms\rDev</room>
+    <room>rooms\rHTP</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>

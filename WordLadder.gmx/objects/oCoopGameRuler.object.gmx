@@ -27,11 +27,13 @@
             <kind>1</kind>
             <string>prepared = false
 prestart = false
+waiting = false
 prevWord = ''
 currWord = ''
 prevWordList = ds_list_create()
 prevOffset = -1
 words = 0
+loadRot = 0
 
 prevAnim = false
 prevAnimTick = 0
@@ -214,7 +216,8 @@ Stat.GameTypeID = 100  //COOP
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if prepared
+            <string>loadRot+=10
+if prepared
   {
   Stat.ticks++
   Timer--
@@ -317,6 +320,216 @@ else if prestart
         </arguments>
       </action>
     </event>
+    <event eventtype="7" enumb="12">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>refresh Greens &amp; Banneds</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//Tabu refresh
+        ds_list_clear(TabuList)
+        for (i=1; i&lt;=TabuQty; i++)
+          {
+          tmp = funcNewTabuLetter(Vowel + TabuQtyPB.Prog / 20)      //Vowel% chance of vowel tabu
+          if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
+              ds_list_add(TabuList,tmp)
+          }
+        Stat.banned+= ds_list_size(TabuList)
+        //target letters refresh
+        ds_list_clear(TargetList)
+        for (i=0; i&lt;TLQty; i++)
+          {
+          var arr;
+          arr[0] = 1.1
+          arr[1] = 1.22
+          arr[2] = 1.333
+          arr[3] = 1.4444
+          var c = funcNewTargetLetter(arr);
+          if ds_list_find_index(TargetList, c) == -1
+            if ds_list_find_index(TabuList,c) == -1
+              ds_list_add(TargetList, c)
+          }
+          
+with Net {event_user(3)}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="11">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Word confirmed by server</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//stats count
+        words++
+        Stat.words++
+        Stat.lettersa += string_length(currWord)
+        Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
+        Stat.LenWord = currWord
+        with Stat {event_user(2)}
+        //words changing
+        prevWord = currWord
+        MinLen = string_length(currWord)
+        if MinLen &gt; MaxLen
+          MaxLen = MinLen
+        if MinLen &gt; 15
+          MinLen = 15
+        ds_list_add(prevWordList,currWord)
+        Cube.Rot = true
+        Cube.LengthErrTick = 0
+        Cube.LengthErr = false
+        Timer+= (string_length(currWord)-1)*SecPerLetter - Timer div 60
+        currWord = string_char_at(currWord, string_length(currWord))
+        //shift prog
+        if Shift
+          {
+          ShiftQty--
+          Stat.ShiftU = true
+          Stat.shiftsu++
+          Shift = false
+          }
+        ShiftPB.Prog+= string_length(prevWord) + ds_list_size(TabuList)
+        if ShiftPB.Prog &gt;= ShiftPB.Req
+          {
+          ShiftPB.Prog-= ShiftPB.Req
+          ShiftPB.Req+= MinLen
+          ShiftQty++
+          Stat.ShiftA = true
+          Stat.shiftsa++
+          }
+        ShiftPB.Anim = true
+        ShiftPB.AnimXTarget = ShiftPB.Prog / ShiftPB.Req * 1600
+        //TT prog
+        if TT
+          {
+          TT = false
+          TTNum = -1
+          TTQty--
+          Stat.TTU = true
+          Stat.unbansu++
+          }
+        TTPB.Prog+= string_length(prevWord) + ds_list_size(TabuList) + (Timer div 1800)
+        if TTPB.Prog &gt;= TTPB.Req
+          {
+          TTPB.Prog-= TTPB.Req
+          TTPB.Req+= TTPB.Req div 42
+          TTQty++
+          Stat.TTA = true
+          Stat.unbansa++
+          }
+        TTPB.Anim = true
+        TTPB.AnimXTarget = TTPB.Prog / TTPB.Req * 1600
+        //length dec calc
+          tmp = string_length(prevWord) + ds_list_size(TabuList) - 9
+          if tmp &gt; 0
+            {
+            DecPB.Prog+= tmp
+            if DecPB.Prog &gt;= DecPB.Req
+              {
+              DecPB.Prog-= DecPB.Req
+              DecQty++
+              MinLen--
+              DecPB.Req = DecArr[DecQty]
+              }
+            DecPB.Anim = true
+            DecPB.AnimXTarget = DecPB.Prog / DecPB.Req * 1600
+            }
+        //tabu calc
+        TabuQtyPB.Prog++
+        if TabuQtyPB.Prog &gt;= TabuQtyPB.Req
+          {
+          TabuQty++
+          TabuQtyPB.Prog = 0
+          TabuQtyPB.Req = BanArr[TabuQty]
+          }
+        TabuQtyPB.Anim = true
+        TabuQtyPB.AnimXTarget = TabuQtyPB.Prog / TabuQtyPB.Req * 1600
+        //target Letters List count
+        for (i=0; i&lt; ds_list_size(TargetList); i++)
+          {
+          var cnt = string_count(TargetList[| i],prevWord) ;
+          if cnt &gt; 0
+            Stat.pp+= ceil(cnt*words / 10)
+          }
+        //HintRefresh
+        HintTimeUp = false
+        HintTooLong = false
+        Think = 0
+        HintWrong = 0
+        HintTimer+= 228
+        //Cube Post Operations 
+        Cube.NewLen = MinLen
+        //Refresh green / ban
+        event_user(2)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
@@ -336,7 +549,10 @@ else if prestart
             <kind>1</kind>
             <string>//gameover Event
 with Stat {event_user(0)}
-instance_destroy(parent,true)
+Net.GR = -1
+Net.Stat = Stat
+with Net {event_user(4)}
+//instance_destroy(parent,true)
 instance_destroy(Cube,true)
 instance_destroy(self,true)
 </string>
@@ -361,7 +577,13 @@ instance_destroy(self,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//alpha background
+            <string>if waiting
+  {
+  draw_sprite_ext(sLoading,0,1500,80,2,2,loadRot,c_white,1)
+  draw_sprite_ext(sLoading,0,1500,80,1,1,-loadRot*2,c_white,1)
+  }
+
+//alpha background
 draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,0.5)
 //pre-sets
 draw_set_halign(fa_center)
@@ -546,6 +768,12 @@ for (i=0; i&lt;ds_list_size(TargetList); i++)
 if Cube.Rot
   exit
   
+if waiting
+  exit
+  
+if Net.ChatActive
+  exit
+  
 Stat.attempts++
 
 //check len
@@ -562,7 +790,6 @@ for (i=2; i&lt;=string_length(currWord); i++)
   j = ds_list_find_index(TabuList, string_char_at(currWord,i))
   if (j != -1) &amp;&amp; (j != TTNum)
     {
-    Timer-= 150
     Cube.TabuErr = true
     Cube.TabuErrNum = j
     Stat.tabus++
@@ -578,7 +805,6 @@ if HintWrong == 0
   HintWrong = 1
   HintTimer+= 228
   }
-Timer-= 150
 prevAnim = true
 Stat.prevs++
 exit
@@ -595,128 +821,8 @@ exit
       tmp = ds_list_find_index(tmpl,currWord)
       if tmp != -1
         {
-        //stats count
-        words++
-        Stat.words++
-        Stat.lettersa += string_length(currWord)
-        Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
-        Stat.LenWord = currWord
-        with Stat {event_user(2)}
-        //words changing
-        prevWord = currWord
-        MinLen = string_length(currWord)
-        if MinLen &gt; MaxLen
-          MaxLen = MinLen
-        if MinLen &gt; 15
-          MinLen = 15
-        ds_list_add(prevWordList,currWord)
-        Cube.Rot = true
-        Cube.LengthErrTick = 0
-        Cube.LengthErr = false
-        Timer+= (string_length(currWord)-1)*SecPerLetter - Timer div 60
-        currWord = string_char_at(currWord, string_length(currWord))
-        //shift prog
-        if Shift
-          {
-          ShiftQty--
-          Stat.ShiftU = true
-          Stat.shiftsu++
-          Shift = false
-          }
-        ShiftPB.Prog+= string_length(prevWord) + ds_list_size(TabuList)
-        if ShiftPB.Prog &gt;= ShiftPB.Req
-          {
-          ShiftPB.Prog-= ShiftPB.Req
-          ShiftPB.Req+= MinLen
-          ShiftQty++
-          Stat.ShiftA = true
-          Stat.shiftsa++
-          }
-        ShiftPB.Anim = true
-        ShiftPB.AnimXTarget = ShiftPB.Prog / ShiftPB.Req * 1600
-        //TT prog
-        if TT
-          {
-          TT = false
-          TTNum = -1
-          TTQty--
-          Stat.TTU = true
-          Stat.unbansu++
-          }
-        TTPB.Prog+= string_length(prevWord) + ds_list_size(TabuList) + (Timer div 1800)
-        if TTPB.Prog &gt;= TTPB.Req
-          {
-          TTPB.Prog-= TTPB.Req
-          TTPB.Req+= TTPB.Req div 42
-          TTQty++
-          Stat.TTA = true
-          Stat.unbansa++
-          }
-        TTPB.Anim = true
-        TTPB.AnimXTarget = TTPB.Prog / TTPB.Req * 1600
-        //length dec calc
-          tmp = string_length(prevWord) + ds_list_size(TabuList) - 9
-          if tmp &gt; 0
-            {
-            DecPB.Prog+= tmp
-            if DecPB.Prog &gt;= DecPB.Req
-              {
-              DecPB.Prog-= DecPB.Req
-              DecQty++
-              MinLen--
-              DecPB.Req = DecArr[DecQty]
-              }
-            DecPB.Anim = true
-            DecPB.AnimXTarget = DecPB.Prog / DecPB.Req * 1600
-            }
-        //tabu calc
-        TabuQtyPB.Prog++
-        if TabuQtyPB.Prog &gt;= TabuQtyPB.Req
-          {
-          TabuQty++
-          TabuQtyPB.Prog = 0
-          TabuQtyPB.Req = BanArr[TabuQty]
-          }
-        TabuQtyPB.Anim = true
-        TabuQtyPB.AnimXTarget = TabuQtyPB.Prog / TabuQtyPB.Req * 1600
-        //target Letters List count
-        for (i=0; i&lt; ds_list_size(TargetList); i++)
-          {
-          var cnt = string_count(TargetList[| i],prevWord) ;
-          if cnt &gt; 0
-            Stat.pp+= ceil(cnt*words / 10)
-          }
-        //Tabu refresh
-        ds_list_clear(TabuList)
-        for (i=1; i&lt;=TabuQty; i++)
-          {
-          tmp = funcNewTabuLetter(Vowel + TabuQtyPB.Prog / 20)      //Vowel% chance of vowel tabu
-          if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
-              ds_list_add(TabuList,tmp)
-          }
-        Stat.banned+= ds_list_size(TabuList)
-        //target letters refresh
-        ds_list_clear(TargetList)
-        for (i=0; i&lt;TLQty; i++)
-          {
-          var arr;
-          arr[0] = 1
-          arr[1] = 1.1
-          arr[2] = 1.22
-          arr[3] = 1.444
-          var c = funcNewTargetLetter(arr);
-          if ds_list_find_index(TargetList, c) == -1
-            if ds_list_find_index(TabuList,c) == -1
-              ds_list_add(TargetList, c)
-          }
-        //HintRefresh
-        HintTimeUp = false
-        HintTooLong = false
-        Think = 0
-        HintWrong = 0
-        HintTimer+= 228
-        //Cube Post Operations 
-        Cube.NewLen = MinLen
+        waiting = true
+        with Net {event_user(2)}
         }
       else
         {
@@ -725,7 +831,6 @@ exit
           HintWrong = 1
           HintTimer+= 228
           }
-        Timer-= 150
         Cube.LengthErr = true
         Stat.dicts++
         }
@@ -737,7 +842,6 @@ exit
         HintWrong = 1
         HintTimer+= 228
         }
-      Timer-= 150
       Cube.LengthErr = true
       Stat.dicts++
       }
@@ -749,7 +853,6 @@ exit
       HintWrong = 1
       HintTimer+= 228
       }
-    Timer-= 150
     Cube.LengthErr = true
     Stat.dicts++
     }
@@ -775,9 +878,12 @@ exit
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !Cube.Rot
-{
-////////////////////////////
+            <string>if Cube.Rot
+  exit
+  
+if Net.ChatActive
+  exit
+  
 if !keyboard_check(vk_enter)
   {     
   //backspacing
@@ -829,6 +935,7 @@ if !keyboard_check(vk_enter)
     }
   Cube.w1 = currWord  
   Cube.NewWord = true
+  with Net {event_user(1)}
   
   //find similar in prevs
   prevOffset = -1
@@ -843,8 +950,6 @@ if !keyboard_check(vk_enter)
       }
     }
   }
-///////////////////////
-}
 </string>
           </argument>
         </arguments>

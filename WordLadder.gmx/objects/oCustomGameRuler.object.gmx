@@ -811,7 +811,7 @@ if !keyboard_check(vk_enter)
     Stat.letters++
     }
   //TODO: LOCALE!!!!! ! ! !
-  else
+  else if (MinLen&gt;=15)||(string_length(currWord)&lt;=MinLen)
     {
     keyboard_lastchar = string_upper(keyboard_lastchar)
     if (ord(keyboard_lastchar)&gt;64)&amp;&amp;(ord(keyboard_lastchar)&lt;91)

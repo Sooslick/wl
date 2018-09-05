@@ -1,4 +1,6 @@
 var tick = argument0;
+if tick < 0
+  tick = 0
 //count basics
 var ms = tick mod 30;
 tick = tick div 30
