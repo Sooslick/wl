@@ -72,14 +72,14 @@ for (i=1; i&lt;=TabuQty; i++)
 TargetList = ds_list_create()
 TLQty = 0
 
-Cube = instance_create(800,600,oGameCube)
+Cube = instance_create(800,720,oGameCube)
 Cube.parent = id
 Cube.MinLen = MinLen
 Cube.NewLen = MinLen
 Cube.w1 = prevWord
-Cube.w2 = ''
-Cube.w3 = ''
-Cube.w4 = ''
+Cube.w2 = '    '
+Cube.w3 = '    '
+Cube.w4 = '    '
 Cube.TabuList = TabuList
 Cube.TargetList = TargetList
 
@@ -402,7 +402,7 @@ FadingOp = 0
         TypeStr = 'ATAGAN#ETWORK#INGDOM#ILLION#OTHING#ENERAL#ICENCE#DUCATE#CLIPSE#LLIPSE#EEEEEEEEEEEEEEEEEE'
         TypeChr = 1
         TypeTimer = 15
-        TypeTimerReset = 9
+        TypeTimerReset = 6
         TypeEnable = true
         break
       case 30:
@@ -803,7 +803,7 @@ if TT
 draw_set_halign(fa_center)
 draw_set_valign(fa_bottom)
 draw_set_alpha(1)
-draw_text_ext(800,330,TextArr[TextPt],72,1234)
+draw_text_ext(800,420,TextArr[TextPt],76,1234)
 
 //fading
 if Fading

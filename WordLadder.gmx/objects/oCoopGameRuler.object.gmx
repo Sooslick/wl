@@ -179,14 +179,14 @@ switch global.custom[?'Green']
   case 2: TLQty = 0
   }
 
-Cube = instance_create(800,600,oGameCube)
+Cube = instance_create(800,600 + MinLen*30, oGameCube)
 Cube.parent = id
 Cube.MinLen = MinLen
 Cube.NewLen = MinLen
 Cube.w1 = prevWord
-Cube.w2 = ''
-Cube.w3 = ''
-Cube.w4 = ''
+Cube.w2 = '    '
+Cube.w3 = '    '
+Cube.w4 = '    '
 Cube.TabuList = TabuList
 Cube.TargetList = TargetList
 

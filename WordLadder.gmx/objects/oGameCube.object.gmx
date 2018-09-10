@@ -54,6 +54,7 @@ LengthErrTick = 0
 
 Shifted = false
 aps = 1                     //alpha per square
+ds = -1                     //draw surface
 </string>
           </argument>
         </arguments>
@@ -98,13 +99,11 @@ if Rot
       w3 = w2
     w2 = w1
     w1 = string_char_at(w1,string_length(w1))
-    ShiftY = (NewLen - MinLen)*32
-    ShiftX = ShiftY
+    ShiftY = (string_length(w2) - MinLen)*32
+    ShiftX = (NewLen - MinLen)*32
     x+= ShiftX
-    if ShiftY &gt; 0
-      y-= ShiftY
-    else
-      ShiftY = 0
+    y-= ShiftY
+    ShiftY+= ShiftX
     MinLen = NewLen
     Shift = true
     NewWord = true
@@ -122,23 +121,23 @@ if Shift
   {
   if ShiftY &gt; 0
     {
-    y+= 2
-    ShiftY-= 1
+    y+= 4
+    ShiftY-= 4
     }
   else if ShiftY &lt; 0
     {
-    y-= 2
-    ShiftY+= 1
+    y-= 4
+    ShiftY+= 4
     }
   else if ShiftX &gt; 0
     {
-    x-= 1
-    ShiftX-= 1
+    x-= 2
+    ShiftX-= 2
     }
   else if ShiftX &lt; 0
     {
-    x+= 1
-    ShiftX+= 1
+    x+= 2
+    ShiftX+= 2
     }
   else
     Shift = false
@@ -212,6 +211,14 @@ draw_set_halign(fa_center)
 draw_set_valign(fa_center)
 draw_set_alpha(1)
 
+//pre-set surface
+if !surface_exists(ds)
+  ds = surface_create(1600,1600)    //a
+surface_set_target(ds)
+var sx = 512;
+var sy = 800;
+draw_clear_alpha(0,0)
+
 //pre-computing
 if Shifted
   shoff = 1
@@ -230,14 +237,14 @@ else
   tmp = MinLen
 for (i=0; i&lt;tmp; i++)
   {
-  xd = x-j+64*i
-  yd = y-j
+  xd = sx-j+64*i
+  yd = sy-j
   if Rot
     {
-    dist=point_distance(x,y,xd,yd)
-    currrot=degtorad(point_direction(x,y,xd,yd)+RotDeg)  
-    xd=x+dist*cos(currrot)
-    yd=y-dist*sin(currrot)
+    dist=point_distance(sx,sy,xd,yd)
+    currrot=degtorad(point_direction(sx,sy,xd,yd)+RotDeg)  
+    xd=sx+dist*cos(currrot)
+    yd=sy-dist*sin(currrot)
     }
   draw_sprite_ext(sSquareCenter,0, xd, yd, ApproachScale,ApproachScale,RotDeg,c_white,1)       
   draw_text_transformed(xd,yd,string_char_at(w1,i+1), 1,1,RotDeg)
@@ -249,96 +256,91 @@ if (string_length(w1) &gt;= MinLen) &amp;&amp; !Rot
 if LengthErr
   {
   a = (0.52 - (LengthErrTick*0.015))
-  draw_sprite_ext(sPixel,0,x-j-32,yd-32,tmp*64,64,0,c_red,a)
+  draw_sprite_ext(sPixel,0,sx-j-32,yd-32,tmp*64,64,0,c_red,a)
   }
 //newword fading
 if !Rot &amp;&amp; !Approach &amp;&amp; NewWord
   {
-  draw_sprite_ext(sSquareFaded,0,x-j+NewWordX-32,y-j-32,0.25,0.25,RotDeg,c_black,1) 
-  draw_sprite_ext(sPixel,0,x-j+NewWordX+32,y-j-32,tmp*64-NewWordX,64,0,c_black,1)
+  draw_sprite_ext(sSquareFaded,0,sx-j+NewWordX-32,sy-j-32,0.25,0.25,RotDeg,c_black,1) 
+  draw_sprite_ext(sPixel,0,sx-j+NewWordX+32,sy-j-32,tmp*64-NewWordX,64,0,c_black,1)
   }
   
 if w2 != ''
-{
-if Shifted
   {
-  xd = x-j
-  yd = y-j-64
-  if Rot
+  if Shifted
     {
-    dist=point_distance(x,y,xd,yd)
-    currrot=degtorad(point_direction(x,y,xd,yd)+RotDeg)  
-    xd=x+dist*cos(currrot)
-    yd=y-dist*sin(currrot)
+    xd = sx-j
+    yd = sy-j-64
+    if Rot
+      {
+      dist=point_distance(sx,sy,xd,yd)
+      currrot=degtorad(point_direction(sx,sy,xd,yd)+RotDeg)  
+      xd=sx+dist*cos(currrot)
+      yd=sy-dist*sin(currrot)
+      }
+    draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,1)       
+    draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)), 1,1,RotDeg+90)
+    //TODO fade out while ROT
     }
-  draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,1)       
-  draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)), 1,1,RotDeg+90)
-  //TODO fade out while ROT
-  }
-for (i=1; i&lt;string_length(w2)-shoff; i++)
-  {
-  xd = x-j
-  yd = y-j+64*i
-  if Rot
+  for (i=1; i&lt;string_length(w2)-shoff; i++)
     {
-    dist=point_distance(x,y,xd,yd)
-    currrot=degtorad(point_direction(x,y,xd,yd)+RotDeg)  
-    xd=x+dist*cos(currrot)
-    yd=y-dist*sin(currrot)
+    xd = sx-j
+    yd = sy-j+64*i
+    if Rot
+      {
+      dist=point_distance(sx,sy,xd,yd)
+      currrot=degtorad(point_direction(sx,sy,xd,yd)+RotDeg)  
+      xd=sx+dist*cos(currrot)
+      yd=sy-dist*sin(currrot)
+      }
+    draw_set_alpha(draw_get_alpha()-aps)
+    draw_sprite_ext(sSquareCenter,0,xd,yd,1,1,RotDeg,c_white,draw_get_alpha()) 
+    draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)-i-shoff), 1,1,RotDeg+90)
     }
-  draw_set_alpha(draw_get_alpha()-aps)
-  draw_sprite_ext(sSquareCenter,0,xd,yd,1,1,RotDeg,c_white,draw_get_alpha()) 
-  draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)-i-shoff), 1,1,RotDeg+90)
   }
-}
   
 //w3
 if w3 != ''
-{
-for (i=1; i&lt;string_length(w3); i++)
   {
-  xd = x-j+64*i
-  yd = y-j+(string_length(w2)-1-shoff)*64
-  if Rot
+  for (i=1; i&lt;string_length(w3); i++)
     {
-    dist=point_distance(x,y,xd,yd)
-    currrot=degtorad(point_direction(x,y,xd,yd)+RotDeg)  
-    xd=x+dist*cos(currrot)
-    yd=y-dist*sin(currrot)
+    xd = sx-j+64*i
+    yd = sy-j+(string_length(w2)-1-shoff)*64
+    if Rot
+      {
+      dist=point_distance(sx,sy,xd,yd)
+      currrot=degtorad(point_direction(sx,sy,xd,yd)+RotDeg)  
+      xd=sx+dist*cos(currrot)
+      yd=sy-dist*sin(currrot)
+      }
+    draw_set_alpha(draw_get_alpha()-aps)
+    draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,draw_get_alpha()) 
+    draw_text_transformed(xd, yd,string_char_at(w3,string_length(w3)-i), 1,1,RotDeg+180)
     }
-  draw_set_alpha(draw_get_alpha()-aps)
-  draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,draw_get_alpha()) 
-  draw_text_transformed(xd, yd,string_char_at(w3,string_length(w3)-i), 1,1,RotDeg+180)
   }
-}
 
 //w4    
 if (w4 != '')
-{
-i=1
-while (draw_get_alpha() &gt; 0)
   {
-  xd = x-j+(string_length(w3)-1)*64
-  yd = y-j+(string_length(w2)-1-shoff)*64-i*64
-  if Rot
+  i=1
+  while (draw_get_alpha() &gt; 0)
     {
-    dist=point_distance(x,y,xd,yd)
-    currrot=degtorad(point_direction(x,y,xd,yd)+RotDeg)  
-    xd=x+dist*cos(currrot)
-    yd=y-dist*sin(currrot)
-    }
-  draw_set_alpha(draw_get_alpha()-aps)
-  draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,draw_get_alpha()) 
-  draw_text_transformed(xd, yd, string_char_at(w4,string_length(w4)-i), 1,1,RotDeg+270)
-  i++
-  } 
-}  
-
-/*//DEBUG 
-draw_set_alpha(1)
-draw_set_color(c_white)
-draw_line(x-400,y,x+400,y)
-draw_line(x,y-300,x,y+300)*/
+    xd = sx-j+(string_length(w3)-1)*64
+    yd = sy-j+(string_length(w2)-1-shoff)*64-i*64
+    if Rot
+      {
+      dist=point_distance(sx,sy,xd,yd)
+      currrot=degtorad(point_direction(sx,sy,xd,yd)+RotDeg)  
+      xd=sx+dist*cos(currrot)
+      yd=sy-dist*sin(currrot)
+      }
+    draw_set_alpha(draw_get_alpha()-aps)
+    draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,draw_get_alpha()) 
+    draw_text_transformed(xd, yd, string_char_at(w4,string_length(w4)-i), 1,1,RotDeg+270)
+    i++
+    } 
+  }  
+surface_reset_target()
 
 var xt = x + shoff * 72
 //TabuList
@@ -417,6 +419,28 @@ if !Rot &amp;&amp; !Tabu
       }
   }
 }
+
+var dlen = string_length(w1) - (MinLen div 2);
+if dlen &gt; 16
+  dlen = 16
+var ssc = 1;
+var sdy = 0;
+if dlen &gt; 7.49
+  {
+  ssc = 7.49 / dlen
+  sdy = (string_length(w2) / 2) * 64
+  sdy = (sdy - sdy*ssc)
+  }
+draw_set_alpha(1)
+draw_surface_ext(ds,x-sx*ssc,y-sy*ssc-sdy,ssc,ssc,0,c_white,1)
+//draw_surface(ds,x-sx,y-sy)
+//TODO: scale anim + adekvate scale calculation
+
+//debug
+//draw_set_color(c_white)
+//draw_line(0,y,1600,y)
+//draw_line(0,600,1600,600)
+//draw_line(x,0,x,1200)
 </string>
           </argument>
         </arguments>

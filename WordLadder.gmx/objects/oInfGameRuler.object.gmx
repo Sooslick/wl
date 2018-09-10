@@ -75,22 +75,14 @@ HintTooLong = false
 HintWrong = 0           //0 = waiting;  1 = ready;  2 = passed
 HintTimer = 0           //while &gt;0 a new oSquareHint cannot be created
 
-//TabuFill
-for (i=1; i&lt;=TabuQty; i++)
-  {
-  tmp = irandom_range(1,string_length(prevWord)-1)
-  if tmp != string_char_at(prevWord,string_length(prevWord))
-    ds_list_add(TabuList,string_char_at(prevWord,i))
-  }
-
-Cube = instance_create(800,600,oGameCube)
+Cube = instance_create(800,720,oGameCube)   //600 ???
 Cube.parent = id
 Cube.MinLen = MinLen
 Cube.NewLen = MinLen
 Cube.w1 = prevWord
-Cube.w2 = ''
-Cube.w3 = ''
-Cube.w4 = ''
+Cube.w2 = '    '
+Cube.w3 = '    '
+Cube.w4 = '    '
 Cube.TabuList = TabuList
 
 Stat = instance_create(0,0,oGameStatCounter)
@@ -209,7 +201,7 @@ Stat.GameTypeID = 30  //ENDLESS
     BStart = -1
     prepared = true
     currWord = string_char_at(prevWord,string_length(prevWord))
-    Cube.w1 = currWord
+    Cube.Rot = true
     global.profile[?'PSGAMES']++
     }
   }
@@ -263,7 +255,7 @@ instance_destroy(self,true)
           <argument>
             <kind>1</kind>
             <string>//alpha background
-draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,0.5)
+draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,0.5)   //check hint? TODO
 //pre-sets
 draw_set_halign(fa_center)
 draw_set_valign(fa_top)

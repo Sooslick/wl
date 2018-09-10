@@ -133,14 +133,14 @@ TLQty = 0
 TLReq = 1
 TLProg = 0                   //max 10^ TLQty / TLQty^TLQty^TLQty
 
-Cube = instance_create(800,600,oGameCube)
+Cube = instance_create(800,750,oGameCube)
 Cube.parent = id
 Cube.MinLen = MinLen
 Cube.NewLen = MinLen
 Cube.w1 = prevWord
-Cube.w2 = ''
-Cube.w3 = ''
-Cube.w4 = ''
+Cube.w2 = '    '
+Cube.w3 = '    '
+Cube.w4 = '    '
 Cube.TabuList = TabuList
 Cube.TargetList = TargetList
 
@@ -260,7 +260,7 @@ Stat.GameTypeID = 20  //ADVANCED
     BStart = -1
     prepared = true
     currWord = string_char_at(prevWord,string_length(prevWord))
-    Cube.w1 = currWord
+    Cube.Rot = true
     global.profile[?'PSGAMES']++
     }
   }
