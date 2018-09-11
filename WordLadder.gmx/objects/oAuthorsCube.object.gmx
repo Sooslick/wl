@@ -26,17 +26,17 @@
           <argument>
             <kind>1</kind>
             <string>MinLen = 9
-w1 = ''
-w2 = ''
-w3 = ''
-w4 = ''
+w1 = '         '
+w2 = '         '
+w3 = '         '
+w4 = '         '
 
 Rot = false                 //Otherclockwise animation
 RotDeg = 0
 NewWord = true              //new word approach animation
 NewWordX = 0
 
-aps = 1                     //alpha per square
+aps = 0.05                     //alpha per square
 </string>
           </argument>
         </arguments>
@@ -131,8 +131,6 @@ for (i=0; i&lt;tmp; i++)
   draw_text_transformed(xd,yd,string_char_at(w1,i+1), 1,1,RotDeg)
   }  
   
-if w2 != ''
-{
 for (i=1; i&lt;string_length(w2); i++)
   {
   xd = x-j
@@ -148,11 +146,8 @@ for (i=1; i&lt;string_length(w2); i++)
   draw_sprite_ext(sSquareCenter,0,xd,yd,1,1,RotDeg,c_white,draw_get_alpha()) 
   draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)-i), 1,1,RotDeg+90)
   }
-}
   
 //w3
-if w3 != ''
-{
 for (i=1; i&lt;string_length(w3); i++)
   {
   xd = x-j+64*i
@@ -168,11 +163,8 @@ for (i=1; i&lt;string_length(w3); i++)
   draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,draw_get_alpha()) 
   draw_text_transformed(xd, yd,string_char_at(w3,string_length(w3)-i), 1,1,RotDeg+180)
   }
-}
 
 //w4    
-if (w4 != '')
-{
 i=1
 while (draw_get_alpha() &gt; 0)
   {
@@ -190,7 +182,6 @@ while (draw_get_alpha() &gt; 0)
   draw_text_transformed(xd, yd, string_char_at(w4,string_length(w4)-i), 1,1,RotDeg+270)
   i++
   } 
-}  
 
 //Fading
 if !Rot &amp;&amp; NewWord

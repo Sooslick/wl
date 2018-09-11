@@ -73,6 +73,7 @@ ds_map_add(PLang.arr,0,'English')
 ds_map_add(PLang.arr,1,'Russian')
 PLang.num = global.config[?'Localization']
 PLang.val = PLang.arr[?global.config[?'Localization']]
+PLang.clickable = false
 
 //showlogo
 ShowLogo = instance_create(300,760,oCheckBox) 

@@ -25,41 +25,45 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>bm10 = instance_create(300,280,oButton)
+            <string>bmf = instance_create(172,280,oCheckBox)
+bmf.content = 'LAST GAME ONLY'
+bmf.font = fImpact64
+bmf.dsc = 0.5
+bmf.tsc = 0.5
+bmf.checked = false
+with bmf {event_user(0)}
+
+bmg = instance_create(172,350,oButton)
+bmg.content = 'GENERAL'
+bmg.dsc = 0.5
+bmg.tsc = 0.5
+
+bm10 = instance_create(172,420,oButton)
 bm10.content = 'SIMPLE'
 bm10.dsc = 0.5
 bm10.tsc = 0.5
-bm11 = instance_create(300,350,oButton)
-bm11.content = 'LAST SIMPLE'
-bm11.dsc = 0.5
-bm11.tsc = 0.5
-with bm11 {event_user(0)}
 
-bm20 = instance_create(300,420,oButton)
+bm20 = instance_create(172,490,oButton)
 bm20.content = 'ADVANCED'
 bm20.dsc = 0.5
 bm20.tsc = 0.5
-bm21 = instance_create(300,490,oButton)
-bm21.content = 'LAST ADVANCED'
-bm21.dsc = 0.5
-bm21.tsc = 0.5
-with bm21 {event_user(0)}
 
-bm30 = instance_create(300,560,oButton)
+bm30 = instance_create(172,560,oButton)
 bm30.content = 'ENDLESS'
 bm30.dsc = 0.5
 bm30.tsc = 0.5
-bm31 = instance_create(300,630,oButton)
-bm31.content = 'LAST ENDLESS'
-bm31.dsc = 0.5
-bm31.tsc = 0.5
-with bm31 {event_user(0)}
 
-bm100 = instance_create(300,700,oButton)
-bm100.content = 'TODO'
+bm40 = instance_create(172,630,oButton)
+bm40.content = 'CUSTOM'
+bm40.dsc = 0.5
+bm40.tsc = 0.5
+
+bm100 = instance_create(172,700,oButton)
+bm100.content = 'MULTIPLAYER'
 bm100.dsc = 0.5
 bm100.tsc = 0.5
 bm100.clickable = false
+with bm100 {event_user(0)}
 
 bReset = instance_create(300,850,oButton)
 bReset.content = 'RESET'
@@ -93,12 +97,12 @@ stats = instance_create(60,100,oStatsDrawer)
             <string>instance_destroy(stats)
 instance_destroy(bBack)
 instance_destroy(bReset)
+instance_destroy(bmf)
+instance_destroy(bmg)
 instance_destroy(bm10)
-instance_destroy(bm11)
 instance_destroy(bm20)
-instance_destroy(bm21)
 instance_destroy(bm30)
-instance_destroy(bm31)
+instance_destroy(bm40)
 instance_destroy(bm100)
 if bAlert&lt;&gt;0
   instance_destroy(bAlert)
@@ -128,32 +132,39 @@ if bAlert&lt;&gt;0
 if bm10.clicked
   {
   bm10.clicked = false
-  stats.Selected = 2
-  }
-else if bm11.clicked
-  {
-  bm11.clicked = false
-  stats.Selected = 3
+  if bmf.checked
+    stats.Selected = 3
+  else
+    stats.Selected = 2
   }
 else if bm20.clicked
   {
   bm20.clicked = false
-  stats.Selected = 4
-  }
-else if bm21.clicked
-  {
-  bm21.clicked = false
-  stats.Selected = 5
+  if bmf.checked
+    stats.Selected = 5
+  else
+    stats.Selected = 4
   }
 else if bm30.clicked
   {
   bm30.clicked = false
-  stats.Selected = 6
+  if bmf.checked
+    stats.Selected = 7
+  else
+    stats.Selected = 6
   }
-else if bm31.clicked
+else if bm40.clicked
   {
-  bm31.clicked = false
-  stats.Selected = 7
+  bm30.clicked = false
+  if bmf.checked
+    stats.Selected = 9
+  else
+    stats.Selected = 8
+  }
+else if bmg.clicked
+  {
+  bmg.clicked = false
+  stats.Selected = 1
   }
 //todo others
 else if bReset.clicked

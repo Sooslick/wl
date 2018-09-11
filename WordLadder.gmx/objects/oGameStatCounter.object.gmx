@@ -53,6 +53,7 @@ success = false
 active = false
 B1 = -1
 s = ''
+sCaption = ''
 ShowPage = 0                //0: general;  1: letters;  2: abilities;  3: fails
 ShowPageTick = 0
 
@@ -68,6 +69,7 @@ TTUTick = 0
 
 //TODO more stats
 LenMap = ds_map_create()
+ds_map_clear(LenMap)
 LenWord = ''
 
 //special
@@ -170,7 +172,10 @@ else
             <kind>1</kind>
             <string>if B1 &gt; 0
   if B1.clicked
+    {
+    funcProfileWrite()
     action_another_room(rMenu)
+    }
   else
     {
     if mouse_x &gt; 800
@@ -207,9 +212,10 @@ LenCurr = LenMap[?string_length(LenWord)]
 if is_undefined(LenCurr)
   {
   LenCurr = ds_map_create()
+  ds_map_clear(LenCurr)
   for (tmp=0; tmp&lt;26; tmp++)
-    ds_map_add(LenCurr, funcChrDecode(tmp), 0)
-  ds_map_add(LenMap, string_length(LenWord), LenCurr)
+    LenCurr[?funcChrDecode(tmp)] = 0
+  LenMap[?string_length(LenWord)] = LenCurr
   }
 LenCurr[?ord(string_char_at(LenWord,1))]++
 
@@ -245,54 +251,58 @@ else if ShowPage &gt; 5
 switch ShowPage
   {
   case 1:
-    s = 'LETTERS#'
-    s+= '#TYPED TOTAL: ' + string(letters)
-    s+= '#ACCEPTED: ' + string(lettersa)
-    s+= '#BACKSPACED: ' + string(lettersb)
-    s+= '#BANNED: ' + string(banned)
+    sCaption = 'LETTERS'
+    s = 'TYPED TOTAL: '     + string(letters)
+    s+= '#ACCEPTED: '       + string(lettersa)
+    s+= '#BACKSPACED: '     + string(lettersb)
+    s+= '#BANNED: '         + string(banned)
     s+= '#INPUT ATTEMPTS: ' + string(attempts)
     sc = 1
     break
   case 2:
-    s = 'SPECIAL ABILITIES#'
-    s+= '#HINTS SHOWN: ' + string(hints)
+    sCaption = 'SPECIAL ABILITIES'
+    s = 'HINTS SHOWN: '      + string(hints)
     s+= '#SHIFTS ACQUIRED: ' + string(shiftsa)
-    s+= '#SHIFTS USED: ' + string(shiftsu)
+    s+= '#SHIFTS USED: '     + string(shiftsu)
     s+= '#UNBANS ACQUIRED: ' + string(unbansa)
-    s+= '#UNBANS USED: ' + string(unbansu)
+    s+= '#UNBANS USED: '     + string(unbansu)
     sc = 1
     break
   case 3:
-    s = 'WRONG WORDS#'
-    s+= '#TYPOS: ' + string(dicts)
-    s+= '#REPEATS: ' + string(prevs)
-    s+= '#TABOOS: ' + string(tabus)
+    sCaption = 'WRONG WORDS'
+    s = 'TYPOS: '      + string(dicts)
+    s+= '#REPEATS: '   + string(prevs)
+    s+= '#TABOOS: '    + string(tabus)
     s+= '#TOOSHORTS: ' + string(lens)
     sc = 1
     break
   case 4:
-    s = "WORD'S LENGTH#"
+    sCaption = "WORD'S LENGTH"
     var lines = 2
     var src = ds_map_find_first(LenMap);      //src = key
     var dest;                                 //dest = map
     var qty;
+    s = ''
     while (!is_undefined(src))
       {
       qty = 0;
       dest = LenMap[?src]
       for(i=0; i&lt;26; i++)
         qty+= dest[?funcChrDecode(i)]
-      s+= '#' + string(src) + ': ' + string(qty)
+      s+= string(src) + ': ' + string(qty) + '#'
       lines++
       src = ds_map_find_next(LenMap,src)
       }
     if lines &gt; 6
-      sc = 6 / lines
+      sc = (6+lines/10) / lines
     else
       sc = 1
     break
   case 5:
-    s = "WORD THAT START WITH##"
+    sCaption = "WORD THAT START WITH"
+    sSpec[0] = '##'
+    sSpec[1] = '##'
+    sSpec[2] = '##'
     var pos = 0;
     for(i=0; i&lt;26; i++)
       {
@@ -305,9 +315,6 @@ switch ShowPage
         qty+= dest[?funcChrDecode(i)]
         src = ds_map_find_next(LenMap,src)
         }
-      sSpec[0] = '##'
-      sSpec[1] = '##'
-      sSpec[2] = '##'
       sSpec[pos]+= chr(funcChrDecode(i)) + ': ' + string(qty) + '#'
       pos++
       if pos &gt; 2
@@ -316,14 +323,15 @@ switch ShowPage
         s+= '#'
         }
       }
-    sc = 0.6
+    sSpec[2]+= '#'
+    sc = 0.65
     break
   default:
-    s = 'OVERALL RATE#'
-    s+= '#PLAYTIME: ' + formatTimeString(ticks)
-    s+= '#ACCEPTED WORDS: ' + string(words)
+    sCaption = 'OVERALL RATE'
+    s = 'PLAYTIME: '             + formatTimeString(ticks)
+    s+= '#ACCEPTED WORDS: '      + string(words)
     s+= '#TOTAL LETTERS TYPED: ' + string(letters)
-    s+= '#SCORE: ' + string(pp)
+    s+= '#SCORE: '               + string(pp)
     sc = 1
   }
 </string>
@@ -353,20 +361,22 @@ B1 = instance_create(800,1100,oButton)  //TODO checlk gamemode
 B1.content = 'BACK'
 active = true
 
-s = 'OVERALL RATE#'
-s+= '#PLAYTIME: ' + formatTimeString(ticks)
-s+= '#ACCEPTED WORDS: ' + string(words)
+sCaption = 'OVERALL RATE'
+s =  'PLAYTIME: '            + formatTimeString(ticks)
+s+= '#ACCEPTED WORDS: '      + string(words)
 s+= '#TOTAL LETTERS TYPED: ' + string(letters)
-s+= '#SCORE: ' + string(pp)
+s+= '#SCORE: '               + string(pp)
 
 global.profile[?'PSENDS']++
 
 //Profile Stat Write
+//Current gamemode last game
 SECTMAP = global.profile[?'PSSECTIONS']
 CURRMAP = SECTMAP[?GameTypeID+1]
 if is_undefined(CURRMAP)
   {
   CURRMAP = ds_map_create()
+  ds_map_clear(CURRMAP)
   SECTMAP[?GameTypeID+1] = CURRMAP
   }
 CURRMAP[?'PSPLAYTIME'] = ticks
@@ -395,7 +405,7 @@ OVERMAP = SECTMAP[?GameTypeID]
 if is_undefined(OVERMAP)
   {
   OVERMAP = ds_map_create()
-  ds_map_copy(OVERMAP,CURRMAP)
+  ds_map_copy(OVERMAP,SECTMAP[?GameTypeID+1])
   SECTMAP[?GameTypeID] = OVERMAP
   }
 else
@@ -418,7 +428,7 @@ else
   OVERMAP[?'PSWRONGTYPED']+= CURRMAP[?'PSWRONGTYPED']
   OVERMAP[?'PSREPTYPED']+= CURRMAP[?'PSREPTYPED']
   OVERMAP[?'PSLENAVERAGE'] = 0
-  //TODO LETTERS
+  //TODO DEBUG LETTERS
   OVERMAP = OVERMAP[?'PSLENGTHMAP']
   var src = ds_map_find_first(LenMap);      //src = key
   var dest;                                 //dest = map
@@ -428,7 +438,7 @@ else
     if is_undefined(dest)
       {
       dest = ds_map_create()
-      ds_map_copy(LenMap[?src],dest)
+      ds_map_copy(dest,LenMap[?src])
       ds_map_add(OVERMAP,src,dest)
       }
     else
@@ -441,12 +451,12 @@ else
     }
   }
   
-//OVERALL
+//OVERALL GAME
 OVERMAP = SECTMAP[?0]
 if is_undefined(OVERMAP)
   {
   OVERMAP = ds_map_create()
-  ds_map_copy(OVERMAP,CURRMAP)
+  ds_map_copy(OVERMAP,SECTMAP[?GameTypeID+1])
   SECTMAP[?0] = OVERMAP
   }
 else
@@ -469,7 +479,6 @@ else
   OVERMAP[?'PSWRONGTYPED']+= CURRMAP[?'PSWRONGTYPED']
   OVERMAP[?'PSREPTYPED']+= CURRMAP[?'PSREPTYPED']
   OVERMAP[?'PSLENAVERAGE'] = 0
-  //TODO LETTERS
     OVERMAP = OVERMAP[?'PSLENGTHMAP']
   var src = ds_map_find_first(LenMap);      //src = key
   var dest;                                 //dest = map
@@ -479,7 +488,7 @@ else
     if is_undefined(dest)
       {
       dest = ds_map_create()
-      ds_map_copy(LenMap[?src],dest)
+      ds_map_copy(dest,LenMap[?src])
       ds_map_add(OVERMAP,src,dest)
       }
     else
@@ -521,13 +530,18 @@ else
   draw_set_halign(fa_left)
   draw_set_valign(fa_center)
   
-  draw_text_transformed(100,600,s,sc,sc,0)
   if ShowPage == 5
     {
-    draw_text_transformed(50,600,sSpec[0],sc,sc,0)
-    draw_text_transformed(200,600,sSpec[1],sc,sc,0)
-    draw_text_transformed(350,600,sSpec[2],sc,sc,0)
+    draw_text_transformed(70,600,sSpec[0],sc,sc,0)
+    draw_text_transformed(250,600,sSpec[1],sc,sc,0)
+    draw_text_transformed(430,600,sSpec[2],sc,sc,0)
     }
+  else
+    draw_text_transformed(100,600,s,sc,sc,0)
+    
+  draw_set_font(fImpact96)
+  draw_text(150,280,sCaption)
+  
   if success
     {
     draw_set_font(fImpact96)

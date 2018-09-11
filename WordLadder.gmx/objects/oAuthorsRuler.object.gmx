@@ -26,33 +26,19 @@
           <argument>
             <kind>1</kind>
             <string>s[0] = ' CREDITS '
-s[1] = ' GAME BY '
-s[2] = ' SOOSLICK'
-s[3] = 'K ART PRO'
-s[4] = 'OJECT    '
-s[5] = '    GAME '
-s[6] = ' DIRECTOR'
-s[7] = 'R PETROV '
-s[8] = ' ALEXEY  '
-s[9] = '  DESIGN&amp;'
-s[10] = '&amp;LOCALES '
-s[11] = ' BALOBANO'
-s[12] = 'OVA NADEZ'
-s[13] = 'HDA      '
-s[14] = '    SITE '
-s[15] = ' FLAMING '
-s[16] = ' GAMING  '
-s[17] = ' THANKS 4'
-s[18] = '4 PLAYING'
-s[19] = 'GG WP    '
+s[1] = ' WORK IN '
+s[2] = ' PROGRESS'
+s[3] = 'STILL    '
+s[4] = '  STAND  '
+s[5] = ' BY      '
 scurr = 0
-smax = 19
+smax = 5
 stick = 0
 spos = 1
 
 Cube = instance_create(800,600,oAuthorsCube)
 Cube.parent = id
-Cube.w1 = 'C'
+Cube.w1 = ' '
 </string>
           </argument>
         </arguments>
@@ -113,7 +99,7 @@ if stick&gt;=3
   if spos == 10
     {
     Cube.Rot = true
-    stick = -32
+    stick = -36
     }
   else
     Cube.w1+= string_char_at(s[scurr],spos)

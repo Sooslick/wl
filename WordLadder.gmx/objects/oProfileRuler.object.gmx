@@ -39,9 +39,10 @@ ds_map_add(PLang.arr,0,'English')
 ds_map_add(PLang.arr,1,'Russian')
 PLang.num = global.profile[?'PLOCALE']
 PLang.val = PLang.arr[?global.profile[?'PLOCALE']]
+PLang.clickable = false
 //achievements menu
 PAch = instance_create(300,680,oButton)
-PAch.content = 'ACHIEVEMENTS'
+PAch.content = 'STATISTICS'
 PAch.font = fImpact64
 //profile selector
 PSelector = instance_create(300,1000,oButton)

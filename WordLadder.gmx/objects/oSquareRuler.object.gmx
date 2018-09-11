@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>2</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -61,7 +61,11 @@ file_bin_close(f)
 
 //cheat states
 chStop = false
+chRestart = false
 chReverse = false
+chFlip = false
+chBlur = false
+chBlurSf = -1
 </string>
           </argument>
         </arguments>
@@ -252,9 +256,14 @@ switch revState             //TODO comments
   
 //PARAMETERS  
 view_angle[0] = rot             //complete 180 rotation
-if (rot == 80) || (rot == 260)
+if ((rot == 80) || (rot == 260))
   {
-  revState = 2
+  if revState == 0
+    revState = 2
+  else if isReverse
+         isReverse = false
+       else
+         isReverse = true
   animType = irandom_range(0,1)
   }
   
@@ -265,7 +274,95 @@ if (rot == 80) || (rot == 260)
         </arguments>
       </action>
     </event>
+    <event eventtype="7" enumb="11">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>restart cheat</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//init values
+tick = 0                //counter
+rot = 0                 //field rotation
+pxByTick = 2            //pixels by tick aka offset speed
+rotReversed = 0
+isReverse = false       //upside-down drawing
+revState = 3            //0 wait; 1 op++; 2 op--; 3 begin; 4 ticker;
+
+//cheat states
+chStop = false
+chReverse = false
+chFlip = false
+chBlur = false
+   
+if chRestart
+  {
+  chRestart = false
+  revState = 3
+  for (i=0; i&lt;ARRMAX; i++)
+    for (j=0; j&lt;ARRMAX; j++)
+      {
+      sqArr[i,j].opSq = 0
+      sqArr[i,j].opCon = 0
+      sqArr[i,j].revState = 0
+      }
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>cheat accept</string>
+          </argument>
+        </arguments>
+      </action>
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -285,19 +382,73 @@ if (rot == 80) || (rot == 260)
             <string>//cheat processor, performed from MenuRuler.b2Accept
 if cheat == 'STOP'
   chStop = true
-else if cheat == 'REVERSE'
+else if (cheat == 'REVERSE')||(cheat == 'TURN')
   if chReverse
     chReverse = false
   else
     chReverse = true
+else if cheat == 'START'
+  chStop = false
+else if ((cheat == 'EASTER') || (cheat == 'EASTEREGG'))
+  with parent {bEggClicked = true; event_perform(ev_mouse,ev_global_left_release)}
+else if (cheat == 'PREVED') || (cheat == 'HELLO')
+  instance_create(0,0,oPreved)
+else if cheat == 'SPLASH'
+  with parent {http_get("http://sooslick.flaminggaming.ru/wl/getSplash.php")}
+else if (cheat == 'EXIT')||(cheat == 'QUIT')
+  {
+  with parent {
+    bExit.clicked = true
+    event_perform(ev_mouse, ev_global_left_release)
+    }
+  }
+else if cheat == 'BLUR'
+  chBlur = true
+else if (cheat == 'FLIP') || (cheat == 'SPIN')
+  {
+  if chFlip
+    chFlip = false
+  else
+    chFlip = true
+  if isReverse
+    isReverse = false
+  else
+    isReverse = true
+  }
+else if cheat == 'SHUFFLE'
+  for (i=0; i&lt;ARRMAX; i++)
+    for (j=0; j&lt;ARRMAX; j++)
+      {
+      if random(1) &gt; 0.69
+        continue
+      var i1 = irandom_range(0,ARRMAX-1);
+      var j1 = irandom_range(0,ARRMAX-1);
+      var tmp = sqArr[i,j].content;
+      sqArr[i,j].content = sqArr[i1,j1].content
+      sqArr[i1,j1].content = tmp
+      }
+else if cheat == 'RESTART'
+  {
+  chRestart = true
+  event_user(1)
+  }
 else if cheat == 'RESET'
+  event_user(1)
+else if cheat == 'CANCEL'
   {
   chStop = false
   chReverse = false
+  chBlur = false
+  if chFlip
+    {
+    chFlip = false
+    if isReverse
+      isReverse = false
+    else
+      isReverse = true
+    }
   }
-else if ((cheat == 'EASTER') || (cheat == 'EASTEREGG'))
-  with parent {bEggClicked = true; event_perform(ev_mouse,ev_global_left_release)}
-  
+      
 //refresh
 cheat = ''
 for (i=0; i&lt;ARRMAX; i++)
@@ -328,7 +479,16 @@ for (i=0; i&lt;ARRMAX; i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//draw_text(25,25,cheat) //debug
+            <string>//draw_text(25,25,string(chBlur)) //debug
+
+if chBlur
+  {
+  if !surface_exists(chBlurSf)
+    chBlurSf = surface_create(1600,1200)
+  draw_surface_ext(chBlurSf,-10,-7,1.0125,1.0125,0,c_white,1)
+  var a = application_get_position();
+  surface_copy_part(chBlurSf, 0,0, application_surface, a[0]-global.DRAW_HOFF,a[1]-global.DRAW_VOFF, 1600,1200)
+  }
 </string>
           </argument>
         </arguments>

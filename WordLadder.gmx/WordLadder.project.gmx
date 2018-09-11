@@ -69,6 +69,7 @@
     <sprite>sprites\sFadedCircle</sprite>
     <sprite>sprites\sArrow</sprite>
     <sprite>sprites\sArrowScroll</sprite>
+    <sprite>sprites\sPreved</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -149,6 +150,7 @@
     <object>objects\oTimeCounter</object>
     <object>objects\oDevDictRd</object>
     <object>objects\oDevMenu</object>
+    <object>objects\oPreved</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>

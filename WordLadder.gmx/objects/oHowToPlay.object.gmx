@@ -411,6 +411,7 @@ FadingOp = 0
         Fading = true
         break
       case 31:
+        global.profile[?'PSGAMES'] ++
         action_another_room(rMenu)
         break
       default: TextTimer = 9000
