@@ -3,7 +3,7 @@
   <spriteName>sButton</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>-5</depth>
+  <depth>-8</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -34,9 +34,11 @@ content = ''    //draw string; set after create call
 bYes = instance_create(500,700,oButton)
 bYes.content = 'SURE'
 bYes.depth = -10                        //drawing button on upper layer, not behind menu
+bYes.StartDepth = -10
 bNo = instance_create(1100,700,oButton)
 bNo.content = 'CANCEL'
 bNo.depth = -10
+bNo.StartDepth = -10
 
 dsc = 1                     //draw scale
 </string>
@@ -87,14 +89,15 @@ instance_destroy(bNo, true)
             <kind>1</kind>
             <string>//DRAW PRE-SETS
 draw_set_font(fImpact64)
-draw_set_color(c_white)
 draw_set_halign(fa_center)
 draw_set_valign(fa_center)
 
 //MAIN DRAW 
-draw_set_alpha(0.5)
+draw_set_alpha(0.75)
+draw_set_color(0)
 draw_rectangle(150,400,1450,800,false)
 draw_set_alpha(1)
+draw_set_color(c_white)
 draw_text_transformed(800,500,content,dsc,dsc,0)
 </string>
           </argument>

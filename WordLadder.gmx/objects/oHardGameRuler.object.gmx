@@ -438,7 +438,13 @@ for (i=0; i&lt;ds_list_size(TargetList); i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if ShiftQty &gt; 0
+            <string>if !prepared
+  exit
+  
+if Cube.Rot
+  exit
+
+if ShiftQty &gt; 0
   if !Shift
     {
     Shift = true
@@ -469,7 +475,13 @@ for (i=0; i&lt;ds_list_size(TargetList); i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if Shift
+            <string>if !prepared
+  exit
+  
+if Cube.Rot
+  exit
+
+if Shift
     {
     Shift = false
     currWord = string_char_at(prevWord, string_length(prevWord))
@@ -726,6 +738,8 @@ exit
         HintTimer+= 228
         //Cube Post Operations 
         Cube.NewLen = MinLen
+        Cube.TabuErr = false
+        Cube.TabuErrNum = -1
         //Check passed
         if (TargetW.Prog &gt;= TargetW.Req) &amp;&amp;
            (TargetL.Prog &gt;= TargetL.Req) &amp;&amp;
@@ -794,76 +808,77 @@ exit
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !Cube.Rot
-{
-////////////////////////////
-if !keyboard_check(vk_enter)
-  {     
-  //backspacing
-  if keyboard_check(vk_backspace) 
-    {    
-    if string_length(currWord) &gt; 1 
-      {     
-      currWord = string_copy(currWord,1,string_length(currWord)-1)
-      Stat.lettersb++
-      }
-    Cube.TabuErr = false
-    Cube.TabuErrNum = -1
+            <string>if !prepared
+  exit
+  
+if Cube.Rot
+  exit 
+  
+if keyboard_check(vk_enter)
+  exit
+   
+//backspacing
+if keyboard_check(vk_backspace) 
+  {    
+  if string_length(currWord) &gt; 1 
+    {     
+    currWord = string_copy(currWord,1,string_length(currWord)-1)
+    Stat.lettersb++
     }
-  //switch Unban ability
-  else if keyboard_check(vk_tab) &amp;&amp; TTQty &gt; 0
+  Cube.TabuErr = false
+  Cube.TabuErrNum = -1
+  }
+//switch Unban ability
+else if keyboard_check(vk_tab) &amp;&amp; TTQty &gt; 0
+  {
+  if TT
     {
-    if TT
+    TTNum++
+    if TTNum == ds_list_size(TabuList)
       {
-      TTNum++
-      if TTNum == ds_list_size(TabuList)
-        {
-        TTNum = -1
-        TT = false
-        }
-      }
-    else
-      {
-      TT = true
-      TTNum = 0
+      TTNum = -1
+      TT = false
       }
     }
-  //anykey: force EN layout
-  else if (keyboard_lastkey &gt;= 65) &amp;&amp; (keyboard_lastkey &lt;= 90)
-    {
-    currWord+= chr(keyboard_lastkey)
-    keyboard_lastkey = -1
-    Stat.letters++
-    }
-  //TODO: LOCALE!!!!! ! ! !
   else
     {
-    keyboard_lastchar = string_upper(keyboard_lastchar)
-    if (ord(keyboard_lastchar)&gt;64)&amp;&amp;(ord(keyboard_lastchar)&lt;91)
-      {
-      currWord+= keyboard_lastchar
-      Stat.letters++
-      }
-    keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...
-    }
-  Cube.w1 = currWord  
-  Cube.NewWord = true
-  
-  //find similar in prevs
-  prevOffset = -1
-  for (i=words-1; i&gt;=0; i--)
-    {
-    if string_length(prevWordList[| i]) &lt; MinLen
-      continue
-    if currWord == string_copy(prevWordList[| i], 1,string_length(currWord))
-      {
-      prevOffset = i
-      break
-      }
+    TT = true
+    TTNum = 0
     }
   }
-///////////////////////
-}
+//anykey: force EN layout
+else if (keyboard_lastkey &gt;= 65) &amp;&amp; (keyboard_lastkey &lt;= 90)
+  {
+  currWord+= chr(keyboard_lastkey)
+  keyboard_lastkey = -1
+  Stat.letters++
+  }
+//TODO: LOCALE!!!!! ! ! !
+else
+  {
+  keyboard_lastchar = string_upper(keyboard_lastchar)
+  if (ord(keyboard_lastchar)&gt;64)&amp;&amp;(ord(keyboard_lastchar)&lt;91)
+    {
+    currWord+= keyboard_lastchar
+    Stat.letters++
+    }
+  keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...
+  }
+Cube.w1 = currWord  
+Cube.NewWord = true
+
+//find similar in prevs
+prevOffset = -1
+for (i=words-1; i&gt;=0; i--)
+  {
+  if string_length(prevWordList[| i]) &lt; MinLen
+    continue
+  if currWord == string_copy(prevWordList[| i], 1,string_length(currWord))
+    {
+    prevOffset = i
+    break
+    }
+  }
 </string>
           </argument>
         </arguments>

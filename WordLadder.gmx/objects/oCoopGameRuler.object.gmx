@@ -523,6 +523,8 @@ with Net {event_user(3)}
         HintTimer+= 228
         //Cube Post Operations 
         Cube.NewLen = MinLen
+        Cube.TabuErr = false
+        Cube.TabuErrNum = -1
         //Refresh green / ban
         event_user(2)
 </string>
@@ -701,7 +703,13 @@ for (i=0; i&lt;ds_list_size(TargetList); i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if ShiftQty &gt; 0
+            <string>if !prepared
+  exit
+  
+if Cube.Rot
+  exit
+
+if ShiftQty &gt; 0
   if !Shift
     {
     Shift = true
@@ -732,7 +740,13 @@ for (i=0; i&lt;ds_list_size(TargetList); i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if Shift
+            <string>if !prepared
+  exit
+  
+if Cube.Rot
+  exit
+
+if Shift
     {
     Shift = false
     currWord = string_char_at(prevWord, string_length(prevWord))
@@ -878,7 +892,10 @@ exit
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if Cube.Rot
+            <string>if !prepared
+  exit
+
+if Cube.Rot
   exit
   
 if Net.ChatActive

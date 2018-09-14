@@ -34,7 +34,7 @@ bStartLen.val = 'Start w/ 4'
 bStartLen.num = 0
 bStartLen.dsc = 0.84
 bStartLen.hintMsg = 'Word length at the game start'
-bStartLen.StartDepth = -6                               //AAAAAAAAAAAAAAAA
+bStartLen.StartDepth = -2
 
 //start timer
 bStartTimer = instance_create(300,520,oList)
@@ -46,7 +46,7 @@ bStartTimer.val = 'Timer: auto'
 bStartTimer.num = -1
 bStartTimer.dsc = 0.84
 bStartTimer.hintMsg = 'The time you have from the start'
-bStartTimer.StartDepth = -3                                         //AAA AAAA AAAAAA !!!
+bStartTimer.StartDepth = -1 
 
 bSec = instance_create(300,640,oList)
 ds_map_add(bSec.arr,0,'Inc.: 3s')
@@ -66,7 +66,7 @@ bBan.val = 'Bans: simple'
 bBan.num = 0
 bBan.dsc = 0.84
 bBan.hintMsg = 'The speed of banned letters amount increasing'
-bBan.StartDepth = -3                                                //wtf debug value
+bBan.StartDepth = -1
 
 bVowel = instance_create(1200,520,oSlider)
 bVowel.content = 'Vowels ban %'

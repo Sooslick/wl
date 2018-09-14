@@ -25,7 +25,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>bmf = instance_create(172,280,oCheckBox)
+            <string>bmf = instance_create(428,230,oCheckBox)
 bmf.content = 'LAST GAME ONLY'
 bmf.font = fImpact64
 bmf.dsc = 0.5
@@ -33,32 +33,33 @@ bmf.tsc = 0.5
 bmf.checked = false
 with bmf {event_user(0)}
 
-bmg = instance_create(172,350,oButton)
-bmg.content = 'GENERAL'
+bmg = instance_create(428,300,oButton)
+bmg.content = 'OVERALL'
 bmg.dsc = 0.5
 bmg.tsc = 0.5
 
-bm10 = instance_create(172,420,oButton)
+bm10 = instance_create(428,370,oButton)
 bm10.content = 'SIMPLE'
 bm10.dsc = 0.5
 bm10.tsc = 0.5
 
-bm20 = instance_create(172,490,oButton)
+bm20 = instance_create(428,440,oButton)
 bm20.content = 'ADVANCED'
 bm20.dsc = 0.5
 bm20.tsc = 0.5
+with bm20 {event_user(0)}
 
-bm30 = instance_create(172,560,oButton)
+bm30 = instance_create(428,510,oButton)
 bm30.content = 'ENDLESS'
 bm30.dsc = 0.5
 bm30.tsc = 0.5
 
-bm40 = instance_create(172,630,oButton)
+bm40 = instance_create(428,580,oButton)
 bm40.content = 'CUSTOM'
 bm40.dsc = 0.5
 bm40.tsc = 0.5
 
-bm100 = instance_create(172,700,oButton)
+bm100 = instance_create(428,650,oButton)
 bm100.content = 'MULTIPLAYER'
 bm100.dsc = 0.5
 bm100.tsc = 0.5
@@ -155,7 +156,7 @@ else if bm30.clicked
   }
 else if bm40.clicked
   {
-  bm30.clicked = false
+  bm40.clicked = false
   if bmf.checked
     stats.Selected = 9
   else

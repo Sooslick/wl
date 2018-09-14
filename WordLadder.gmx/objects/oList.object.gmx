@@ -185,8 +185,11 @@ if !active
   tsc = (366 / string_width(val))
   if tsc &gt; 1 tsc = 1
   tsc*= dsc
-  draw_set_alpha(hover+0.66)
   draw_sprite_ext(sList,hover,x,y,dsc,dsc,0,c_white,1)      //if list closed
+  if clickable
+    draw_set_alpha(hover+0.66)
+  else
+    draw_set_alpha((hover+0.5)/2)
   draw_text_transformed((x-240*dsc),y,val,tsc,dsc,0)
   }
 else

@@ -213,13 +213,12 @@ else if Right
             <string>//DRAW PRE-SETS
 draw_set_font(fImpact64)
 draw_set_color(c_white)
-draw_set_halign(fa_center)
+draw_set_halign(fa_left)
 draw_set_valign(fa_top)
 //MAIN DRAW   
 draw_set_alpha(1)
-draw_text(800,180,sCaption[Selected])
+draw_text(600,180,sCaption[Selected])
 
-draw_set_halign(fa_left)
 if Page == 0
   draw_text_transformed(640,280,s[Selected],0.5,0.5,0)
 else if Page == 1

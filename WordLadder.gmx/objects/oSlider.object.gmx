@@ -73,7 +73,7 @@ currval = 100
         if clickable      
           a = 1    
         else
-          a = 0.66   
+          a = 0.5 
         hintTick++
         if hintTick &gt; 42
           {
@@ -87,7 +87,7 @@ else
         if clickable    
           a = 0.66   
         else
-          a = 0.33 
+          a = 0.25 
         hint = false
         hintTick = 0
         depth = StartDepth

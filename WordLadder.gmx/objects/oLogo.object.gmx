@@ -25,8 +25,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//0.0.1.4            1*4 + 256*1 + *0 + *0
-global.GameVersion = 260
+            <string>//0.0.1.5            1*5 + 256*1 + *0 + *0
+global.GameVersion = 261
+global.versionName = 'Demo 0.0.1.5'
 
 randomize()
 global.cfg = 'config.cfg'
