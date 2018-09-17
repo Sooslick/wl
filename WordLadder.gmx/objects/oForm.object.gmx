@@ -31,6 +31,7 @@ hover = 1       //draw cl
 a = 1           //draw alpha
 content = ''    //draw string; set after create call
 contentSaved = content
+allowClipboard = false
 active = false  //form focus
 clicked = false //enter pressed
 clickable = true
@@ -71,11 +72,13 @@ cursortick = 0
             <string>if funcCheckGuiHover((x-256*dsc), (y-64*dsc), (x+256*dsc), (y+64*dsc))     
         {
         hover = 1            //check cursor pos
-        if clickable      
+        if clickable 
+          {
+          hintTick++     
           a = 1    
+          }
         else
           a = 0.5 
-        hintTick++
         if hintTick &gt; 42
           {
           hint = true   
@@ -336,11 +339,20 @@ content = contentSaved
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if active
-{
-////////////////////////////
+            <string>if !active
+  exit
+
 if !keyboard_check(vk_enter)
-  {     
+  {  
+  if keyboard_check(vk_control)     //clipboard processor
+    if keyboard_check(ord('V'))
+      if allowClipboard
+        if clipboard_has_text()
+          if string_length(clipboard_get_text()) &lt; 16
+            {
+            content = clipboard_get_text()
+            event_user(0)
+            } 
   if keyboard_check(vk_backspace)                           //Hold Fixed in &lt;backspace event&gt;
       content = string_copy(content,1,string_length(content)-1)
   else
@@ -362,8 +374,6 @@ else
   active = false
   contentSaved = content
   }
-////////////////////////
-}
 </string>
           </argument>
         </arguments>

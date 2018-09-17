@@ -26,8 +26,9 @@
           <argument>
             <kind>1</kind>
             <string>bIP = instance_create(300,400,oForm)
-bIP.content = '127.0.0.1'
-bIP.contentSaved = '127.0.0.1'
+bIP.content = global.config[?'SavedIP']
+bIP.contentSaved = global.config[?'SavedIP']
+bIP.allowClipboard = true
 
 bConnect = instance_create(850,400,oButton)
 bConnect.content = 'CONNECT'
@@ -60,7 +61,8 @@ bBack.content = 'BACK'
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_destroy(bIP,true)
+            <string>global.config[?'SavedIP'] = bIP.contentSaved
+instance_destroy(bIP,true)
 instance_destroy(bConnect,true)
 instance_destroy(bNew,true)
 instance_destroy(bBack,true)

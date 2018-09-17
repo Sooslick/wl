@@ -70,7 +70,8 @@ num = 0
           {
           hover = 1            //check cursor pos     //not by mouse enter/leave event
           hoverElement = -1
-          hintTick++
+          if clickable
+            hintTick++
           if hintTick &gt; 42
             {
             hint = true   

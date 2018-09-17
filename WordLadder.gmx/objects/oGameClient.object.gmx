@@ -52,6 +52,7 @@ Restarting = false
 ChatActive = false
 Chat = instance_create(800,200,oGameChat)
 Chat.parent = id
+Chat.visible = false
 </string>
           </argument>
         </arguments>
@@ -211,9 +212,13 @@ else if type == network_type_data
       
     //recv Ready qty
     case 10:
-      if GR != -1
-        GR.prestart = true
       Ready = buffer_read(msg_buff, buffer_s8);
+      if GR != -1
+        {
+        GR.prestart = true
+        GR.currWord = buffer_read(msg_buff, buffer_string);
+        GR.Cube.w1 = GR.currWord
+        }
       break
       
     //sync prestart timer
@@ -228,6 +233,8 @@ else if type == network_type_data
         {
         GR.prepared = true
         GR.Timer = buffer_read(msg_buff, buffer_s32);
+        GR.currWord = string_char_at(GR.currWord,string_length(GR.currWord))
+        GR.Cube.Rot = true
         }
       break
       
@@ -237,7 +244,10 @@ else if type == network_type_data
           {
           var pid = buffer_read(msg_buff, buffer_s8);     //player typed the word
           if pid == PID
-            GR.waiting = false   
+            {
+            GR.waiting = false 
+            GR.myWord = true
+            }  
           if buffer_read(msg_buff, buffer_bool)
             {
             GR.currWord = buffer_read(msg_buff, buffer_string)      //AAA
@@ -256,6 +266,8 @@ else if type == network_type_data
     case 15:
       if GR != -1
           {
+          GR.ShiftQty = buffer_read(msg_buff, buffer_s8);
+          GR.TTQty = buffer_read(msg_buff, buffer_s8);
           GR.MinLen = buffer_read(msg_buff, buffer_s8);
           GR.Cube.NewLen = GR.MinLen
           var B = buffer_read(msg_buff, buffer_s8);
@@ -313,8 +325,76 @@ else if type == network_type_data
       Chat.GotStr = buffer_read(msg_buff, buffer_string);
       with Chat {event_user(0)}
       break
+    
+    //Vote init event
+    case 21:
+      buffer_read(msg_buff, buffer_s8);
+      var VoteStarter = buffer_read(msg_buff, buffer_s8);
+      GR.VoteText = buffer_read(msg_buff, buffer_string);
+      with GR {event_user(3)}
+      //TODO Force Yes if PID == VoteStarter
+      break
+    
+    //Vote Progress event
+    case 23:
+      buffer_read(msg_buff, buffer_s8);   //players
+      GR.VoteY = buffer_read(msg_buff, buffer_s8);
+      GR.VoteN = buffer_read(msg_buff, buffer_s8);
+      var isResult = buffer_read(msg_buff, buffer_bool);
+      if isResult
+        {
+        Vote = false
+        GR.Vote = false
+        }
+      break
     }                
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="16">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Vote </string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 22)
+buffer_write(buffer_send, buffer_bool, GR.VoteChoice)
+network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
 </string>
           </argument>
         </arguments>
@@ -361,6 +441,62 @@ else if type == network_type_data
 buffer_write(buffer_send, buffer_s8, 20)
 buffer_write(buffer_send, buffer_string, Chat.PendingStr)
 network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="14">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>gameover event</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//Stat passed from GameRuler in endgame event
+var bestpl = -1;
+var bestsc = -1;
+for (var i=0; i&lt;Players; i++)
+  if PlsArrScore[i] &gt; bestsc
+    {
+    bestpl = i
+    bestsc = PlsArrScore[i]
+    }
+var s = 'BEST PLAYER:#';
+s+= PlsArrName[bestpl]
+s+= '##SCORE:#'
+s+= string(PlsArrScore[bestpl])
+Stat.s = s
 </string>
           </argument>
         </arguments>
@@ -501,7 +637,8 @@ network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+            <string>Chat.visible = true
+buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 9)
 network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
 </string>
@@ -538,29 +675,32 @@ draw_set_valign(fa_bottom)
 draw_text(1595,565,'Players: ' + string(Players))
 
 //ping column
-for (var i=0; i&lt;Players; i++)
-  draw_text(1595,500-i*65,string(PlsArrPing[i]))
+//for (var i=0; i&lt;Players; i++)
+//  draw_text(1595,500-i*65,string(PlsArrPing[i]))
 
 //name column
 for (var i=0; i&lt;Players; i++)
-  draw_text(1520,500-i*65,PlsArrName[i])
+  draw_text(1595,500-i*65,PlsArrName[i])
   
 //score column
+draw_set_alpha(0.8)
 for (var i=0; i&lt;Players; i++)
-  draw_text(1245,500-i*65,string(PlsArrScore[i]))
+  draw_text(1145,500-i*65,string(PlsArrScore[i]))
 
 //word column
+draw_set_alpha(0.6)
 for (var i=0; i&lt;Players; i++)
-  draw_text(1000,500-i*65,PlsArrWord[i])
+  draw_text(995,500-i*65,PlsArrWord[i])
 
 //prestart string
-if !GR.prepared
-  {
-  var s = 'Waiting for players#Ready: ' + string(Ready) + ' / ' + string(Players);
-  draw_set_halign(fa_center)
-  draw_set_valign(fa_center)
-  draw_text(800, 400, s)
-  }
+if GR != -1
+  if !GR.prepared
+    {
+    var s = 'Waiting for players#Ready: ' + string(Ready) + ' / ' + string(Players);
+    draw_set_halign(fa_center)
+    draw_set_valign(fa_center)
+    draw_text(800, 400, s)
+    }
 
 if Restarting
   {

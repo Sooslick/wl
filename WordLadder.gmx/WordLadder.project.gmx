@@ -92,6 +92,9 @@
     <script>scripts\funcWriteLong.gml</script>
     <script>scripts\checkWord.gml</script>
   </scripts>
+  <shaders name="shaders">
+    <shader type="GLSLES">shaders\shLinear.shader</shader>
+  </shaders>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
     <font>fonts\fImpact64</font>

@@ -179,7 +179,7 @@ else if bReset.clicked
 else if bAlert&lt;&gt;0
   {
   if bAlert.bYes.clicked
-    {
+    {    
     global.profile[?'PSINGAMETIME'] = 0
     global.profile[?'PSPLAYTIME'] = 0
     global.profile[?'PSONLINETIME'] = 0
@@ -187,6 +187,10 @@ else if bAlert&lt;&gt;0
     global.profile[?'PSENDS'] = 0
     global.profile[?'PSSERVERS'] = 0
     global.profile[?'PSRESETS']++
+    global.profile[?'GM1'] = 0
+    global.profile[?'GM2'] = 0
+    global.profile[?'PSLV'] = 0
+    global.profile[?'PSXP'] = 0 
     ds_map_destroy(global.profile[?'PSSECTIONS'])
     global.profile[?'PSSECTIONS'] = ds_map_create()
     instance_destroy(bAlert,true)

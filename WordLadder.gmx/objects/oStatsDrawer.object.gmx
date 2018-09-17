@@ -38,6 +38,8 @@ s[0]+= '#online: '+formatTimeString(global.profile[?'PSONLINETIME'])
 s[0]+= '#games launched: '+string(global.profile[?'PSGAMES'])
 s[0]+= '#games ended: '+string(global.profile[?'PSENDS'])
 s[0]+= '#servers: '+string(global.profile[?'PSSERVERS'])
+s[0]+= '#score: '+string(global.profile[?'PSXP'])
+//s[0]+= '#level: '+string(global.profile[?'PSLV'])
 s[0]+= '#RESETS: '+string(global.profile[?'PSRESETS'])
 sDet1[0] = 'Select gamemode first.'
 sDet2[0] = 'Select gamemode first.'
@@ -77,6 +79,8 @@ for (var i=1; i&lt;=10; i++)
     s[i]+= '#too shorts: '+string(SECTMAP[?'PSSHORTTYPED'])
     s[i]+= '#wrong words: '+string(SECTMAP[?'PSWRONGTYPED'])
     s[i]+= '#repeated words: '+string(SECTMAP[?'PSREPTYPED'])
+    s[i]+= '#best score: '+string(SECTMAP[?'PSBESTSCORE'])
+    s[i]+= '#last score: '+string(SECTMAP[?'PSLASTSCORE'])
     
     sDet1[i] = "WORD'S LENGTH:##"
     var lines = 2

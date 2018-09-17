@@ -485,7 +485,12 @@ if chBlur
   {
   if !surface_exists(chBlurSf)
     chBlurSf = surface_create(1600,1200)
-  draw_surface_ext(chBlurSf,-10,-7,1.0125,1.0125,0,c_white,1)
+  shader_set(shLinear)
+  var shader_params = shader_get_uniform(shLinear, "tense");
+  shader_set_uniform_f(shader_params, 0.8);
+  draw_surface(chBlurSf,0,0)
+  shader_reset()
+  //draw_surface_ext(chBlurSf,-10,-7,1.0125,1.0125,0,c_white,1)
   var a = application_get_position();
   surface_copy_part(chBlurSf, 0,0, application_surface, a[0]-global.DRAW_HOFF,a[1]-global.DRAW_VOFF, 1600,1200)
   }

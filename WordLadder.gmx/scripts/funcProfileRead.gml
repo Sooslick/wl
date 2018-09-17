@@ -11,7 +11,7 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
     v[1] = file_bin_read_byte(f)
     v[2] = file_bin_read_byte(f)
     v[3] = file_bin_read_byte(f)
-    if v[0] == 0 && v[1] == 0 && v[2] == 0 && v[3] == 4
+    if v[0] == 0 && v[1] == 0 && v[2] == 0 && v[3] == 5
         {
         //PLAYER NET ID
         global.profile[?'PNETID'] = funcReadLong(f)
@@ -40,6 +40,8 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
         
         global.profile[?'GM1'] = file_bin_read_byte(f)
         global.profile[?'GM2'] = file_bin_read_byte(f)
+        global.profile[?'PSLV'] = funcReadLong(f)
+        global.profile[?'PSXP'] = funcReadLong(f)
         //STAT: sectons
         global.profile[?'PSSECTIONS'] = ds_map_create()
         var SECTIONS = file_bin_read_byte(f)
@@ -65,7 +67,8 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
           SECTMAP[?'PSSHORTTYPED'] = funcReadLong(f)
           SECTMAP[?'PSWRONGTYPED'] = funcReadLong(f)
           SECTMAP[?'PSREPTYPED'] = funcReadLong(f) 
-          SECTMAP[?'PSLENAVERAGE'] = funcReadLong(f)
+          SECTMAP[?'PSBESTSCORE'] = funcReadLong(f) 
+          SECTMAP[?'PSLASTSCORE'] = funcReadLong(f) 
            
           //Length fields
           SECTMAP[?'PSLENGTHMAP'] = ds_map_create()
@@ -107,6 +110,9 @@ global.profile[?'PSRESETS'] = 0
     
 global.profile[?'GM1'] = 0
 global.profile[?'GM2'] = 0
+
+global.profile[?'PSLV'] = 0
+global.profile[?'PSXP'] = 0
 
 global.profile[?'PSSECTIONS'] = ds_map_create()
 

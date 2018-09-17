@@ -112,6 +112,13 @@ if file_exists(global.cfg)
       global.config[?'Music'] = 100
     file_text_readln(f)
     
+    s = file_text_read_string(f)
+    if string_copy(s,1,8) = 'SavedIP='
+      global.config[?'SavedIP'] = string_delete(s,1,8)
+    else
+      global.config[?'SavedIP'] = '127.0.0.1'
+    file_text_readln(f)
+    
     file_text_close(f)
     }
 else                //defaults
@@ -127,6 +134,7 @@ else                //defaults
     global.config[?'Master'] = 100
     global.config[?'Sound'] = 100
     global.config[?'Music'] = 100
+    global.config[?'SavedIP'] = '127.0.0.1'
     }
     
 if global.config[?'Fullscreen']

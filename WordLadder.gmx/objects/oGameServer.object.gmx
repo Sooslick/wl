@@ -52,6 +52,11 @@ BRestart = -1
 ChatActive = false
 Chat = instance_create(800,200,oGameChat)
 Chat.parent = id
+Chat.visible = false
+
+Vote = false
+VoteP = -1
+VoteWord = ''
 
 //TODO Api request
 </string>
@@ -315,6 +320,7 @@ else if type = network_type_data
           buffer_seek(buffer_send, buffer_seek_start, 0);
           buffer_write(buffer_send, buffer_s8, 10)
           buffer_write(buffer_send, buffer_s8, Ready)
+          buffer_write(buffer_send, buffer_string, GR.currWord)
           for (var i=1; i&lt;Players; i++)
             network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
           }
@@ -323,37 +329,87 @@ else if type = network_type_data
     
     //player input
     case 13:
-      buffer_read(msg_buff, buffer_s8)      //TT
-      buffer_read(msg_buff, buffer_bool)    //shift
+      var TTNum = buffer_read(msg_buff, buffer_s8);
+      var Shift = buffer_read(msg_buff, buffer_bool);
       var enter = buffer_read(msg_buff, buffer_bool);
       var word = buffer_read(msg_buff, buffer_string);
+      if enter
+        enter = checkWord(word,GR)
+      var VoteScope = 0;
+      if string_length(word) &gt; GR.MinLen
+        VoteScope+= 1
+      if TTNum &gt; 0
+        VoteScope+= 2
+      if Shift
+        VoteScope+= 4
       PlsArrWord[eid] = word
-      if enter &amp;&amp; checkWord(word,GR)
+      if enter &amp;&amp; VoteScope == 0        //word ok
+        {
+        GR.currWord = word
+        GR.Cube.w1 = word
+        PlsArrScore[eid]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(GR.currWord)
+        buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 14)
+        buffer_write(buffer_send, buffer_s8, eid)
+        buffer_write(buffer_send, buffer_bool, true)
+        buffer_write(buffer_send, buffer_string, word)
+        for (var i=1; i&lt;Players; i++)
+          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+        GR.myWord = false
+        with GR {event_user(1)}
+        for (var i=0; i&lt;Players; i++)
+          PlsArrWord[i] = ''
+        if Vote
           {
-          GR.currWord = word
-          GR.Cube.w1 = word
-          PlsArrScore[eid]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(GR.currWord)
+          Vote = false
+          GR.Vote = false
           buffer_seek(buffer_send, buffer_seek_start, 0);
-          buffer_write(buffer_send, buffer_s8, 14)
-          buffer_write(buffer_send, buffer_s8, eid)
+          buffer_write(buffer_send, buffer_s8, 23)
+          buffer_write(buffer_send, buffer_s8, Players)
+          buffer_write(buffer_send, buffer_s8, GR.VoteY)
+          buffer_write(buffer_send, buffer_s8, GR.VoteN)
           buffer_write(buffer_send, buffer_bool, true)
-          buffer_write(buffer_send, buffer_string, word)
-          for (var i=1; i&lt;Players; i++)
-            network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
-          with GR {event_user(1)}
-          for (var i=0; i&lt;Players; i++)
-            PlsArrWord[i] = ''
-          }
-      else
-          {
-          buffer_seek(buffer_send, buffer_seek_start, 0);
-          buffer_write(buffer_send, buffer_s8, 14)
-          buffer_write(buffer_send, buffer_s8, eid)
           buffer_write(buffer_send, buffer_bool, false)
-          buffer_write(buffer_send, buffer_string, word)
           for (var i=1; i&lt;Players; i++)
             network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
           }
+        }
+      else if !enter || Vote           //word not ok       or vote initialized yet           
+        {
+        buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 14)
+        buffer_write(buffer_send, buffer_s8, eid)
+        buffer_write(buffer_send, buffer_bool, false)
+        buffer_write(buffer_send, buffer_string, word)
+        for (var i=1; i&lt;Players; i++)
+          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+        }
+      else if VoteScope &gt; 0           //word ok: init vote
+        {
+        VoteP = eid;
+        VoteWord = word
+        Vote = true
+        var Desc = 'Vote by ' + PlsArrName[eid] + '#';
+        switch VoteScope
+          {
+          case 1: Desc+= 'Increase word length?#Word: ' + word; break;
+          case 2: Desc+= 'Use Unban ability?#Word: ' + word; break;
+          case 3: Desc+= 'Use Unban and increase word length?#Word: ' + word; break;
+          case 4: Desc+= 'Use Shift ability?#Word: ' + word; break;
+          case 5: Desc+= 'Use Shift and increase word length?#Word: ' + word; break;
+          case 6: Desc+= 'Use both Unban and Shift abilities?#Word: ' + word; break; 
+          case 7: Desc+= 'Use both abilities and increase word length?#Word: ' + word; break;
+          }
+        buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 21)
+        buffer_write(buffer_send, buffer_s8, VoteScope)
+        buffer_write(buffer_send, buffer_s8, VoteP)
+        buffer_write(buffer_send, buffer_string, Desc)
+        for (var i=1; i&lt;Players; i++)
+          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+        GR.VoteText = Desc
+        with GR {event_user(3)}       //vote create
+        }
       break 
     
     //chat str
@@ -365,6 +421,68 @@ else if type = network_type_data
       buffer_write(buffer_send, buffer_string, Chat.GotStr)
       for (var i=1; i&lt;Players; i++)
             network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+      break
+      
+    //vote click
+    case 22:
+      var answer = buffer_read(msg_buff, buffer_bool);
+      if answer
+        GR.VoteY++
+      else
+        GR.VoteN++
+      //Vote result check
+      var isResult = false;
+      var Result = false;
+      if GR.VoteY / Players &gt; 0.5
+        {
+        isResult = true
+        Result = true
+        }
+      else if GR.VoteN / Players &gt; 0.5
+        isResult = true
+      else if GR.VoteY + GR.VoteN == Players
+        isResult = true
+      //VoteResult sent
+      buffer_seek(buffer_send, buffer_seek_start, 0);
+      buffer_write(buffer_send, buffer_s8, 23)
+      buffer_write(buffer_send, buffer_s8, Players)
+      buffer_write(buffer_send, buffer_s8, GR.VoteY)
+      buffer_write(buffer_send, buffer_s8, GR.VoteN)
+      buffer_write(buffer_send, buffer_bool, isResult)
+      buffer_write(buffer_send, buffer_bool, Result)
+      for (var i=1; i&lt;Players; i++)
+        network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+      //Post operations
+      if isResult
+        {
+        GR.Vote = false
+        Vote = false
+        if Result
+          {
+          GR.currWord = VoteWord
+          GR.Cube.w1 = VoteWord
+          PlsArrScore[VoteP]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(GR.currWord)
+          buffer_seek(buffer_send, buffer_seek_start, 0);
+          buffer_write(buffer_send, buffer_s8, 14)
+          buffer_write(buffer_send, buffer_s8, VoteP)
+          buffer_write(buffer_send, buffer_bool, true)
+          buffer_write(buffer_send, buffer_string, VoteWord)
+          for (var i=1; i&lt;Players; i++)
+            network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+          with GR {event_user(1)}
+          for (var i=0; i&lt;Players; i++)
+            PlsArrWord[i] = ''
+          }
+        else
+          {
+          buffer_seek(buffer_send, buffer_seek_start, 0);
+          buffer_write(buffer_send, buffer_s8, 14)
+          buffer_write(buffer_send, buffer_s8, VoteP)
+          buffer_write(buffer_send, buffer_bool, false)
+          buffer_write(buffer_send, buffer_string, VoteWord)
+          network_send_packet( PlsArrSock[VoteP], buffer_send, buffer_tell(buffer_send) );
+          }
+        }
       break
     }
   }
@@ -396,6 +514,106 @@ else if type = network_type_disconnect
     PlsArrUnban[i] = PlsArrUnban[i+1]
     }
   Players--
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="16">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Vote</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if GR.VoteChoice
+  GR.VoteY++
+else
+  GR.VoteN++
+//Vote result check
+var isResult = false;
+var Result = false;
+if GR.VoteY / Players &gt; 0.5
+  {
+  isResult = true
+  Result = true
+  }
+else if GR.VoteN / Players &gt; 0.5
+  isResult = true
+else if GR.VoteY + GR.VoteN == Players
+  isResult = true
+//VoteResult sent
+buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 23)
+buffer_write(buffer_send, buffer_s8, Players)
+buffer_write(buffer_send, buffer_s8, GR.VoteY)
+buffer_write(buffer_send, buffer_s8, GR.VoteN)
+buffer_write(buffer_send, buffer_bool, isResult)
+buffer_write(buffer_send, buffer_bool, Result)
+for (var i=1; i&lt;Players; i++)
+  network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+//Post operations
+if isResult
+  {
+  GR.Vote = false
+  GR.waiting = false
+  Vote = false
+  if Result
+    {
+    GR.currWord = VoteWord
+    GR.Cube.w1 = VoteWord
+    PlsArrScore[VoteP]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(GR.currWord)
+    buffer_seek(buffer_send, buffer_seek_start, 0);
+    buffer_write(buffer_send, buffer_s8, 14)
+    buffer_write(buffer_send, buffer_s8, VoteP)
+    buffer_write(buffer_send, buffer_bool, true)
+    buffer_write(buffer_send, buffer_string, VoteWord)
+    for (var i=1; i&lt;Players; i++)
+      network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+    with GR {event_user(1)}
+    for (var i=0; i&lt;Players; i++)
+      PlsArrWord[i] = ''
+    }
+  else
+    {
+    buffer_seek(buffer_send, buffer_seek_start, 0);
+    buffer_write(buffer_send, buffer_s8, 14)
+    buffer_write(buffer_send, buffer_s8, VoteP)
+    buffer_write(buffer_send, buffer_bool, false)
+    buffer_write(buffer_send, buffer_string, VoteWord)
+    network_send_packet( PlsArrSock[VoteP], buffer_send, buffer_tell(buffer_send) );
+    }
   }
 </string>
           </argument>
@@ -440,12 +658,12 @@ else if type = network_type_disconnect
           <argument>
             <kind>1</kind>
             <string>Chat.GotStr = PlsArrName[0] + ': ' + Chat.PendingStr
-      with Chat {event_user(0)}
-      buffer_seek(buffer_send, buffer_seek_start, 0);
-      buffer_write(buffer_send, buffer_s8, 20)
-      buffer_write(buffer_send, buffer_string, Chat.GotStr)
-      for (var i=1; i&lt;Players; i++)
-            network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+with Chat {event_user(0)}
+buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 20)
+buffer_write(buffer_send, buffer_string, Chat.GotStr)
+for (var i=1; i&lt;Players; i++)
+      network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
 </string>
           </argument>
         </arguments>
@@ -527,7 +745,7 @@ Stat.s = s
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>Ban &amp; Green broadcast</string>
+            <string>Ban &amp; Green &amp; Score broadcast</string>
           </argument>
         </arguments>
       </action>
@@ -547,8 +765,11 @@ Stat.s = s
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+            <string>//B &amp; G BROADCAST
+buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 15)            //header
+buffer_write(buffer_send, buffer_s8, GR.ShiftQty)
+buffer_write(buffer_send, buffer_s8, GR.TTQty)
 buffer_write(buffer_send, buffer_s8, GR.MinLen)     //length
 
 var B = ds_list_size(GR.TabuList);
@@ -564,6 +785,18 @@ buffer_write(buffer_send, buffer_s8, G)             //Greens Qty
 buffer_write(buffer_send, buffer_string, S)         //Banned + Greens char sequence
 for (var i=1; i&lt;Players; i++)
   network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+  
+//SCORE BROADCAST
+buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 16)            //header
+buffer_write(buffer_send, buffer_s8, Players)       //pls
+for (i=0; i&lt;Players; i++)
+  buffer_write(buffer_send, buffer_s32, PlsArrScore[i])
+for (var i=1; i&lt;Players; i++)
+  network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+  
+//debug?
+GR.waiting = false
 </string>
           </argument>
         </arguments>
@@ -606,26 +839,82 @@ for (var i=1; i&lt;Players; i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>PlsArrScore[0]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(GR.currWord)
-buffer_seek(buffer_send, buffer_seek_start, 0);
-buffer_write(buffer_send, buffer_s8, 14)
-buffer_write(buffer_send, buffer_s8, 0)
-buffer_write(buffer_send, buffer_bool, true)
-buffer_write(buffer_send, buffer_string, GR.currWord)
-for (var i=1; i&lt;Players; i++)
-  network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
-with GR {event_user(1)}
-GR.waiting = false
-for (var i=0; i&lt;Players; i++)
-  PlsArrWord[i] = ''
-
-buffer_seek(buffer_send, buffer_seek_start, 0);
-buffer_write(buffer_send, buffer_s8, 16)
-buffer_write(buffer_send, buffer_s8, Players)
-for (var i=0; i&lt;Players; i++)
-  buffer_write(buffer_send, buffer_s32, PlsArrScore[i])
-for (var i=1; i&lt;Players; i++)
-  network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+            <string>var TTNum = GR.TTNum
+var Shift = GR.Shift
+var enter = true
+var word = GR.currWord
+var VoteScope = 0;
+if string_length(word) &gt; GR.MinLen
+  VoteScope+= 1
+if TTNum &gt; 0
+  VoteScope+= 2
+if Shift
+  VoteScope+= 4
+  
+if VoteScope == 0
+  {
+  PlsArrScore[0]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(word)
+  buffer_seek(buffer_send, buffer_seek_start, 0);
+  buffer_write(buffer_send, buffer_s8, 14)
+  buffer_write(buffer_send, buffer_s8, 0)
+  buffer_write(buffer_send, buffer_bool, true)
+  buffer_write(buffer_send, buffer_string, GR.currWord)
+  for (var i=1; i&lt;Players; i++)
+    network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+  GR.myWord = true
+  with GR {event_user(1)}
+  GR.waiting = false
+  for (var i=0; i&lt;Players; i++)
+    PlsArrWord[i] = ''
+  
+  if Vote
+    {
+    Vote = false
+    GR.Vote = false
+    buffer_seek(buffer_send, buffer_seek_start, 0);
+    buffer_write(buffer_send, buffer_s8, 23)
+    buffer_write(buffer_send, buffer_s8, Players)
+    buffer_write(buffer_send, buffer_s8, GR.VoteY)
+    buffer_write(buffer_send, buffer_s8, GR.VoteN)
+    buffer_write(buffer_send, buffer_bool, true)
+    buffer_write(buffer_send, buffer_bool, false)
+    for (var i=1; i&lt;Players; i++)
+      network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+    }
+  }
+  
+else if !Vote
+  {
+  VoteP = 0
+  VoteWord = word
+  Vote = true
+  var Desc = 'Vote by ' + PlsArrName[0] + '#';
+  switch VoteScope
+    {
+    case 1: Desc+= 'Increase word length?#Word: ' + word; break;
+    case 2: Desc+= 'Use Unban ability?#Word: ' + word; break;
+    case 3: Desc+= 'Use Unban and increase word length?#Word: ' + word; break;
+    case 4: Desc+= 'Use Shift ability?#Word: ' + word; break;
+    case 5: Desc+= 'Use Shift and increase word length?#Word: ' + word; break;
+    case 6: Desc+= 'Use both Unban and Shift abilities?#Word: ' + word; break; 
+    case 7: Desc+= 'Use both abilities and increase word length?#Word: ' + word; break;
+    }
+  buffer_seek(buffer_send, buffer_seek_start, 0);
+  buffer_write(buffer_send, buffer_s8, 21)
+  buffer_write(buffer_send, buffer_s8, VoteScope)
+  buffer_write(buffer_send, buffer_s8, VoteP)
+  buffer_write(buffer_send, buffer_string, Desc)
+  for (var i=1; i&lt;Players; i++)
+    network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+  GR.VoteText = Desc
+  with GR {event_user(3)}
+  }
+  
+else
+  {
+  GR.waiting = false
+  GR.Cube.LengthErr = true
+  }
 </string>
           </argument>
         </arguments>
@@ -718,9 +1007,12 @@ for (var i=1; i&lt;Players; i++)
           <argument>
             <kind>1</kind>
             <string>Ready++
+Chat.visible = true
 if Players == Ready
     {
     GR.prepared = true
+    GR.currWord = string_char_at(GR.currWord,string_length(GR.currWord))
+    GR.Cube.Rot = true
     buffer_seek(buffer_send, buffer_seek_start, 0);
     buffer_write(buffer_send, buffer_s8, 12)
     buffer_write(buffer_send, buffer_s32, GR.Timer)
@@ -733,6 +1025,7 @@ else
     buffer_seek(buffer_send, buffer_seek_start, 0);
     buffer_write(buffer_send, buffer_s8, 10)
     buffer_write(buffer_send, buffer_s8, Ready)
+    buffer_write(buffer_send, buffer_string, GR.currWord)
     for (var i=1; i&lt;Players; i++)
         network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
     }
@@ -770,22 +1063,22 @@ draw_set_valign(fa_bottom)
 draw_text(1595,550,'Players: ' + string(Players))
 
 //ping column
-for (var i=0; i&lt;Players; i++)
-  draw_text(1595,485-i*65,string(PlsArrPing[i]))
+//for (var i=0; i&lt;Players; i++)
+//  draw_text(1595,485-i*65,string(PlsArrPing[i]))
 
 //name column
 for (var i=0; i&lt;Players; i++)
-  draw_text(1500,485-i*65,PlsArrName[i])
+  draw_text(1595,485-i*65,PlsArrName[i])
   
 //score column
 draw_set_alpha(0.8)
 for (var i=0; i&lt;Players; i++)
-  draw_text(1100,485-i*65,string(PlsArrScore[i]))
+  draw_text(1145,485-i*65,string(PlsArrScore[i]))
   
 //word column
 draw_set_alpha(0.6)
 for (var i=0; i&lt;Players; i++)
-  draw_text(1000,485-i*65,PlsArrWord[i])
+  draw_text(995,485-i*65,PlsArrWord[i])
 
 //prestart string
 if GR != -1

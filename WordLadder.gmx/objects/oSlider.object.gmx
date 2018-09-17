@@ -70,11 +70,13 @@ currval = 100
             <string>if funcCheckGuiHover((x-256*dsc), (y-64*dsc), (x+256*dsc), (y+64*dsc))    
         {
         hover = 1            //check cursor pos not by mouse enter/leave event
-        if clickable      
+        if clickable     
+          {
+          hintTick++ 
           a = 1    
+          }
         else
           a = 0.5 
-        hintTick++
         if hintTick &gt; 42
           {
           hint = true   

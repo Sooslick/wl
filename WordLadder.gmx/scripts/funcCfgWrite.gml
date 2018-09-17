@@ -65,4 +65,8 @@
     file_text_write_string(f,s)
     file_text_writeln(f)
     
+    s = 'SavedIP=' + global.config[?'SavedIP']
+    file_text_write_string(f,s)
+    file_text_writeln(f)
+    
     file_text_close(f)

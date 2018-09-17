@@ -30,6 +30,7 @@ prestart = false
 waiting = false
 prevWord = ''
 currWord = ''
+myWord = false
 prevWordList = ds_list_create()
 prevOffset = -1
 words = 0
@@ -194,6 +195,16 @@ Stat = instance_create(0,0,oGameStatCounter)
 Stat.parent = id
 Stat.Cube = Cube
 Stat.GameTypeID = 100  //COOP
+
+Vote = false
+VoteText = ''
+VoteY = 0
+VoteN = 0
+Voted = false
+VoteChoice = false  //false No; true Yes.
+
+bVoteY = -1
+bVoteN = -1
 </string>
           </argument>
         </arguments>
@@ -303,18 +314,97 @@ else if prestart
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if BStart&gt;0
+            <string>if BStart &gt; 0
   {
   if BStart.clicked
     {
     instance_destroy(BStart,true)
     BStart = -1
     with Net {event_user(0)}
-    //currWord = string_char_at(prevWord,string_length(prevWord))
-    //Cube.w1 = currWord
-    //global.profile[?'PSGAMES']++
+    exit;
     }
   }
+  
+if bVoteY &gt; 0
+  {
+  if bVoteY.clicked
+    {
+    instance_destroy(bVoteY)
+    instance_destroy(bVoteN)
+    bVoteY = -1
+    bVoteN = -1
+    VoteChoice = true
+    Voted = true
+    with Net {event_user(6)}
+    exit
+    }
+  }
+  
+if bVoteN &gt; 0
+  {
+  if bVoteN.clicked
+    {
+    instance_destroy(bVoteY)
+    instance_destroy(bVoteN)
+    bVoteY = -1
+    bVoteN = -1
+    VoteChoice = false
+    Voted = true
+    with Net {event_user(6)}
+    exit
+    }
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="13">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Vote init</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Vote = true
+VoteY = 0
+VoteN = 0
+Voted = false
+
+bVoteY = instance_create(500,1050,oButton)
+bVoteY.content = 'YES'
+bVoteN = instance_create(1100,1050,oButton)
+bVoteN.content = 'NO'
 </string>
           </argument>
         </arguments>
@@ -425,10 +515,13 @@ with Net {event_user(3)}
           <argument>
             <kind>1</kind>
             <string>//stats count
+        if myWord
+          {
+          Stat.words++
+          Stat.lettersa += string_length(currWord)
+          Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
+          }
         words++
-        Stat.words++
-        Stat.lettersa += string_length(currWord)
-        Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
         Stat.LenWord = currWord
         with Stat {event_user(2)}
         //words changing
@@ -469,7 +562,7 @@ with Net {event_user(3)}
           TT = false
           TTNum = -1
           TTQty--
-          Stat.TTU = true
+          Stat.TTU = true           //TODO check myStat
           Stat.unbansu++
           }
         TTPB.Prog+= string_length(prevWord) + ds_list_size(TabuList) + (Timer div 1800)
@@ -527,6 +620,18 @@ with Net {event_user(3)}
         Cube.TabuErrNum = -1
         //Refresh green / ban
         event_user(2)
+        
+//destroy vote debug
+if bVoteY != -1
+  {
+  instance_destroy (bVoteY)
+  bVoteY = -1
+  }
+if bVoteN != -1
+  {
+  instance_destroy (bVoteN)
+  bVoteN = -1
+  }
 </string>
           </argument>
         </arguments>
@@ -557,6 +662,71 @@ with Net {event_user(4)}
 //instance_destroy(parent,true)
 instance_destroy(Cube,true)
 instance_destroy(self,true)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if Vote
+  {
+  if !Voted
+    {
+    draw_set_valign(fa_top)
+    draw_set_halign(fa_center)
+    draw_set_font(fCube)
+    draw_set_alpha(0.25)
+    draw_set_color(c_white)
+    draw_rectangle(150,680,1450,1180,false)
+    draw_set_alpha(1)
+    draw_rectangle(150,680,1450,1180,true)
+    draw_text(800,700,VoteText)
+    }
+  else
+    {
+    draw_set_valign(fa_top)
+    draw_set_halign(fa_center)
+    draw_set_font(fCube)
+    draw_set_alpha(0.25)
+    draw_set_color(c_white)
+    draw_rectangle(150,880,1450,1180,false)
+    draw_set_alpha(1)
+    draw_rectangle(150,880,1450,1180,true)
+    draw_text(800,900,'Vote result')
+    draw_line_width(300,1050,1300,1050,32)
+    if VoteChoice
+      {
+      draw_set_color(c_blue)
+      draw_line_width(300,1050,300+(VoteY/(Net.Players))*1000,1050,28)
+      draw_set_color(c_red)
+      draw_line_width(1300,1050,1300-(VoteN/(Net.Players))*1000,1050,28)
+      }
+    else
+      {
+      draw_set_color(c_red)
+      draw_line_width(300,1050,300+(VoteY/(Net.Players))*1000,1050,28)
+      draw_set_color(c_blue)
+      draw_line_width(1300,1050,1300-(VoteN/(Net.Players))*1000,1050,28)
+      }
+    }
+  //TODO: Pls Count, Blue vs Red + empty white line
+  }
 </string>
           </argument>
         </arguments>
@@ -681,6 +851,7 @@ draw_set_alpha(1)
 draw_set_color(c_green)
 for (i=0; i&lt;ds_list_size(TargetList); i++)
   draw_text(333+i*72,400,TargetList[| i]) */
+//Vote menu
 </string>
           </argument>
         </arguments>
@@ -709,6 +880,9 @@ for (i=0; i&lt;ds_list_size(TargetList); i++)
 if Cube.Rot
   exit
 
+if waiting
+  exit
+  
 if ShiftQty &gt; 0
   if !Shift
     {
@@ -744,6 +918,9 @@ if ShiftQty &gt; 0
   exit
   
 if Cube.Rot
+  exit
+  
+if waiting
   exit
 
 if Shift
@@ -901,6 +1078,9 @@ if Cube.Rot
 if Net.ChatActive
   exit
   
+if waiting
+  exit
+  
 if !keyboard_check(vk_enter)
   {     
   //backspacing
@@ -932,6 +1112,9 @@ if !keyboard_check(vk_enter)
       TTNum = 0
       }
     }
+  //too long
+  else if (string_length(currWord)-1 == MinLen) &amp;&amp; MinLen &lt; 14
+    exit
   //anykey: force EN layout
   else if (keyboard_lastkey &gt;= 65) &amp;&amp; (keyboard_lastkey &lt;= 90)
     {

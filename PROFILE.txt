@@ -44,8 +44,8 @@ N	Name String
 4	short words
 4	wrong words
 4	repeated words
-4	total score			//
-4	best score			//
+4	total score
+4	best score
 1	K = Length Maps
 
  K x LENGTH MAPS

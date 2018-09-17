@@ -368,6 +368,7 @@ s+= '#TOTAL LETTERS TYPED: ' + string(letters)
 s+= '#SCORE: '               + string(pp)
 
 global.profile[?'PSENDS']++
+global.profile[?'PSXP']+= pp
 
 //Profile Stat Write
 //Current gamemode last game
@@ -396,7 +397,12 @@ CURRMAP[?'PSBANTYPED'] = tabus
 CURRMAP[?'PSSHORTTYPED'] = lens
 CURRMAP[?'PSWRONGTYPED'] = dicts
 CURRMAP[?'PSREPTYPED'] = prevs
-CURRMAP[?'PSLENAVERAGE'] = 0
+CURRMAP[?'PSLASTSCORE'] = pp
+if is_undefined(CURRMAP[?'PSBESTSCORE'])
+  CURRMAP[?'PSBESTSCORE'] = pp
+else
+  if CURRMAP[?'PSBESTSCORE'] &lt; CURRMAP[?'PSLASTSCORE']
+    CURRMAP[?'PSBESTSCORE'] = pp
 CURRMAP[?'PSLENGTHMAP'] = ds_map_create()
 ds_map_copy(CURRMAP[?'PSLENGTHMAP'], LenMap)
 
@@ -427,7 +433,12 @@ else
   OVERMAP[?'PSSHORTTYPED']+= CURRMAP[?'PSSHORTTYPED']
   OVERMAP[?'PSWRONGTYPED']+= CURRMAP[?'PSWRONGTYPED']
   OVERMAP[?'PSREPTYPED']+= CURRMAP[?'PSREPTYPED']
-  OVERMAP[?'PSLENAVERAGE'] = 0
+  OVERMAP[?'PSLASTSCORE'] = pp
+  if is_undefined(OVERMAP[?'PSBESTSCORE'])
+    OVERMAP[?'PSBESTSCORE'] = pp
+  else
+    if OVERMAP[?'PSBESTSCORE'] &lt; OVERMAP[?'PSLASTSCORE']
+      OVERMAP[?'PSBESTSCORE'] = pp
   //TODO DEBUG LETTERS
   OVERMAP = OVERMAP[?'PSLENGTHMAP']
   var src = ds_map_find_first(LenMap);      //src = key
@@ -478,8 +489,13 @@ else
   OVERMAP[?'PSSHORTTYPED']+= CURRMAP[?'PSSHORTTYPED']
   OVERMAP[?'PSWRONGTYPED']+= CURRMAP[?'PSWRONGTYPED']
   OVERMAP[?'PSREPTYPED']+= CURRMAP[?'PSREPTYPED']
-  OVERMAP[?'PSLENAVERAGE'] = 0
-    OVERMAP = OVERMAP[?'PSLENGTHMAP']
+  OVERMAP[?'PSLASTSCORE'] = pp
+  if is_undefined(OVERMAP[?'PSBESTSCORE'])
+    OVERMAP[?'PSBESTSCORE'] = pp
+  else
+    if OVERMAP[?'PSBESTSCORE'] &lt; OVERMAP[?'PSLASTSCORE']
+      OVERMAP[?'PSBESTSCORE'] = pp
+  OVERMAP = OVERMAP[?'PSLENGTHMAP']
   var src = ds_map_find_first(LenMap);      //src = key
   var dest;                                 //dest = map
   while (!is_undefined(src))

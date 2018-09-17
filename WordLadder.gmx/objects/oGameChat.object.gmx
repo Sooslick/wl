@@ -27,13 +27,45 @@
             <kind>1</kind>
             <string>for (i=0; i&lt;256; i++)
   Arr[i] = ''
+for (i=0; i&lt;5; i++)
+  cdArr[i] = 0
 CurrPos = 0
 PendingStr = ''
 GotStr = ''
-image_xscale = 200
-image_yscale = 200
-image_alpha = 0.33
+image_xscale = 320
+image_yscale = 150
+image_alpha = 0.15
 Hover = false
+CursorTick = 0
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>CursorTick++
+if CursorTick &gt; 20
+  CursorTick = 0
+  
+for (i=0; i&lt;5; i++)
+  if cdArr[i] &gt; 0
+    cdArr[i]--
 </string>
           </argument>
         </arguments>
@@ -152,6 +184,10 @@ else
 if CurrPos &gt; 255
   CurrPos = 0
 Arr[CurrPos] = GotStr
+
+for (i=0; i&lt;4; i++)
+  cdArr[i+1] = cdArr[i]
+cdArr[0] = 300
 </string>
           </argument>
         </arguments>
@@ -177,23 +213,39 @@ Arr[CurrPos] = GotStr
             <string>draw_self()
 draw_set_color(c_white)
 if parent.ChatActive
+  {
   draw_set_alpha(1)
-else
-  draw_set_alpha(0.75)
+  draw_rectangle(x-image_xscale, y-image_yscale,x+image_xscale, y+image_yscale, true)
+  }
 draw_set_halign(fa_left)
 draw_set_valign(fa_top)
 draw_set_font(fHint)
 
 var cp = CurrPos;
-for (var i=0; i&lt;7; i++)
+for (var i=0; i&lt;5; i++)
   {
-  draw_text(x-200,i*50,Arr[cp])
+  draw_set_alpha(clamp(cdArr[i] / 3, 0, 1))
+  draw_text(x-320,75+i*50,Arr[cp])
   cp--;
   if cp &lt; 0
     cp = 255
   }
   
-draw_text(x-200, 350, '&gt;' + PendingStr)
+draw_set_alpha(image_alpha)
+draw_rectangle(x-image_xscale, y-200,x+image_xscale, y-150, false)
+if (parent.ChatActive)
+  {
+  draw_set_alpha(1)
+  if (CursorTick &gt; 10)
+    draw_text(x-320, 0, '&gt;' + PendingStr + '|')
+  else
+    draw_text(x-320, 0, '&gt;' + PendingStr)
+  }
+else
+  {
+  draw_set_alpha(0.5)
+  draw_text(x-320,0, 'click here to type msg')
+  }
 </string>
           </argument>
         </arguments>

@@ -431,6 +431,13 @@ if dlen &gt; 7.49
   sdy = (string_length(w2) / 2) * 64
   sdy = (sdy - sdy*ssc)
   }
+  
+shader_set(shLinear)
+var shader_params = shader_get_uniform(shLinear, "tense");
+shader_set_uniform_f(shader_params, 0.9);
+draw_surface_ext(ds,x-sx*2,y-sy*1.8,2,2,0,c_white,0.08)
+shader_reset()  
+  
 draw_set_alpha(1)
 draw_surface_ext(ds,x-sx*ssc,y-sy*ssc-sdy,ssc,ssc,0,c_white,1)
 //draw_surface(ds,x-sx,y-sy)
