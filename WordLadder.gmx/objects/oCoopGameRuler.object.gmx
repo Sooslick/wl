@@ -162,14 +162,6 @@ HintTimeUp = false
 HintTooLong = false
 HintWrong = 0           //0 = waiting;  1 = ready;  2 = passed
 HintTimer = 0           //while &gt;0 a new oSquareHint cannot be created
-
-//TabuFill
-for (i=1; i&lt;=TabuQty; i++)
-  {
-  tmp = irandom_range(1,string_length(prevWord)-1)
-  if tmp != string_char_at(prevWord,string_length(prevWord))
-    ds_list_add(TabuList,string_char_at(prevWord,i))
-  }
   
 //targetlist + fill
 TargetList = ds_list_create()
@@ -291,7 +283,14 @@ if prepared
       }
   }
 else if prestart
+  {
   BTimer--
+  if BTimer &lt;= 0
+    {
+    Net.Ready = Net.Players-1
+    with Net {event_user(0)}
+    }
+  }
 </string>
           </argument>
         </arguments>

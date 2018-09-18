@@ -24,9 +24,8 @@ SOCKET HEADERS
 21	server -> client	Vote Start
 22	client -> server	Voting
 23	server -> client	Vote result
-24	server -> client	ability info broadcast: shifts, unbans
-
-..	server -> client	Full word history
+24	server -> client	Full word history
+25	server -> client	Current GameCube state
 _________________________________________
 
 Socket:
@@ -150,3 +149,16 @@ s8		Players Voted Yes
 s8		Players Voted No
 bool		Vote ended
 bool		Vote result
+
+24:
+s8		Header
+s32	W	Words
+Wxstring	Word
+
+25:
+s8		Header
+s8		MinLen
+s32		words
+string		Word 2
+string		Word 3
+string		Word 4

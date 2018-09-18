@@ -1,7 +1,9 @@
 //argument0: word
 //argument1: pointer to GR object
+//argument2: TTNum
 var currWord = argument0;
 var GR = argument1;
+var TT = argument2;
 
 //check len
 if string_length(currWord) < GR.MinLen
@@ -11,7 +13,7 @@ if string_length(currWord) < GR.MinLen
 for (var i=2; i<=string_length(currWord); i++)
   {
   var j = ds_list_find_index(GR.TabuList, string_char_at(currWord,i));
-  if (j != -1) && (j != GR.TTNum)
+  if (j != -1) && (j != TT)
     return false
   }
 

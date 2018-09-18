@@ -42,6 +42,7 @@ PlsArrWord[0] = ''
 PlsArrScore[0] = 0
 PlsArrShift[0] = false
 PlsArrUnban[0] = -1
+PlsArrReady[0] = false
 //stat fields
 
 PingTimestamp = 0
@@ -57,6 +58,8 @@ Chat.visible = false
 Vote = false
 VoteP = -1
 VoteWord = ''
+VoteShift = false
+VoteBan = false
 
 //TODO Api request
 </string>
@@ -225,6 +228,7 @@ if type = network_type_connect
   PlsArrScore[Players] = 0
   PlsArrShift[Players] = false
   PlsArrUnban[Players] = -1
+  PlsArrReady[Players] = false
   Players++
   parent.tc.online = true
   }
@@ -295,19 +299,53 @@ else if type = network_type_data
       if GR.prepared
         {
         buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 10)
+        buffer_write(buffer_send, buffer_s8, Ready)
+        buffer_write(buffer_send, buffer_string, GR.Cube.w1)
+          network_send_packet( PlsArrSock[eid], buffer_send, buffer_tell(buffer_send) );
+        //broadcast timer
+        buffer_seek(buffer_send, buffer_seek_start, 0);
         buffer_write(buffer_send, buffer_s8, 12)
         buffer_write(buffer_send, buffer_s32, GR.Timer)
         for (var i=1; i&lt;Players; i++)
           network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
-        //send game info only for eid
-        //send word history
+        //send word history socket 24
+        buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 24)
+        var w = GR.words;
+        buffer_write(buffer_send, buffer_s32, w)
+        for (var i=0; i&lt;w; i++)
+          buffer_write(buffer_send, buffer_string, GR.prevWordList[|i])
+        network_send_packet( PlsArrSock[eid], buffer_send, buffer_tell(buffer_send) );
+        //send GameCube state socket 25
+        buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 25)
+        buffer_write(buffer_send, buffer_s8, GR.MinLen)
+        buffer_write(buffer_send, buffer_s32, GR.words)
+        buffer_write(buffer_send, buffer_string, GR.Cube.w2)
+        buffer_write(buffer_send, buffer_string, GR.Cube.w3)
+        buffer_write(buffer_send, buffer_string, GR.Cube.w4)
+        network_send_packet( PlsArrSock[eid], buffer_send, buffer_tell(buffer_send) );
+        //send current game state &amp; score
+        event_user(3)
         }
       else
         {
         Ready++
+        PlsArrReady[eid] = true
         if Players == Ready
           {
           GR.prepared = true
+          GR.currWord = string_char_at(GR.prevWord,string_length(GR.prevWord))
+          GR.Cube.Rot = true
+          //ready 4 Cube Sync
+          buffer_seek(buffer_send, buffer_seek_start, 0);
+          buffer_write(buffer_send, buffer_s8, 10)
+          buffer_write(buffer_send, buffer_s8, Ready)
+          buffer_write(buffer_send, buffer_string, GR.Cube.w1)
+          for (var i=1; i&lt;Players; i++)
+            network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+          //Game Start signal
           buffer_seek(buffer_send, buffer_seek_start, 0);
           buffer_write(buffer_send, buffer_s8, 12)
           buffer_write(buffer_send, buffer_s32, GR.Timer)
@@ -320,7 +358,7 @@ else if type = network_type_data
           buffer_seek(buffer_send, buffer_seek_start, 0);
           buffer_write(buffer_send, buffer_s8, 10)
           buffer_write(buffer_send, buffer_s8, Ready)
-          buffer_write(buffer_send, buffer_string, GR.currWord)
+          buffer_write(buffer_send, buffer_string, GR.Cube.w1)
           for (var i=1; i&lt;Players; i++)
             network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
           }
@@ -329,12 +367,13 @@ else if type = network_type_data
     
     //player input
     case 13:
+      GR.myWord = false
       var TTNum = buffer_read(msg_buff, buffer_s8);
       var Shift = buffer_read(msg_buff, buffer_bool);
       var enter = buffer_read(msg_buff, buffer_bool);
       var word = buffer_read(msg_buff, buffer_string);
       if enter
-        enter = checkWord(word,GR)
+        enter = checkWord(word,GR,TTNum)
       var VoteScope = 0;
       if string_length(word) &gt; GR.MinLen
         VoteScope+= 1
@@ -348,6 +387,12 @@ else if type = network_type_data
         GR.currWord = word
         GR.Cube.w1 = word
         PlsArrScore[eid]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(GR.currWord)
+        for (var i=0; i&lt; ds_list_size(GR.TargetList); i++)
+          {
+          var cnt = string_count(GR.TargetList[| i],word) ;
+          if cnt &gt; 0
+            PlsArrScore[eid]+= ceil(cnt*GR.words / 10)
+          }
         buffer_seek(buffer_send, buffer_seek_start, 0);
         buffer_write(buffer_send, buffer_s8, 14)
         buffer_write(buffer_send, buffer_s8, eid)
@@ -388,6 +433,14 @@ else if type = network_type_data
         {
         VoteP = eid;
         VoteWord = word
+        if Shift
+          VoteShift = true
+        else
+          VoteShift = false
+        if TTNum &gt;= 0
+          VoteBan = true
+        else
+          VoteBan = false
         Vote = true
         var Desc = 'Vote by ' + PlsArrName[eid] + '#';
         switch VoteScope
@@ -461,6 +514,10 @@ else if type = network_type_data
           {
           GR.currWord = VoteWord
           GR.Cube.w1 = VoteWord
+          if VoteShift
+            GR.ShiftQty--
+          if VoteBan
+            GR.TTQty--
           PlsArrScore[VoteP]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(GR.currWord)
           buffer_seek(buffer_send, buffer_seek_start, 0);
           buffer_write(buffer_send, buffer_s8, 14)
@@ -494,7 +551,10 @@ else if type = network_type_disconnect
       eid = i
       break
       }
-    
+   
+  if PlsArrReady[eid]
+    Ready--    
+      
   buffer_seek(buffer_send, buffer_seek_start, 0);
   buffer_write(buffer_send, buffer_s8, 18)
   buffer_write(buffer_send, buffer_s8, eid)
@@ -512,6 +572,7 @@ else if type = network_type_disconnect
     PlsArrScore[i] = PlsArrScore[i+1]
     PlsArrShift[i] = PlsArrShift[i+1]
     PlsArrUnban[i] = PlsArrUnban[i+1]
+    PlsArrReady[i] = PlsArrReady[i+1]
     }
   Players--
   }
@@ -794,9 +855,6 @@ for (i=0; i&lt;Players; i++)
   buffer_write(buffer_send, buffer_s32, PlsArrScore[i])
 for (var i=1; i&lt;Players; i++)
   network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
-  
-//debug?
-GR.waiting = false
 </string>
           </argument>
         </arguments>
@@ -1007,6 +1065,7 @@ for (var i=1; i&lt;Players; i++)
           <argument>
             <kind>1</kind>
             <string>Ready++
+PlsArrReady[0] = true
 Chat.visible = true
 if Players == Ready
     {
