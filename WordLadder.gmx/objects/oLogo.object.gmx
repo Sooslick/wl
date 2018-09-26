@@ -25,9 +25,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//0.0.1.5            1*6 + 256*1 + *0 + *0
-global.GameVersion = 262
-global.versionName = 'Demo 0.0.1.6: coop update'
+            <string>//0.0.1.7            1*7 + 256*1 + *0 + *0
+global.GameVersion = 263
+global.versionName = 'Demo 0.0.1.7: coop update'
 
 randomize()
 global.cfg = 'config.cfg'
@@ -55,7 +55,8 @@ else
   }
 window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
 window_set_fullscreen(global.config[?'Fullscreen'])
-window_center()
+//window_center()
+//display_reset(0,true)
 display_set_gui_size(1600,1200)
 
 //LOGO Code:
@@ -125,7 +126,12 @@ if stepno==3                        //2: white
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if stepno==0
+            <string>shader_set(shLinear)
+  var shader_params = shader_get_uniform(shLinear, "tense");
+  shader_set_uniform_f(shader_params, 1 - frame/987);
+  draw_sprite(LogoWhite,0,800,600)
+  shader_reset()
+if stepno==0
   {
   draw_sprite_ext(sPixel,0,0,0,1600,1200,0,c_white,1)
   draw_sprite(LogoBlack,0,800,600)

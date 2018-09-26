@@ -34,7 +34,7 @@ bStartLen.val = 'Start w/ 4'
 bStartLen.num = 0
 bStartLen.dsc = 0.84
 bStartLen.hintMsg = 'Word length at the game start'
-bStartLen.StartDepth = -2
+bStartLen.StartDepth = -4
 
 //start timer
 bStartTimer = instance_create(300,520,oList)
@@ -46,7 +46,7 @@ bStartTimer.val = 'Timer: auto'
 bStartTimer.num = -1
 bStartTimer.dsc = 0.84
 bStartTimer.hintMsg = 'The time you have from the start'
-bStartTimer.StartDepth = -1
+bStartTimer.StartDepth = -3
 
 bSec = instance_create(300,640,oList)
 ds_map_add(bSec.arr,0,'Inc.: 3s')
@@ -56,6 +56,7 @@ bSec.val = 'Inc.: 5s'
 bSec.num = 2
 bSec.dsc = 0.84
 bSec.hintMsg = 'Time bonus for every letter in the word'
+bSec.StartDepth = -2
 
 //banned
 bBan = instance_create(1200,400,oList)
@@ -120,7 +121,7 @@ bType.val = 'Cooperative'
 bType.num = 0
 bType.dsc = 0.84
 bType.hintMsg = 'Game type'
-bType.StartDepth = -9                            //AAAAAAAAAAAAAAAA
+bType.StartDepth = -1
 
 //bBack
 bBack = instance_create(300,1000,oButton)

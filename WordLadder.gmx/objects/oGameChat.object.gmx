@@ -31,9 +31,10 @@ for (i=0; i&lt;5; i++)
   cdArr[i] = 0
 CurrPos = 0
 PendingStr = ''
+DrawFrom = 0
 GotStr = ''
 image_xscale = 320
-image_yscale = 150
+image_yscale = 145
 image_alpha = 0.15
 Hover = false
 CursorTick = 0
@@ -180,14 +181,50 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>CurrPos++
-if CurrPos &gt; 255
-  CurrPos = 0
-Arr[CurrPos] = GotStr
+            <string>//prepare miltiline array
+var lines;
+var l = 0;
+var sym = 15;
+draw_set_font(fChat)
+while sym &lt; string_length(GotStr)
+  {
+  if string_width(string_copy(GotStr,1,sym)) &gt; image_xscale*1.92
+    {
+    var spacePos = 0;
+    for (var i=1; i&lt;=sym; i++)
+      if string_char_at(GotStr,i) == ' '
+        spacePos = i
+    if spacePos &gt; 0
+      sym = spacePos+1
+    lines[l] = string_copy(GotStr,1,sym-1)
+    l++
+    GotStr = string_copy(GotStr,sym,string_length(GotStr)-sym+1)
+    sym = 15;
+    }
+  sym++
+  }
+if string_length(GotStr) == 0
+  l--
+else
+  {
+  lines[l] = GotStr
+  l++
+  }
 
-for (i=0; i&lt;4; i++)
-  cdArr[i+1] = cdArr[i]
-cdArr[0] = 300
+var k = l-1
+while k &gt;= 0
+  {
+  CurrPos++
+  if CurrPos &gt; 255
+    CurrPos = 0
+  Arr[CurrPos] = lines[k]
+  k--
+  }
+
+for (i=5-l; i&gt;=0; i--)
+  cdArr[i+l] = cdArr[i]
+for (i=0; i &lt; l; i++)
+  cdArr[i] = 300
 </string>
           </argument>
         </arguments>
@@ -219,12 +256,12 @@ if parent.ChatActive
   }
 draw_set_halign(fa_left)
 draw_set_valign(fa_top)
-draw_set_font(fHint)
+draw_set_font(fChat)
 
 var cp = CurrPos;
 for (var i=0; i&lt;5; i++)
   {
-  draw_set_alpha(clamp(cdArr[i] / 3, 0, 1))
+  draw_set_alpha(clamp(cdArr[i] / 100, 0, 1))
   draw_text(x-320,75+i*50,Arr[cp])
   cp--;
   if cp &lt; 0
@@ -237,9 +274,9 @@ if (parent.ChatActive)
   {
   draw_set_alpha(1)
   if (CursorTick &gt; 10)
-    draw_text(x-320, 0, '&gt;' + PendingStr + '|')
+    draw_text(x-320, 0, '&gt;' + string_copy(PendingStr,DrawFrom+1,string_length(PendingStr) - DrawFrom) + '|')
   else
-    draw_text(x-320, 0, '&gt;' + PendingStr)
+    draw_text(x-320, 0, '&gt;' + string_copy(PendingStr,DrawFrom+1,string_length(PendingStr) - DrawFrom))
   }
 else
   {
@@ -277,21 +314,35 @@ if keyboard_check(vk_enter)
     {
     with parent {event_user(5)}
     PendingStr = ''
+    DrawFrom = 0
     }
   exit     
   }
 
 if keyboard_check(vk_backspace) 
   {   
-  if string_length(PendingStr) &gt; 1 
+  if string_length(PendingStr) &gt; 0 
+    {
     PendingStr = string_copy(PendingStr,1,string_length(PendingStr)-1)
+    if DrawFrom &gt; 0
+      DrawFrom--
+    }
   exit
   }
 
-if keyboard_lastchar=='#'
+if (ord(keyboard_lastchar)&gt;=32) &amp;&amp; (string_length(PendingStr)&lt;54)
+  {
+  if keyboard_lastchar == '#'
           PendingStr+= '\#'
-else
+  else
           PendingStr+= keyboard_lastchar
+  if string_length(PendingStr) &gt; 15
+    {
+    draw_set_font(fChat)
+    while string_width(string_copy(PendingStr,DrawFrom+1,string_length(PendingStr) - DrawFrom)) &gt; image_xscale*1.92
+      DrawFrom++
+    }
+  }
 keyboard_lastchar = ''
 </string>
           </argument>

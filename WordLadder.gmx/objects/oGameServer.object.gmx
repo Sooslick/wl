@@ -43,6 +43,7 @@ PlsArrScore[0] = 0
 PlsArrShift[0] = false
 PlsArrUnban[0] = -1
 PlsArrReady[0] = false
+PlsArrPos[0] = 0
 //stat fields
 
 PingTimestamp = 0
@@ -229,6 +230,7 @@ if type = network_type_connect
   PlsArrShift[Players] = false
   PlsArrUnban[Players] = -1
   PlsArrReady[Players] = false
+  PlsArrPos[Players] = Players
   Players++
   parent.tc.online = true
   }
@@ -377,7 +379,7 @@ else if type = network_type_data
       var VoteScope = 0;
       if string_length(word) &gt; GR.MinLen
         VoteScope+= 1
-      if TTNum &gt; 0
+      if TTNum != -1
         VoteScope+= 2
       if Shift
         VoteScope+= 4
@@ -397,6 +399,8 @@ else if type = network_type_data
         buffer_write(buffer_send, buffer_s8, 14)
         buffer_write(buffer_send, buffer_s8, eid)
         buffer_write(buffer_send, buffer_bool, true)
+        buffer_write(buffer_send, buffer_bool, false)   //no use tt
+        buffer_write(buffer_send, buffer_bool, false)   //no use shift
         buffer_write(buffer_send, buffer_string, word)
         for (var i=1; i&lt;Players; i++)
           network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
@@ -425,6 +429,8 @@ else if type = network_type_data
         buffer_write(buffer_send, buffer_s8, 14)
         buffer_write(buffer_send, buffer_s8, eid)
         buffer_write(buffer_send, buffer_bool, false)
+        buffer_write(buffer_send, buffer_bool, false)   //tt
+        buffer_write(buffer_send, buffer_bool, false)   //shift
         buffer_write(buffer_send, buffer_string, word)
         for (var i=1; i&lt;Players; i++)
           network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
@@ -467,13 +473,13 @@ else if type = network_type_data
     
     //chat str
     case 20:
-      Chat.GotStr = PlsArrName[eid] + ': ' + buffer_read(msg_buff, buffer_string);
-      with Chat {event_user(0)}
+      Chat.GotStr = PlsArrName[eid] + ':' + chr(888) + buffer_read(msg_buff, buffer_string);
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 20)
       buffer_write(buffer_send, buffer_string, Chat.GotStr)
       for (var i=1; i&lt;Players; i++)
             network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+      with Chat {event_user(0)}
       break
       
     //vote click
@@ -510,6 +516,8 @@ else if type = network_type_data
         {
         GR.Vote = false
         Vote = false
+        if VoteP == 0
+          GR.waiting = false
         if Result
           {
           GR.currWord = VoteWord
@@ -522,7 +530,8 @@ else if type = network_type_data
           buffer_seek(buffer_send, buffer_seek_start, 0);
           buffer_write(buffer_send, buffer_s8, 14)
           buffer_write(buffer_send, buffer_s8, VoteP)
-          buffer_write(buffer_send, buffer_bool, true)
+          buffer_write(buffer_send, buffer_bool, VoteShift)
+          buffer_write(buffer_send, buffer_bool, VoteBan)
           buffer_write(buffer_send, buffer_string, VoteWord)
           for (var i=1; i&lt;Players; i++)
             network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
@@ -535,6 +544,8 @@ else if type = network_type_data
           buffer_seek(buffer_send, buffer_seek_start, 0);
           buffer_write(buffer_send, buffer_s8, 14)
           buffer_write(buffer_send, buffer_s8, VoteP)
+          buffer_write(buffer_send, buffer_bool, false)
+          buffer_write(buffer_send, buffer_bool, false)
           buffer_write(buffer_send, buffer_bool, false)
           buffer_write(buffer_send, buffer_string, VoteWord)
           network_send_packet( PlsArrSock[VoteP], buffer_send, buffer_tell(buffer_send) );
@@ -552,15 +563,23 @@ else if type = network_type_disconnect
       break
       }
    
+  //Pl count ?
   if PlsArrReady[eid]
     Ready--    
-      
+    
+  //disconnect socket  
   buffer_seek(buffer_send, buffer_seek_start, 0);
   buffer_write(buffer_send, buffer_s8, 18)
   buffer_write(buffer_send, buffer_s8, eid)
   for (var i=1; i&lt;Players; i++)
     network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
   
+  //Shift Table Pos
+  for (var i=0; i&lt;Players; i++)
+    if PlsArrPos[i] &gt; PlsArrPos[eid]
+      PlsArrPos[i]--  
+    
+  //shift array
   for (var i = eid; i &lt; Players-1; i++)
     {
     PlsArrSock[i] = PlsArrSock[i+1]
@@ -573,6 +592,7 @@ else if type = network_type_disconnect
     PlsArrShift[i] = PlsArrShift[i+1]
     PlsArrUnban[i] = PlsArrUnban[i+1]
     PlsArrReady[i] = PlsArrReady[i+1]
+    PlsArrPos[i] = PlsArrPos[i+1]
     }
   Players--
   }
@@ -659,6 +679,8 @@ if isResult
     buffer_write(buffer_send, buffer_s8, 14)
     buffer_write(buffer_send, buffer_s8, VoteP)
     buffer_write(buffer_send, buffer_bool, true)
+    buffer_write(buffer_send, buffer_bool, VoteShift)
+    buffer_write(buffer_send, buffer_bool, VoteBan)
     buffer_write(buffer_send, buffer_string, VoteWord)
     for (var i=1; i&lt;Players; i++)
       network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
@@ -671,6 +693,8 @@ if isResult
     buffer_seek(buffer_send, buffer_seek_start, 0);
     buffer_write(buffer_send, buffer_s8, 14)
     buffer_write(buffer_send, buffer_s8, VoteP)
+    buffer_write(buffer_send, buffer_bool, false)
+    buffer_write(buffer_send, buffer_bool, false)
     buffer_write(buffer_send, buffer_bool, false)
     buffer_write(buffer_send, buffer_string, VoteWord)
     network_send_packet( PlsArrSock[VoteP], buffer_send, buffer_tell(buffer_send) );
@@ -718,13 +742,13 @@ if isResult
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>Chat.GotStr = PlsArrName[0] + ': ' + Chat.PendingStr
-with Chat {event_user(0)}
+            <string>Chat.GotStr = PlsArrName[0] + ':' + chr(888) + Chat.PendingStr
 buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 20)
 buffer_write(buffer_send, buffer_string, Chat.GotStr)
 for (var i=1; i&lt;Players; i++)
       network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+with Chat {event_user(0)}
 </string>
           </argument>
         </arguments>
@@ -847,12 +871,49 @@ buffer_write(buffer_send, buffer_string, S)         //Banned + Greens char seque
 for (var i=1; i&lt;Players; i++)
   network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
   
+//SCORE SORT
+var ne_ok = false;
+for (var i=1; i&lt;Players; i++)
+  if PlsArrScore[PlsArrPos[i]] &gt; PlsArrScore[PlsArrPos[i-1]]
+    {
+    ne_ok = true;
+    break;
+    }
+if ne_ok
+  for (var j=Players; j&gt;1; j--)
+    for (var i=1; i&lt;j; i++)
+      {
+      var id1;
+      var id2;
+      for (var g=0; g&lt;Players; g++)
+        if PlsArrPos[g] == i
+          {
+          id1 = g;
+          break
+          }
+      for (var g=0; g&lt;Players; g++)
+        if PlsArrPos[g] == i-1
+          {
+          id2 = g;
+          break
+          }
+      if PlsArrScore[id1] &gt; PlsArrScore[id2]
+        {
+        var k = PlsArrPos[id1];
+        PlsArrPos[id1] = PlsArrPos[id2]
+        PlsArrPos[id2] = k
+        }
+      }
+  
 //SCORE BROADCAST
 buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 16)            //header
 buffer_write(buffer_send, buffer_s8, Players)       //pls
 for (i=0; i&lt;Players; i++)
+  {
+  buffer_write(buffer_send, buffer_s8, PlsArrPos[i])
   buffer_write(buffer_send, buffer_s32, PlsArrScore[i])
+  }
 for (var i=1; i&lt;Players; i++)
   network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
 </string>
@@ -904,7 +965,7 @@ var word = GR.currWord
 var VoteScope = 0;
 if string_length(word) &gt; GR.MinLen
   VoteScope+= 1
-if TTNum &gt; 0
+if TTNum != -1
   VoteScope+= 2
 if Shift
   VoteScope+= 4
@@ -912,10 +973,18 @@ if Shift
 if VoteScope == 0
   {
   PlsArrScore[0]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(word)
+  for (var i=0; i&lt; ds_list_size(GR.TargetList); i++)
+          {
+          var cnt = string_count(GR.TargetList[| i],word) ;
+          if cnt &gt; 0
+            PlsArrScore[0]+= ceil(cnt*GR.words / 10)
+          }
   buffer_seek(buffer_send, buffer_seek_start, 0);
   buffer_write(buffer_send, buffer_s8, 14)
   buffer_write(buffer_send, buffer_s8, 0)
   buffer_write(buffer_send, buffer_bool, true)
+  buffer_write(buffer_send, buffer_bool, false)       //no use tt
+  buffer_write(buffer_send, buffer_bool, false)       //no use shift
   buffer_write(buffer_send, buffer_string, GR.currWord)
   for (var i=1; i&lt;Players; i++)
     network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
@@ -1019,6 +1088,8 @@ else
 buffer_write(buffer_send, buffer_s8, 14)
 buffer_write(buffer_send, buffer_s8, 0)
 buffer_write(buffer_send, buffer_bool, false)
+buffer_write(buffer_send, buffer_bool, false)
+buffer_write(buffer_send, buffer_bool, false)
 buffer_write(buffer_send, buffer_string, GR.currWord)
 for (var i=1; i&lt;Players; i++)
   network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
@@ -1070,7 +1141,7 @@ Chat.visible = true
 if Players == Ready
     {
     GR.prepared = true
-    GR.currWord = string_char_at(GR.currWord,string_length(GR.currWord))
+    GR.currWord = string_char_at(GR.prevWord,string_length(GR.prevWord))
     GR.Cube.Rot = true
     buffer_seek(buffer_send, buffer_seek_start, 0);
     buffer_write(buffer_send, buffer_s8, 12)
@@ -1088,6 +1159,57 @@ else
     for (var i=1; i&lt;Players; i++)
         network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
     }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if !parent.loaded
+  exit
+
+draw_set_font(fImpact64)
+draw_set_color(c_white)
+draw_set_halign(fa_right)
+draw_set_valign(fa_bottom)
+
+for (var i=0; i&lt;Players; i++)
+  {
+  var j = PlsArrPos[i];
+  var p = PlsArrPos[0]-j;
+  if abs(p) &lt; 6
+    {
+    draw_set_alpha(1 - abs(p)/5)
+    //name column
+    var w = string_width(PlsArrName[i]);
+    if w &lt; 350
+      draw_text(1595,675-p*70,PlsArrName[i])
+    else
+      draw_text_transformed(1595,675-p*70,PlsArrName[i],350/w,1,0)
+    //score column
+    draw_text(1240,675-p*70,string(PlsArrScore[i]))
+    //draw_text(1240,675-p*70,string(PlsArrPos[i]))
+    //word column
+    if p != 0
+      draw_text(1080,675-p*70,PlsArrWord[i])
+    }
+  }
 </string>
           </argument>
         </arguments>
@@ -1113,31 +1235,17 @@ else
             <string>if !parent.loaded
   exit
 
-draw_set_font(fCube)
+draw_set_font(fImpact64)
 draw_set_color(c_white)
 draw_set_alpha(1)
 draw_set_halign(fa_right)
-draw_set_valign(fa_bottom)
+draw_set_valign(fa_top)
 
-draw_text(1595,550,'Players: ' + string(Players))
+draw_text(1595,65,'Players: ' + string(Players))
 
 //ping column
 //for (var i=0; i&lt;Players; i++)
 //  draw_text(1595,485-i*65,string(PlsArrPing[i]))
-
-//name column
-for (var i=0; i&lt;Players; i++)
-  draw_text(1595,485-i*65,PlsArrName[i])
-  
-//score column
-draw_set_alpha(0.8)
-for (var i=0; i&lt;Players; i++)
-  draw_text(1145,485-i*65,string(PlsArrScore[i]))
-  
-//word column
-draw_set_alpha(0.6)
-for (var i=0; i&lt;Players; i++)
-  draw_text(995,485-i*65,PlsArrWord[i])
 
 //prestart string
 if GR != -1

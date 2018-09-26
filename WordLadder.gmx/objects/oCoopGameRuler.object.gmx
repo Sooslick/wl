@@ -163,6 +163,16 @@ HintTooLong = false
 HintWrong = 0           //0 = waiting;  1 = ready;  2 = passed
 HintTimer = 0           //while &gt;0 a new oSquareHint cannot be created
   
+//in-game animations
+ShiftA = false
+ShiftATick = 0
+ShiftU = false
+ShiftUTick = 0
+TTA = false
+TTATick = 0
+TTU = false
+TTUTick = 0
+
 //targetlist + fill
 TargetList = ds_list_create()
 switch global.custom[?'Green']
@@ -281,6 +291,43 @@ if prepared
         Stat.hints++
         }
       }
+  //spec abil timers anim
+  if ShiftA
+    {
+    ShiftATick += 16
+    if ShiftATick &gt;= 256
+      {
+      ShiftATick = 0
+      ShiftA = false
+      }
+    }
+  if ShiftU
+    {
+    ShiftUTick += 16
+    if ShiftUTick &gt;= 256
+      {
+      ShiftUTick = 0
+      ShiftU = false
+      }
+    }
+  if TTA
+    {
+    TTATick += 16
+    if TTATick &gt;= 256
+      {
+      TTATick = 0
+      TTA = false
+      }
+    }
+  if TTU
+    {
+    TTUTick += 16
+    if TTUTick &gt;= 256
+      {
+      TTUTick = 0
+      TTU = false
+      }
+    }
   }
 else if prestart
   {
@@ -540,7 +587,7 @@ with Net {event_user(3)}
         if Shift
           {
           ShiftQty--
-          Stat.ShiftU = true
+          ShiftU = true
           Stat.shiftsu++
           Shift = false
           }
@@ -550,7 +597,7 @@ with Net {event_user(3)}
           ShiftPB.Prog-= ShiftPB.Req
           ShiftPB.Req+= MinLen
           ShiftQty++
-          Stat.ShiftA = true
+          ShiftA = true
           Stat.shiftsa++
           }
         ShiftPB.Anim = true
@@ -561,7 +608,7 @@ with Net {event_user(3)}
           TT = false
           TTNum = -1
           TTQty--
-          Stat.TTU = true           //TODO check myStat
+          TTU = true           //TODO check myStat
           Stat.unbansu++
           }
         TTPB.Prog+= string_length(prevWord) + ds_list_size(TabuList) + (Timer div 1800)
@@ -570,7 +617,7 @@ with Net {event_user(3)}
           TTPB.Prog-= TTPB.Req
           TTPB.Req+= TTPB.Req div 42
           TTQty++
-          Stat.TTA = true
+          TTA = true
           Stat.unbansa++
           }
         TTPB.Anim = true
@@ -685,13 +732,13 @@ instance_destroy(self,true)
             <kind>1</kind>
             <string>if Vote
   {
+  draw_set_valign(fa_top)
+  draw_set_halign(fa_center)
+  draw_set_font(fCube)
+  draw_set_alpha(0.25)
+  draw_set_color(c_dkgray)
   if !Voted
-    {
-    draw_set_valign(fa_top)
-    draw_set_halign(fa_center)
-    draw_set_font(fCube)
-    draw_set_alpha(0.25)
-    draw_set_color(c_white)
+    {   
     draw_rectangle(150,680,1450,1180,false)
     draw_set_alpha(1)
     draw_rectangle(150,680,1450,1180,true)
@@ -699,11 +746,6 @@ instance_destroy(self,true)
     }
   else
     {
-    draw_set_valign(fa_top)
-    draw_set_halign(fa_center)
-    draw_set_font(fCube)
-    draw_set_alpha(0.25)
-    draw_set_color(c_white)
     draw_rectangle(150,880,1450,1180,false)
     draw_set_alpha(1)
     draw_rectangle(150,880,1450,1180,true)
@@ -724,7 +766,6 @@ instance_destroy(self,true)
       draw_line_width(1300,1050,1300-(VoteN/(Net.Players))*1000,1050,28)
       }
     }
-  //TODO: Pls Count, Blue vs Red + empty white line
   }
 </string>
           </argument>
@@ -778,13 +819,6 @@ for (i=1; i&lt;=string_length(s); i++)
   draw_text(tmp,1100,string_char_at(s,i))
   tmp+=34
   }
-/* //abilities              removed to stat drawer
-draw_set_halign(fa_right)
-draw_sprite_ext(sSquareFaded,0,1344,Cube.y-MinLen*32-12,1,0.3,0,c_white,0.66)
-draw_text(1595,Cube.y-MinLen*32-25,'Score: ' +string(Stat.pp))
-draw_text(1595,Cube.y-MinLen*32+45,'Shifts: '+string(ShiftQty))
-draw_text(1595,Cube.y-MinLen*32+115,'Unbans: '+string(TTQty))
-*/ //hints
 
 //full list
 draw_set_halign(fa_left)
@@ -808,7 +842,7 @@ if prevOffset == -1
     {
     if string_length(prevWordList[| i]) &gt;= MinLen
       {
-      draw_text_transformed(5,600+45+j*70,prevWordList[| i],xsc,1,0)
+      draw_text_transformed(5,645+j*70,prevWordList[| i],xsc,1,0)
       j++
       }
     draw_set_alpha(draw_get_alpha()-0.08)
@@ -819,7 +853,7 @@ else
     {
     if string_length(prevWordList[| i]) &gt;= MinLen
       {
-      draw_text_transformed(5,600-25+j*70,prevWordList[| i],xsc,1,0)
+      draw_text_transformed(5,575+j*70,prevWordList[| i],xsc,1,0)
       j++
       }
     draw_set_alpha(draw_get_alpha()-0.08)
@@ -845,12 +879,27 @@ if TT
   j = MinLen*32
   draw_rectangle(xt-j+TTNum*72,Cube.y-j-100,xt-j+TTNum*72+66,Cube.y-j-34,false)
   }
-/*//Target Hilights 
-draw_set_alpha(1)
-draw_set_color(c_green)
-for (i=0; i&lt;ds_list_size(TargetList); i++)
-  draw_text(333+i*72,400,TargetList[| i]) */
-//Vote menu
+
+//Abilities counter
+  {
+  draw_set_font(fImpact64)
+  draw_set_alpha(1)
+  draw_set_color(c_white)
+  draw_set_valign(fa_top)
+  draw_set_halign(fa_right)
+  draw_sprite_ext(sSquareFaded,0,1344,588,1,0.3,0,c_white,0.66)
+  if ShiftA
+    draw_set_color(make_color_rgb(ShiftATick,255,ShiftATick))
+  else if ShiftU
+    draw_set_color(make_color_rgb(255,ShiftUTick,ShiftUTick))
+  draw_text(1595,975,'Shifts: '+string(ShiftQty))
+  if TTA
+    draw_set_color(make_color_rgb(TTATick,255,TTATick))
+  else if TTU
+    draw_set_color(make_color_rgb(255,TTUTick,TTUTick))
+  else draw_set_color(c_white)
+  draw_text(1595,1045,'Unbans: '+string(TTQty))
+  }
 </string>
           </argument>
         </arguments>

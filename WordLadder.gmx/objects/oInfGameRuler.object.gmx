@@ -75,6 +75,16 @@ HintTooLong = false
 HintWrong = 0           //0 = waiting;  1 = ready;  2 = passed
 HintTimer = 0           //while &gt;0 a new oSquareHint cannot be created
 
+//in-game animations
+ShiftA = false
+ShiftATick = 0
+ShiftU = false
+ShiftUTick = 0
+TTA = false
+TTATick = 0
+TTU = false
+TTUTick = 0
+
 Cube = instance_create(800,720,oGameCube)   //600 ???
 Cube.parent = id
 Cube.MinLen = MinLen
@@ -169,6 +179,43 @@ Stat.GameTypeID = 30  //ENDLESS
     HintTimer += 720
     HintWrong = 2
     Stat.hints++
+    }
+  //spec abil timers anim
+  if ShiftA
+    {
+    ShiftATick += 16
+    if ShiftATick &gt;= 256
+      {
+      ShiftATick = 0
+      ShiftA = false
+      }
+    }
+  if ShiftU
+    {
+    ShiftUTick += 16
+    if ShiftUTick &gt;= 256
+      {
+      ShiftUTick = 0
+      ShiftU = false
+      }
+    }
+  if TTA
+    {
+    TTATick += 16
+    if TTATick &gt;= 256
+      {
+      TTATick = 0
+      TTA = false
+      }
+    }
+  if TTU
+    {
+    TTUTick += 16
+    if TTUTick &gt;= 256
+      {
+      TTUTick = 0
+      TTU = false
+      }
     }
   }
 </string>
@@ -275,13 +322,6 @@ for (i=1; i&lt;=string_length(s); i++)
   draw_text(tmp,1100,string_char_at(s,i))
   tmp+=34
   }
-/* //abilities              removed to stat drawer
-draw_set_halign(fa_right)
-draw_sprite_ext(sSquareFaded,0,1344,Cube.y-MinLen*32-12,1,0.3,0,c_white,0.66)
-draw_text(1595,Cube.y-MinLen*32-25,'Score: ' +string(Stat.pp))
-draw_text(1595,Cube.y-MinLen*32+45,'Shifts: '+string(ShiftQty))
-draw_text(1595,Cube.y-MinLen*32+115,'Unbans: '+string(TTQty))
-*/ //hints
 
 //full list
 draw_set_halign(fa_left)
@@ -341,6 +381,28 @@ if TT
   draw_set_alpha(0.66)
   j = MinLen*32
   draw_rectangle(xt-j+TTNum*72,Cube.y-j-100,xt-j+TTNum*72+66,Cube.y-j-34,false)
+  }
+  
+//Abilities counter
+  {
+  draw_set_font(fImpact64)
+  draw_set_alpha(1)
+  draw_set_color(c_white)
+  draw_set_valign(fa_top)
+  draw_set_halign(fa_right)
+  draw_sprite_ext(sSquareFaded,0,1344,588,1,0.3,0,c_white,0.66)
+  draw_text(1595,575,'Score: ' +string(Stat.pp))
+  if ShiftA
+    draw_set_color(make_color_rgb(ShiftATick,255,ShiftATick))
+  else if ShiftU
+    draw_set_color(make_color_rgb(255,ShiftUTick,ShiftUTick))
+  draw_text(1595,645,'Shifts: '+string(ShiftQty))
+  if TTA
+    draw_set_color(make_color_rgb(TTATick,255,TTATick))
+  else if TTU
+    draw_set_color(make_color_rgb(255,TTUTick,TTUTick))
+  else draw_set_color(c_white)
+  draw_text(1595,715,'Unbans: '+string(TTQty))
   }
 </string>
           </argument>
@@ -516,7 +578,7 @@ exit
         if Shift
           {
           ShiftQty--
-          Stat.ShiftU = true
+          ShiftU = true
           Stat.shiftsu++
           Shift = false
           }
@@ -526,7 +588,7 @@ exit
           ShiftPB.Prog-= ShiftPB.Req
           ShiftPB.Req+= MinLen
           ShiftQty++
-          Stat.ShiftA = true
+          ShiftA = true
           Stat.shiftsa++
           }
         ShiftPB.Anim = true
@@ -537,7 +599,7 @@ exit
           TT = false
           TTNum = -1
           TTQty--
-          Stat.TTU = true
+          TTU = true
           Stat.unbansu++
           }
         TTPB.Prog+= string_length(prevWord) + ds_list_size(TabuList) + (Timer div 1800)
@@ -546,7 +608,7 @@ exit
           TTPB.Prog-= TTPB.Req
           TTPB.Req+= TTPB.Req div 42
           TTQty++
-          Stat.TTA = true
+          TTA = true
           Stat.unbansa++
           }
         TTPB.Anim = true

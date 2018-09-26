@@ -45,6 +45,7 @@ PlsArrWord[0] = ''
 PlsArrScore[0] = 0
 PlsArrShift[0] = false
 PlsArrUnban[0] = -1
+PlsArrPos[0] = 0
 
 RestartTimer = 150
 Restarting = false
@@ -198,6 +199,7 @@ else if type == network_type_data
         PlsArrScore[i] = 0
         PlsArrShift[i] = false
         PlsArrUnban[i] = -1
+        PlsArrPos[i] = i
         }
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 8)           //rules map request
@@ -250,18 +252,30 @@ else if type == network_type_data
             {
             GR.waiting = false 
             GR.myWord = true
-            }  
-          if buffer_read(msg_buff, buffer_bool)
+            } 
+          var success = buffer_read(msg_buff, buffer_bool);
+          var sh = buffer_read(msg_buff, buffer_bool);
+          var bb = buffer_read(msg_buff, buffer_bool);
+          PlsArrWord[pid] = buffer_read(msg_buff, buffer_string)
+          if success
             {
-            GR.currWord = buffer_read(msg_buff, buffer_string)      //AAA
+            if sh
+              {
+              GR.ShiftQty--
+              GR.ShiftU = true
+              }
+            if bb
+              {
+              GR.TTQty--
+              GR.TTU = true
+              }
+            GR.currWord = PlsArrWord[pid]
             GR.Cube.w1 = GR.currWord
             with GR {event_user(1)}
             GR.waiting = true
             for (var i=0; i&lt;Players; i++)
               PlsArrWord[i] = ''
             }
-          else
-            PlsArrWord[pid] = buffer_read(msg_buff, buffer_string)      //AAAA
           }
       break
       
@@ -290,7 +304,10 @@ else if type == network_type_data
     case 16:
       Players = buffer_read(msg_buff, buffer_s8);
       for (var i=0; i&lt;Players; i++)
+        {
+        PlsArrPos[i] = buffer_read(msg_buff, buffer_s8);
         PlsArrScore[i] = buffer_read(msg_buff, buffer_s32);
+        }
       break
       
     //disconnected
@@ -303,6 +320,11 @@ else if type == network_type_data
     //someone disconnected
     case 18:
       var pid = buffer_read(msg_buff, buffer_s8);
+        //Shift Table Pos
+      for (var i=0; i&lt;Players; i++)
+        if PlsArrPos[i] &gt; PlsArrPos[pid]
+          PlsArrPos[i]-- 
+          //shift array
       for (var i = pid; i &lt; Players-1; i++)
         {
         PlsArrPing[i] = PlsArrPing[i+1]
@@ -312,6 +334,7 @@ else if type == network_type_data
         PlsArrScore[i] = PlsArrScore[i+1]
         PlsArrShift[i] = PlsArrShift[i+1]
         PlsArrUnban[i] = PlsArrUnban[i+1]
+        PlsArrPos[i] = PlsArrPos[i+1]
         }
       Players--
       break
@@ -340,7 +363,7 @@ else if type == network_type_data
     
     //Vote Progress event
     case 23:
-      buffer_read(msg_buff, buffer_s8);   //players
+      Players = buffer_read(msg_buff, buffer_s8);
       GR.VoteY = buffer_read(msg_buff, buffer_s8);
       GR.VoteN = buffer_read(msg_buff, buffer_s8);
       var isResult = buffer_read(msg_buff, buffer_bool);
@@ -667,6 +690,57 @@ network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
         </arguments>
       </action>
     </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if !parent.loaded
+  exit
+
+draw_set_font(fImpact64)
+draw_set_color(c_white)
+draw_set_halign(fa_right)
+draw_set_valign(fa_top)
+
+for (var i=0; i&lt;Players; i++)
+  {
+  var j = PlsArrPos[i];
+  var p = PlsArrPos[PID]-j;
+  if abs(p) &lt; 6
+    {
+    draw_set_alpha(1 - abs(p)/5)
+    //name column
+    var w = string_width(PlsArrName[i]);
+    if w &lt; 350
+      draw_text(1595,575-p*70,PlsArrName[i])
+    else
+      draw_text_transformed(1595,575-p*70,PlsArrName[i],350/w,1,0)
+    //score column
+    draw_text(1240,575-p*70,string(PlsArrScore[i]))
+    //draw_text(1240,575-p*70,string(PlsArrPos[i]))
+    //word column
+    if p != 0
+      draw_text(1080,575-p*70,PlsArrWord[i])
+    }
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
@@ -687,31 +761,17 @@ network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
             <string>if !parent.loaded
   exit
 
-draw_set_font(fCube)
+draw_set_font(fImpact64)
 draw_set_color(c_white)
 draw_set_alpha(1)
 draw_set_halign(fa_right)
-draw_set_valign(fa_bottom)
+draw_set_valign(fa_top)
 
-draw_text(1595,565,'Players: ' + string(Players))
+draw_text(1595,65,'Players: ' + string(Players))
 
 //ping column
 //for (var i=0; i&lt;Players; i++)
 //  draw_text(1595,500-i*65,string(PlsArrPing[i]))
-
-//name column
-for (var i=0; i&lt;Players; i++)
-  draw_text(1595,500-i*65,PlsArrName[i])
-  
-//score column
-draw_set_alpha(0.8)
-for (var i=0; i&lt;Players; i++)
-  draw_text(1145,500-i*65,string(PlsArrScore[i]))
-
-//word column
-draw_set_alpha(0.6)
-for (var i=0; i&lt;Players; i++)
-  draw_text(995,500-i*65,PlsArrWord[i])
 
 //prestart string
 if GR != -1

@@ -70,6 +70,7 @@
     <sprite>sprites\sArrow</sprite>
     <sprite>sprites\sArrowScroll</sprite>
     <sprite>sprites\sPreved</sprite>
+    <sprite>sprites\sAlmi</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -102,6 +103,7 @@
     <font>fonts\fTimer</font>
     <font>fonts\fCube</font>
     <font>fonts\fHint</font>
+    <font>fonts\fChat</font>
   </fonts>
   <objects name="objects">
     <objects name="GameGeneralGroup">
@@ -154,6 +156,7 @@
     <object>objects\oDevDictRd</object>
     <object>objects\oDevMenu</object>
     <object>objects\oPreved</object>
+    <object>objects\oAlmi</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>

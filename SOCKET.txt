@@ -101,6 +101,8 @@ string		Word
 s8		Header
 s8		Player
 bool		Success
+bool		Using Shift
+bool		Using Unban
 string		Word
 
 15:
@@ -115,6 +117,7 @@ string		Banned & Greens char sequence
 16:
 s8		Header
 s8	P	Players
+Pxs8		Pos
 Pxs32		Score
 
 17:

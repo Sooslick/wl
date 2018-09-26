@@ -66,6 +66,8 @@ chReverse = false
 chFlip = false
 chBlur = false
 chBlurSf = -1
+chAlmi = false
+chAlmiTick = 0
 </string>
           </argument>
         </arguments>
@@ -269,6 +271,16 @@ if ((rot == 80) || (rot == 260))
   
 //////////// ch stop
 }
+
+if chAlmi
+  {
+  chAlmiTick++
+  if chAlmiTick == 4
+    {
+    chAlmiTick = 0
+    instance_create(0,0,oAlmi)
+    }
+  }
 </string>
           </argument>
         </arguments>
@@ -324,6 +336,7 @@ chStop = false
 chReverse = false
 chFlip = false
 chBlur = false
+chAlmi = false
    
 if chRestart
   {
@@ -439,6 +452,7 @@ else if cheat == 'CANCEL'
   chStop = false
   chReverse = false
   chBlur = false
+  chAlmi = false
   if chFlip
     {
     chFlip = false
@@ -448,6 +462,8 @@ else if cheat == 'CANCEL'
       isReverse = true
     }
   }
+else if cheat == 'ALMI'
+  chAlmi = true
       
 //refresh
 cheat = ''
