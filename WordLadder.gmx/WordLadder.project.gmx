@@ -95,6 +95,7 @@
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shLinear.shader</shader>
+    <shader type="GLSLES">shaders\shBw.shader</shader>
   </shaders>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
@@ -115,6 +116,7 @@
       <object>objects\oCustomGameRuler</object>
       <object>objects\oHowToPlay</object>
       <object>objects\oCoopGameRuler</object>
+      <object>objects\oPtpGameRuler</object>
       <object>objects\oGameCube</object>
       <object>objects\oGameStatCounter</object>
       <object>objects\oSquareHint</object>

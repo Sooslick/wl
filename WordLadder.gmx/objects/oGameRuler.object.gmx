@@ -390,6 +390,7 @@ switch (global.GameType)                    //GR: GameRuler
     GR.parent = id
     GR.Net = Net
     Net.GR = GR
+    Net.ptp = true
     break
   default:
     loaded = false

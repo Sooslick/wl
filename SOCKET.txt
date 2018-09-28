@@ -26,6 +26,9 @@ SOCKET HEADERS
 23	server -> client	Vote result
 24	server -> client	Full word history
 25	server -> client	Current GameCube state
+26	server -> client	Player's ptp fields
+27	client -> server	End of ptp timer
+28	server -> client	Endgame signal
 _________________________________________
 
 Socket:
@@ -165,3 +168,16 @@ s32		words
 string		Word 2
 string		Word 3
 string		Word 4
+
+26:
+s8		Header
+s32		Timer
+bool		myWord
+s8		Shifts
+s8		Unbans
+
+27:
+s8		Header
+
+28:
+s8		Header

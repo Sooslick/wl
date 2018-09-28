@@ -34,6 +34,7 @@ myWord = false
 prevWordList = ds_list_create()
 prevOffset = -1
 words = 0
+ptpwords = 0
 loadRot = 0
 
 prevAnim = false
@@ -47,36 +48,36 @@ BTimer = 900
 switch global.custom[?'Banned']
   {
   case 0:
-    BanArr[0] = 3
-    BanArr[1] = 10
-    BanArr[2] = 42
-    BanArr[3] = 42
-    BanArr[4] = 66
-    BanArr[5] = 100
-    BanArr[6] = 228
-    BanArr[7] = 9000
+    BanArr[0] = 1
+    BanArr[1] = 3
+    BanArr[2] = 7
+    BanArr[3] = 13
+    BanArr[4] = 21
+    BanArr[5] = 30
+    BanArr[6] = 42
+    BanArr[7] = 66
     BanArr[8] = 999999999
     break
   case 1:
-    BanArr[0] = 3
-    BanArr[1] = 10
-    BanArr[2] = 24
-    BanArr[3] = 42
-    BanArr[4] = 42
-    BanArr[5] = 66
-    BanArr[6] = 100
-    BanArr[7] = 100
+    BanArr[0] = 1
+    BanArr[1] = 3
+    BanArr[2] = 6
+    BanArr[3] = 10
+    BanArr[4] = 15
+    BanArr[5] = 21
+    BanArr[6] = 30
+    BanArr[7] = 42
     BanArr[8] = 999999999
     break
   case 2:
-    BanArr[0] = 3
-    BanArr[1] = 10
-    BanArr[2] = 22
-    BanArr[3] = 35
-    BanArr[4] = 42
-    BanArr[5] = 66
-    BanArr[6] = 84
-    BanArr[7] = 98
+    BanArr[0] = 1
+    BanArr[1] = 2
+    BanArr[2] = 4
+    BanArr[3] = 8
+    BanArr[4] = 14
+    BanArr[5] = 20
+    BanArr[6] = 26
+    BanArr[7] = 33
     BanArr[8] = 999999999
     break
   }
@@ -192,21 +193,12 @@ Cube.w3 = '    '
 Cube.w4 = '    '
 Cube.TabuList = TabuList
 Cube.TargetList = TargetList
+Cube.ApplyBw = true
 
 Stat = instance_create(0,0,oGameStatCounter)
 Stat.parent = id
 Stat.Cube = Cube
-Stat.GameTypeID = 100  //COOP
-
-Vote = false
-VoteText = ''
-VoteY = 0
-VoteN = 0
-Voted = false
-VoteChoice = false  //false No; true Yes.
-
-bVoteY = -1
-bVoteN = -1
+Stat.GameTypeID = 110  //PTP
 </string>
           </argument>
         </arguments>
@@ -234,20 +226,19 @@ if prepared
   {
   Stat.ticks++
   Timer--
-  Think++
-    if HintTimer &gt; 0
-      HintTimer--
-    if Think==3333
-      HintTooLong = true
-    if Timer==666
-      HintTimeUp = true
-  if Timer&lt;=0
+  if myWord
     {
-    tmp = instance_create(0,0,oSquareTransition)
-    tmp.parent = id
-    TransitionEvent = 0
-    prepared = false
+    Think++
+      if HintTimer &gt; 0
+        HintTimer--
+      if Think==3333
+        HintTooLong = true
+      if Timer==666
+        HintTimeUp = true
     }
+  //TODO
+  if Timer&lt;=0
+    with Net {event_user(7)}
     
   if prevAnim
     {
@@ -335,6 +326,7 @@ else if prestart
   if BTimer &lt;= 0
     {
     Net.Ready = Net.Players-1
+    Net.ptpPlayers = Net.Players-1
     with Net {event_user(0)}
     }
   }
@@ -370,62 +362,12 @@ else if prestart
     exit;
     }
   }
-  
-if bVoteY &gt; 0
-  {
-  if bVoteY.clicked
-    {
-    instance_destroy(bVoteY)
-    instance_destroy(bVoteN)
-    bVoteY = -1
-    bVoteN = -1
-    VoteChoice = true
-    Voted = true
-    with Net {event_user(6)}
-    exit
-    }
-  }
-  
-if bVoteN &gt; 0
-  {
-  if bVoteN.clicked
-    {
-    instance_destroy(bVoteY)
-    instance_destroy(bVoteN)
-    bVoteY = -1
-    bVoteN = -1
-    VoteChoice = false
-    Voted = true
-    with Net {event_user(6)}
-    exit
-    }
-  }
 </string>
           </argument>
         </arguments>
       </action>
     </event>
     <event eventtype="7" enumb="13">
-      <action>
-        <libid>1</libid>
-        <id>605</id>
-        <kind>0</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>0</useapplyto>
-        <exetype>0</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>Vote init</string>
-          </argument>
-        </arguments>
-      </action>
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -442,15 +384,11 @@ if bVoteN &gt; 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>Vote = true
-VoteY = 0
-VoteN = 0
-Voted = false
-
-bVoteY = instance_create(500,1050,oButton)
-bVoteY.content = 'YES'
-bVoteN = instance_create(1100,1050,oButton)
-bVoteN.content = 'NO'
+            <string>//endgame
+    tmp = instance_create(0,0,oSquareTransition)
+    tmp.parent = id
+    TransitionEvent = 0
+    prepared = false
 </string>
           </argument>
         </arguments>
@@ -638,7 +576,7 @@ with Net {event_user(3)}
             DecPB.AnimXTarget = DecPB.Prog / DecPB.Req * 1600
             }
         //tabu calc
-        TabuQtyPB.Prog++
+        TabuQtyPB.Prog+= 1/Net.Players
         if TabuQtyPB.Prog &gt;= TabuQtyPB.Req
           {
           TabuQty++
@@ -666,18 +604,6 @@ with Net {event_user(3)}
         Cube.TabuErrNum = -1
         //Refresh green / ban
         event_user(2)
-        
-//destroy vote debug
-if bVoteY != -1
-  {
-  instance_destroy (bVoteY)
-  bVoteY = -1
-  }
-if bVoteN != -1
-  {
-  instance_destroy (bVoteN)
-  bVoteN = -1
-  }
 </string>
           </argument>
         </arguments>
@@ -713,67 +639,6 @@ instance_destroy(self,true)
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>if Vote
-  {
-  draw_set_valign(fa_top)
-  draw_set_halign(fa_center)
-  draw_set_font(fCube)
-  draw_set_alpha(0.5)
-  draw_set_color(c_dkgray)
-  if !Voted
-    {   
-    draw_rectangle(150,680,1450,1180,false)
-    draw_set_alpha(1)
-    draw_rectangle(150,680,1450,1180,true)
-    draw_set_color(c_white)
-    draw_text(800,700,VoteText)
-    }
-  else
-    {
-    draw_rectangle(150,880,1450,1180,false)
-    draw_set_alpha(1)
-    draw_rectangle(150,880,1450,1180,true)
-    draw_set_color(c_white)
-    draw_text(800,900,'Vote result')
-    draw_line_width(300,1050,1300,1050,32)
-    if VoteChoice
-      {
-      draw_set_color(c_blue)
-      draw_line_width(300,1050,300+(VoteY/(Net.Players))*1000,1050,28)
-      draw_set_color(c_red)
-      draw_line_width(1300,1050,1300-(VoteN/(Net.Players))*1000,1050,28)
-      }
-    else
-      {
-      draw_set_color(c_red)
-      draw_line_width(300,1050,300+(VoteY/(Net.Players))*1000,1050,28)
-      draw_set_color(c_blue)
-      draw_line_width(1300,1050,1300-(VoteN/(Net.Players))*1000,1050,28)
-      }
-    }
-  }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
     <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
@@ -791,7 +656,7 @@ instance_destroy(self,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if waiting
+            <string>if waiting || !myWord
   {
   draw_sprite_ext(sLoading,0,1500,80,2,2,loadRot,c_white,1)
   draw_sprite_ext(sLoading,0,1500,80,1,1,-loadRot*2,c_white,1)
@@ -933,6 +798,9 @@ if Cube.Rot
 if waiting
   exit
   
+if !myWord
+  exit
+  
 if ShiftQty &gt; 0
   if !Shift
     {
@@ -972,6 +840,9 @@ if Cube.Rot
   
 if waiting
   exit
+  
+if !myWord
+  exit
 
 if Shift
     {
@@ -1010,6 +881,9 @@ if Cube.Rot
   exit
   
 if waiting
+  exit
+  
+if !myWord
   exit
   
 if Net.ChatActive
@@ -1129,6 +1003,9 @@ if Net.ChatActive
   exit
   
 if waiting
+  exit
+  
+if !myWord
   exit
   
 if !keyboard_check(vk_enter)

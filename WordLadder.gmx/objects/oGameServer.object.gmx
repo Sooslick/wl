@@ -27,12 +27,16 @@
             <kind>1</kind>
             <string>server = network_create_server(network_socket_tcp, 27015, 10);
 buffer_send = buffer_create(64, buffer_grow, 1);
+buffer_hist = buffer_create(64, buffer_grow, 1);
 
 GR = -1
-
+Stat = -1
 Players = 1
 Ready = 0
+ptp = false
+ptpPlayers = 0
 
+//general fields
 PlsArrSock[0] = 0               //send socket array
 PlsArrIP[0] = 'localhost'
 PlsArrPing[0] = 0               
@@ -44,11 +48,19 @@ PlsArrShift[0] = false
 PlsArrUnban[0] = -1
 PlsArrReady[0] = false
 PlsArrPos[0] = 0
-//stat fields
+//ptpfields
+PtpArrTimer[0] = 0
+PtpArrPlaying[0] = false
+PtpArrShift[0] = 0
+PtpArrShiftProg[0] = 0    //new shift after every 33 points
+PtpArrUnban[0] = 0
+PtpArrUnbanProg[0] = 0      //new unban after every 42 points
+PtpArrPos[0] = 0
+PtpPos = 0
+PtpPosMax = 0
 
 PingTimestamp = 0
 PingTimer = 30
-
 BRestart = -1
 
 ChatActive = false
@@ -231,6 +243,14 @@ if type = network_type_connect
   PlsArrUnban[Players] = -1
   PlsArrReady[Players] = false
   PlsArrPos[Players] = Players
+  
+  PtpArrTimer[Players] = 999
+  PtpArrPlaying[Players] = false
+  PtpArrShift[Players] = 0
+  PtpArrShiftProg[Players] = 0
+  PtpArrUnban[Players] = 0
+  PtpArrUnbanProg[Players] = 0
+  PtpArrPos[Players] = Players
   Players++
   parent.tc.online = true
   }
@@ -312,13 +332,13 @@ else if type = network_type_data
         for (var i=1; i&lt;Players; i++)
           network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
         //send word history socket 24
-        buffer_seek(buffer_send, buffer_seek_start, 0);
-        buffer_write(buffer_send, buffer_s8, 24)
+        buffer_seek(buffer_hist, buffer_seek_start, 0);
+        buffer_write(buffer_hist, buffer_s8, 24)
         var w = GR.words;
-        buffer_write(buffer_send, buffer_s32, w)
+        buffer_write(buffer_hist, buffer_s32, w)
         for (var i=0; i&lt;w; i++)
-          buffer_write(buffer_send, buffer_string, GR.prevWordList[|i])
-        network_send_packet( PlsArrSock[eid], buffer_send, buffer_tell(buffer_send) );
+          buffer_write(buffer_hist, buffer_string, GR.prevWordList[|i])
+        network_send_packet( PlsArrSock[eid], buffer_hist, buffer_tell(buffer_hist) );
         //send GameCube state socket 25
         buffer_seek(buffer_send, buffer_seek_start, 0);
         buffer_write(buffer_send, buffer_s8, 25)
@@ -334,9 +354,10 @@ else if type = network_type_data
       else
         {
         Ready++
+        ptpPlayers++
         PlsArrReady[eid] = true
         if Players == Ready
-          {
+          {    
           GR.prepared = true
           GR.currWord = string_char_at(GR.prevWord,string_length(GR.prevWord))
           GR.Cube.Rot = true
@@ -353,6 +374,44 @@ else if type = network_type_data
           buffer_write(buffer_send, buffer_s32, GR.Timer)
           for (var i=1; i&lt;Players; i++)
             network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+            
+          if ptp
+            { 
+            for (var i=0; i&lt;Players; i++)
+              {
+              PtpArrTimer[0] = GR.Timer
+              PtpArrPlaying[0] = true
+              var r = irandom_range(0, Players-1);
+              if r != i
+                {
+                var p = PtpArrPos[i];
+                PtpArrPos[i] = PtpArrPos[r];
+                PtpArrPos[r] = p;
+                }
+              }
+            PtpPos = 0
+            PtpPosMax = Players - 1
+            for (var i=1; i&lt;Players; i++)
+              {
+              //ptp fields
+              buffer_seek(buffer_send, buffer_seek_start, 0);
+              buffer_write(buffer_send, buffer_s8, 26)
+              buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
+              if PtpPos == PtpArrPos[i]
+                buffer_write(buffer_send, buffer_bool, true)
+              else
+                buffer_write(buffer_send, buffer_bool, false)
+              buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
+              buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
+              network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+              }
+            if PtpArrPos[0] == PtpPos
+              {
+              GR.myWord = true
+              GR.waiting = false
+              GR.Cube.ApplyBw = false
+              }
+            }
           }
         else
           {
@@ -384,7 +443,79 @@ else if type = network_type_data
       if Shift
         VoteScope+= 4
       PlsArrWord[eid] = word
-      if enter &amp;&amp; VoteScope == 0        //word ok
+      if enter &amp;&amp; ptp
+        {
+        var cnt = 0;
+        for (var i=0; i&lt; ds_list_size(GR.TargetList); i++)
+                cnt+= string_count(GR.TargetList[| i],word)
+        PlsArrScore[eid]+= GR.ptpwords + cnt
+        cnt++
+        PtpArrShiftProg[eid]+= cnt;
+        if PtpArrShiftProg[eid] &gt; 33
+          {
+          PtpArrShiftProg[eid]-= 33
+          PtpArrShift[eid]++
+          }
+        PtpArrUnbanProg[eid]+= cnt;
+        if PtpArrUnbanProg[eid] &gt; 42
+          {
+          PtpArrUnbanProg[eid]-= 42
+          PtpArrUnban[eid]++
+          }
+        PtpArrTimer[eid]+= (GR.MinLen-1)*GR.SecPerLetter + cnt*GR.SecPerLetter*0.5
+        if string_length(word) &gt; GR.MinLen
+          PtpArrTimer[eid] = PtpArrTimer[eid] div 2
+        buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 14)
+        buffer_write(buffer_send, buffer_s8, eid)
+        buffer_write(buffer_send, buffer_bool, true)
+        buffer_write(buffer_send, buffer_bool, false)
+        buffer_write(buffer_send, buffer_bool, false)
+        buffer_write(buffer_send, buffer_string, word)
+        for (var i=1; i&lt;Players; i++)
+          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+        GR.currWord = word
+        GR.Cube.w1 = word
+        with GR {event_user(1)}
+        if TTNum != -1
+          PtpArrUnban[0]--
+        if Shift
+          PtpArrShift[0]--
+        var searching = true;
+        while searching
+          {
+          PtpPos++
+          if PtpPos == Players
+            {
+            PtpPos = 0
+            GR.ptpwords++
+            }
+          for (var i=0; i&lt;Players; i++)
+            if PtpArrPos[i] == PtpPos &amp;&amp; PtpArrPlaying[i] == true
+              searching = false
+          }
+        for (var i=1; i&lt;Players; i++)
+          {
+          //ptp fields
+          buffer_seek(buffer_send, buffer_seek_start, 0);
+          buffer_write(buffer_send, buffer_s8, 26)
+          buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
+          if PtpPos == PtpArrPos[i]
+            buffer_write(buffer_send, buffer_bool, true)
+          else
+            buffer_write(buffer_send, buffer_bool, false)
+          buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
+          buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
+          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+          }
+        if PtpArrPos[0] == PtpPos
+          {
+          GR.myWord = true
+          GR.waiting = false
+          GR.Cube.ApplyBw = false
+          }
+        } 
+      else if enter &amp;&amp; VoteScope == 0        //word ok
         {
         GR.currWord = word
         GR.Cube.w1 = word
@@ -552,6 +683,56 @@ else if type = network_type_data
           }
         }
       break
+      
+      //ptp timer off
+    case 27:
+      PtpArrPlaying[eid] = false
+      ptpPlayers--
+      if ptpPlayers &gt; 1
+        {
+        var searching = true;
+        while searching
+          {
+          PtpPos++
+          if PtpPos == Players
+            {
+            PtpPos = 0
+            GR.ptpwords++
+            }
+          for (var i=0; i&lt;Players; i++)
+            if PtpArrPos[i] == PtpPos &amp;&amp; PtpArrPlaying[i] == true
+              searching = false
+          }
+        for (var i=1; i&lt;Players; i++)
+          {
+          //ptp fields
+          buffer_seek(buffer_send, buffer_seek_start, 0);
+          buffer_write(buffer_send, buffer_s8, 26)
+          buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
+          if PtpPos == PtpArrPos[i]
+            buffer_write(buffer_send, buffer_bool, true)
+          else
+            buffer_write(buffer_send, buffer_bool, false)
+          buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
+          buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
+          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+          }
+        if PtpArrPos[0] == PtpPos
+          {
+          GR.myWord = true
+          GR.waiting = false
+          GR.Cube.ApplyBw = false
+          }
+        }
+      else
+        {
+        buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 28)
+        for (var i=1; i&lt;Players; i++)
+            network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+        event_user(4)
+        }
+      break
     }
   }
 else if type = network_type_disconnect
@@ -567,6 +748,59 @@ else if type = network_type_disconnect
   if PlsArrReady[eid]
     Ready--    
     
+  //ptp operations  
+  if PtpArrPlaying[eid]
+    ptpPlayers--
+    
+  if PtpPos == PtpArrPos[eid]
+    {
+    PtpArrPlaying[eid] = false
+    if ptpPlayers &gt; 1
+      {
+      var searching = true;
+      while searching
+        {
+        PtpPos++
+        if PtpPos == Players
+          {
+          PtpPos = 0
+          GR.ptpwords++
+          }
+        for (var i=0; i&lt;Players; i++)
+          if PtpArrPos[i] == PtpPos &amp;&amp; PtpArrPlaying[i] == true
+            searching = false
+        }
+      for (var i=1; i&lt;Players; i++)
+        {
+        //ptp fields
+        buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 26)
+        buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
+        if PtpPos == PtpArrPos[i]
+          buffer_write(buffer_send, buffer_bool, true)
+        else
+          buffer_write(buffer_send, buffer_bool, false)
+        buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
+        buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
+        network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+        }
+      if PtpArrPos[0] == PtpPos
+        {
+        GR.myWord = true
+        GR.waiting = false
+        GR.Cube.ApplyBw = false
+        }
+      }
+    else
+      {
+      buffer_seek(buffer_send, buffer_seek_start, 0);
+      buffer_write(buffer_send, buffer_s8, 28)
+      for (var i=1; i&lt;Players; i++)
+          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+      event_user(4)
+      }
+    }
+    
   //disconnect socket  
   buffer_seek(buffer_send, buffer_seek_start, 0);
   buffer_write(buffer_send, buffer_s8, 18)
@@ -578,7 +812,7 @@ else if type = network_type_disconnect
   for (var i=0; i&lt;Players; i++)
     if PlsArrPos[i] &gt; PlsArrPos[eid]
       PlsArrPos[i]--  
-    
+      
   //shift array
   for (var i = eid; i &lt; Players-1; i++)
     {
@@ -593,6 +827,13 @@ else if type = network_type_disconnect
     PlsArrUnban[i] = PlsArrUnban[i+1]
     PlsArrReady[i] = PlsArrReady[i+1]
     PlsArrPos[i] = PlsArrPos[i+1]
+    PtpArrTimer[i] = PtpArrTimer[i+1]
+    PtpArrPlaying[i] = PtpArrPlaying[i+1]
+    PtpArrShift[i] = PtpArrShift[i+1]
+    PtpArrShiftProg[i] = PtpArrShiftProg[i+1]
+    PtpArrUnban[i] = PtpArrUnban[i+1]
+    PtpArrUnbanProg[i] = PtpArrUnbanProg[i+1]
+    PtpArrPos[i] = PtpArrPos[i+1]
     }
   Players--
   }
@@ -808,6 +1049,7 @@ s+= PlsArrName[bestpl]
 s+= '##SCORE:#'
 s+= string(PlsArrScore[bestpl])
 Stat.s = s
+Chat.visible = false
 </string>
           </argument>
         </arguments>
@@ -970,7 +1212,83 @@ if TTNum != -1
 if Shift
   VoteScope+= 4
   
-if VoteScope == 0
+if ptp
+  {
+  var cnt = 0;
+  for (var i=0; i&lt; ds_list_size(GR.TargetList); i++)
+          cnt+= string_count(GR.TargetList[| i],word)
+  PlsArrScore[0]+= GR.ptpwords + cnt
+  cnt++
+  PtpArrShiftProg[0]+= cnt;
+  if PtpArrShiftProg[0] &gt; 33
+    {
+    PtpArrShiftProg[0]-= 33
+    PtpArrShift[0]++
+    }
+  PtpArrUnbanProg[0]+= cnt;
+  if PtpArrUnbanProg[0] &gt; 42
+    {
+    PtpArrUnbanProg[0]-= 42
+    PtpArrUnban[0]++
+    }
+  PtpArrTimer[0]+= (GR.MinLen-1)*GR.SecPerLetter + cnt*GR.SecPerLetter*0.5
+  if string_length(word) &gt; GR.MinLen
+    PtpArrTimer[0] = PtpArrTimer[0] div 2
+  buffer_seek(buffer_send, buffer_seek_start, 0);
+  buffer_write(buffer_send, buffer_s8, 14)
+  buffer_write(buffer_send, buffer_s8, 0)
+  buffer_write(buffer_send, buffer_bool, true)
+  buffer_write(buffer_send, buffer_bool, false)
+  buffer_write(buffer_send, buffer_bool, false)
+  buffer_write(buffer_send, buffer_string, GR.currWord)
+  for (var i=1; i&lt;Players; i++)
+    network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+  GR.currWord = word
+  GR.Cube.w1 = word
+  with GR {event_user(1)}
+  GR.waiting = true
+  GR.myWord = false
+  GR.Cube.ApplyBw = true
+  if TTNum != -1
+    PtpArrUnban[0]--
+  if Shift
+    PtpArrShift[0]--
+  var searching = true;
+  while searching
+    {
+    PtpPos++
+    if PtpPos == Players
+      {
+      PtpPos = 0
+      GR.ptpwords++
+      }
+    for (var i=0; i&lt;Players; i++)
+      if PtpArrPos[i] == PtpPos &amp;&amp; PtpArrPlaying[i] == true
+        searching = false
+    }
+  for (var i=1; i&lt;Players; i++)
+    {
+    //ptp fields
+    buffer_seek(buffer_send, buffer_seek_start, 0);
+    buffer_write(buffer_send, buffer_s8, 26)
+    buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
+    if PtpPos == PtpArrPos[i]
+      buffer_write(buffer_send, buffer_bool, true)
+    else
+      buffer_write(buffer_send, buffer_bool, false)
+    buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
+    buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
+    network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+    }
+  if PtpArrPos[0] == PtpPos
+    {
+    GR.myWord = true
+    GR.waiting = false
+    GR.Cube.ApplyBw = false
+    }
+  }  
+  
+else if VoteScope == 0
   {
   PlsArrScore[0]+= GR.words + (GR.Timer div 1800) * GR.MinLen + string_length(word)
   for (var i=0; i&lt; ds_list_size(GR.TargetList); i++)
@@ -1136,6 +1454,7 @@ for (var i=1; i&lt;Players; i++)
           <argument>
             <kind>1</kind>
             <string>Ready++
+ptpPlayers++
 PlsArrReady[0] = true
 Chat.visible = true
 if Players == Ready
@@ -1148,6 +1467,43 @@ if Players == Ready
     buffer_write(buffer_send, buffer_s32, GR.Timer)
     for (var i=1; i&lt;Players; i++)
         network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+        
+    if ptp
+        { 
+        for (var i=0; i&lt;Players; i++)
+          {
+          PtpArrTimer[0] = GR.Timer
+          PtpArrPlaying[0] = true
+          var r = irandom_range(0, Players-1);
+          if r != i
+            {
+            var p = PtpArrPos[i];
+            PtpArrPos[i] = PtpArrPos[r];
+            PtpArrPos[r] = p;
+            }
+          }
+        PtpPos = 0
+        PtpPosMax = Players - 1
+        for (var i=1; i&lt;Players; i++)
+          {
+          //ptp fields
+          buffer_seek(buffer_send, buffer_seek_start, 0);
+          buffer_write(buffer_send, buffer_s8, 26)
+          buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
+          if PtpPos == PtpArrPos[i]
+            buffer_write(buffer_send, buffer_bool, true)
+          else
+            buffer_write(buffer_send, buffer_bool, false)
+          buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
+          buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
+          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+          }
+        if PtpArrPos[0] == PtpPos
+          {
+          GR.myWord = true
+          GR.Cube.ApplyBw = false
+          }
+        }
     }
 else
     {
@@ -1183,6 +1539,10 @@ else
             <kind>1</kind>
             <string>if !parent.loaded
   exit
+  
+if Stat != -1
+  if Stat.active
+    exit
 
 draw_set_font(fImpact64)
 draw_set_color(c_white)
@@ -1210,6 +1570,26 @@ for (var i=0; i&lt;Players; i++)
       draw_text(1080,675-p*70,PlsArrWord[i])
     }
   }
+  
+//debug
+draw_set_font(fDebug)
+draw_set_color(c_aqua)
+draw_set_alpha(1)
+draw_set_halign(fa_left)
+for (var i=0; i&lt;Players; i++)
+  {
+  draw_text(i*50,25,PlsArrWord[i])
+  draw_text(i*50,50,string(PlsArrScore[i]))
+  draw_text(i*50,75,string(PlsArrPos[i]))
+  draw_text(i*50,100,string(PtpArrTimer[i]))
+  draw_text(i*50,125,string(PtpArrPlaying[i]))
+  draw_text(i*50,150,string(PtpArrShift[i]))
+  draw_text(i*50,175,string(PtpArrShiftProg[i]))
+  draw_text(i*50,200,string(PtpArrUnban[i]))
+  draw_text(i*50,225,string(PtpArrUnbanProg[i]))
+  draw_text(i*50,250,string(PtpArrPos[i]))
+  }
+draw_text(25,300,string(PtpPos))
 </string>
           </argument>
         </arguments>

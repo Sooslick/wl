@@ -32,8 +32,10 @@ buffer_send = buffer_create(64, buffer_grow, 1);
 
 PID = -1
 GR = -1
+Stat = -1
 timeout = 300
 connected = false
+ptp = false
 
 Players = 0
 Ready = 0
@@ -272,7 +274,7 @@ else if type == network_type_data
             GR.currWord = PlsArrWord[pid]
             GR.Cube.w1 = GR.currWord
             with GR {event_user(1)}
-            GR.waiting = true
+            GR.waiting = false
             for (var i=0; i&lt;Players; i++)
               PlsArrWord[i] = ''
             }
@@ -296,7 +298,6 @@ else if type == network_type_data
           ds_list_clear(GR.TargetList)
           for (var i=B+1; i&lt;=B+G; i++)
             ds_list_add(GR.TargetList,string_char_at(S,i))
-          GR.waiting = false
           }
       break
       
@@ -391,8 +392,80 @@ else if type == network_type_data
       GR.Cube.w3 = buffer_read(msg_buff, buffer_string);
       GR.currWord = string_char_at(GR.Cube.w1,string_length(GR.Cube.w1))
       break
+      
+    //ptp: my state
+    case 26:
+      GR.Timer = buffer_read(msg_buff, buffer_s32);
+      GR.myWord = buffer_read(msg_buff, buffer_bool);
+      if GR.myWord
+        {
+        GR.waiting = false
+        GR.Cube.ApplyBw = false
+        }
+      else
+        {
+        GR.Cube.ApplyBw = true
+        GR.waiting = true
+        }
+      GR.ShiftQty = buffer_read(msg_buff, buffer_s8);
+      GR.TTQty = buffer_read(msg_buff, buffer_s8);
+      break
+      
+    //ptp: endgame
+    case 28:
+      with GR {event_user(3)}
+      event_user(4)
+      break
     }                
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="17">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>ptp end of timer</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if !GR.myWord
+  exit
+  
+buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 27)
+network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
 </string>
           </argument>
         </arguments>
@@ -541,6 +614,7 @@ s+= PlsArrName[bestpl]
 s+= '##SCORE:#'
 s+= string(PlsArrScore[bestpl])
 Stat.s = s
+Chat.visible = false
 </string>
           </argument>
         </arguments>
@@ -709,6 +783,10 @@ network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
             <kind>1</kind>
             <string>if !parent.loaded
   exit
+  
+if Stat != -1
+  if Stat.active
+    exit
 
 draw_set_font(fImpact64)
 draw_set_color(c_white)
