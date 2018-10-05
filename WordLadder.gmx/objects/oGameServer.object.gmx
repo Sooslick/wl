@@ -377,10 +377,11 @@ else if type = network_type_data
             
           if ptp
             { 
+            //set fielts + pos shuffle
             for (var i=0; i&lt;Players; i++)
               {
-              PtpArrTimer[0] = GR.Timer
-              PtpArrPlaying[0] = true
+              PtpArrTimer[i] = GR.Timer
+              PtpArrPlaying[i] = true
               var r = irandom_range(0, Players-1);
               if r != i
                 {
@@ -391,6 +392,7 @@ else if type = network_type_data
               }
             PtpPos = 0
             PtpPosMax = Players - 1
+            //ptp socket
             for (var i=1; i&lt;Players; i++)
               {
               //ptp fields
@@ -405,6 +407,7 @@ else if type = network_type_data
               buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
               network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
               }
+            //server post-operating
             if PtpArrPos[0] == PtpPos
               {
               GR.myWord = true
@@ -448,7 +451,7 @@ else if type = network_type_data
         var cnt = 0;
         for (var i=0; i&lt; ds_list_size(GR.TargetList); i++)
                 cnt+= string_count(GR.TargetList[| i],word)
-        PlsArrScore[eid]+= GR.ptpwords + cnt
+        PlsArrScore[eid]+= 1 + cnt
         cnt++
         PtpArrShiftProg[eid]+= cnt;
         if PtpArrShiftProg[eid] &gt; 33
@@ -462,7 +465,7 @@ else if type = network_type_data
           PtpArrUnbanProg[eid]-= 42
           PtpArrUnban[eid]++
           }
-        PtpArrTimer[eid]+= (GR.MinLen-1)*GR.SecPerLetter + cnt*GR.SecPerLetter*0.5
+        PtpArrTimer[eid] = GR.Timer + (GR.MinLen-1)*GR.SecPerLetter + cnt*GR.SecPerLetter*0.5
         if string_length(word) &gt; GR.MinLen
           PtpArrTimer[eid] = PtpArrTimer[eid] div 2
         buffer_seek(buffer_send, buffer_seek_start, 0);
@@ -474,6 +477,7 @@ else if type = network_type_data
         buffer_write(buffer_send, buffer_string, word)
         for (var i=1; i&lt;Players; i++)
           network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+        PlsArrWord[eid] = ''
         GR.currWord = word
         GR.Cube.w1 = word
         with GR {event_user(1)}
@@ -501,7 +505,10 @@ else if type = network_type_data
           buffer_write(buffer_send, buffer_s8, 26)
           buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
           if PtpPos == PtpArrPos[i]
+            {
             buffer_write(buffer_send, buffer_bool, true)
+            GR.Timer = PtpArrTimer[i]
+            }
           else
             buffer_write(buffer_send, buffer_bool, false)
           buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
@@ -513,6 +520,7 @@ else if type = network_type_data
           GR.myWord = true
           GR.waiting = false
           GR.Cube.ApplyBw = false
+          GR.Timer = PtpArrTimer[0]
           }
         } 
       else if enter &amp;&amp; VoteScope == 0        //word ok
@@ -710,7 +718,10 @@ else if type = network_type_data
           buffer_write(buffer_send, buffer_s8, 26)
           buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
           if PtpPos == PtpArrPos[i]
+            {
             buffer_write(buffer_send, buffer_bool, true)
+            GR.Timer = PtpArrTimer[i]
+            }
           else
             buffer_write(buffer_send, buffer_bool, false)
           buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
@@ -722,6 +733,7 @@ else if type = network_type_data
           GR.myWord = true
           GR.waiting = false
           GR.Cube.ApplyBw = false
+          GR.Timer = PtpArrTimer[0]
           }
         }
       else
@@ -777,7 +789,10 @@ else if type = network_type_disconnect
         buffer_write(buffer_send, buffer_s8, 26)
         buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
         if PtpPos == PtpArrPos[i]
+          {
           buffer_write(buffer_send, buffer_bool, true)
+          GR.Timer = PtpArrTimer[i]
+          }
         else
           buffer_write(buffer_send, buffer_bool, false)
         buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
@@ -789,6 +804,7 @@ else if type = network_type_disconnect
         GR.myWord = true
         GR.waiting = false
         GR.Cube.ApplyBw = false
+        GR.Timer = PtpArrTimer[0]
         }
       }
     else
@@ -836,6 +852,71 @@ else if type = network_type_disconnect
     PtpArrPos[i] = PtpArrPos[i+1]
     }
   Players--
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="17">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>PtpArrPlaying[0] = false
+ptpPlayers--
+if ptpPlayers &gt; 1
+  {
+  var searching = true;
+  while searching
+    {
+    PtpPos++
+    if PtpPos == Players
+      {
+      PtpPos = 0
+      GR.ptpwords++
+      }
+    for (var i=0; i&lt;Players; i++)
+      if PtpArrPos[i] == PtpPos &amp;&amp; PtpArrPlaying[i] == true
+        searching = false
+    }
+  for (var i=1; i&lt;Players; i++)
+    {
+    //ptp fields
+    buffer_seek(buffer_send, buffer_seek_start, 0);
+    buffer_write(buffer_send, buffer_s8, 26)
+    buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
+    if PtpPos == PtpArrPos[i]
+      {
+      buffer_write(buffer_send, buffer_bool, true)
+      GR.Timer = PtpArrTimer[i]
+      }
+    else
+      buffer_write(buffer_send, buffer_bool, false)
+    buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
+    buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
+    network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+    }
+  }
+else
+  {
+  buffer_seek(buffer_send, buffer_seek_start, 0);
+  buffer_write(buffer_send, buffer_s8, 28)
+  for (var i=1; i&lt;Players; i++)
+      network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+  event_user(4)
   }
 </string>
           </argument>
@@ -1217,7 +1298,7 @@ if ptp
   var cnt = 0;
   for (var i=0; i&lt; ds_list_size(GR.TargetList); i++)
           cnt+= string_count(GR.TargetList[| i],word)
-  PlsArrScore[0]+= GR.ptpwords + cnt
+  PlsArrScore[0]+= 1 + cnt
   cnt++
   PtpArrShiftProg[0]+= cnt;
   if PtpArrShiftProg[0] &gt; 33
@@ -1231,7 +1312,7 @@ if ptp
     PtpArrUnbanProg[0]-= 42
     PtpArrUnban[0]++
     }
-  PtpArrTimer[0]+= (GR.MinLen-1)*GR.SecPerLetter + cnt*GR.SecPerLetter*0.5
+  PtpArrTimer[0] = GR.Timer + (GR.MinLen-1)*GR.SecPerLetter + cnt*GR.SecPerLetter*0.5
   if string_length(word) &gt; GR.MinLen
     PtpArrTimer[0] = PtpArrTimer[0] div 2
   buffer_seek(buffer_send, buffer_seek_start, 0);
@@ -1243,6 +1324,7 @@ if ptp
   buffer_write(buffer_send, buffer_string, GR.currWord)
   for (var i=1; i&lt;Players; i++)
     network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+  PlsArrWord[eid] = ''
   GR.currWord = word
   GR.Cube.w1 = word
   with GR {event_user(1)}
@@ -1273,7 +1355,10 @@ if ptp
     buffer_write(buffer_send, buffer_s8, 26)
     buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
     if PtpPos == PtpArrPos[i]
+      {
       buffer_write(buffer_send, buffer_bool, true)
+      GR.Timer = PtpArrTimer[i]
+      }
     else
       buffer_write(buffer_send, buffer_bool, false)
     buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
@@ -1285,6 +1370,7 @@ if ptp
     GR.myWord = true
     GR.waiting = false
     GR.Cube.ApplyBw = false
+    GR.Timer = PtpArrTimer[0]
     }
   }  
   
@@ -1472,8 +1558,8 @@ if Players == Ready
         { 
         for (var i=0; i&lt;Players; i++)
           {
-          PtpArrTimer[0] = GR.Timer
-          PtpArrPlaying[0] = true
+          PtpArrTimer[i] = GR.Timer
+          PtpArrPlaying[i] = true
           var r = irandom_range(0, Players-1);
           if r != i
             {
@@ -1501,6 +1587,7 @@ if Players == Ready
         if PtpArrPos[0] == PtpPos
           {
           GR.myWord = true
+          GR.waiting = false
           GR.Cube.ApplyBw = false
           }
         }
@@ -1578,18 +1665,19 @@ draw_set_alpha(1)
 draw_set_halign(fa_left)
 for (var i=0; i&lt;Players; i++)
   {
-  draw_text(i*50,25,PlsArrWord[i])
-  draw_text(i*50,50,string(PlsArrScore[i]))
-  draw_text(i*50,75,string(PlsArrPos[i]))
-  draw_text(i*50,100,string(PtpArrTimer[i]))
-  draw_text(i*50,125,string(PtpArrPlaying[i]))
-  draw_text(i*50,150,string(PtpArrShift[i]))
-  draw_text(i*50,175,string(PtpArrShiftProg[i]))
-  draw_text(i*50,200,string(PtpArrUnban[i]))
-  draw_text(i*50,225,string(PtpArrUnbanProg[i]))
-  draw_text(i*50,250,string(PtpArrPos[i]))
+  //draw_text(i*50,25,PlsArrWord[i])
+  //draw_text(i*50,50,string(PlsArrScore[i]))
+  //draw_text(i*50,75,string(PlsArrPos[i]))
+  draw_text(i*70,100,string(PtpArrTimer[i] div 30))
+  draw_text(i*70,125,string(PtpArrPlaying[i]))
+  draw_text(i*70,150,string(PtpArrShift[i]))
+  draw_text(i*70,175,string(PtpArrShiftProg[i]))
+  draw_text(i*70,200,string(PtpArrUnban[i]))
+  draw_text(i*70,225,string(PtpArrUnbanProg[i]))
+  //draw_text(i*50,250,string(PtpArrPos[i]))
   }
 draw_text(25,300,string(PtpPos))
+draw_text(25,325,string(ptpPlayers))
 </string>
           </argument>
         </arguments>

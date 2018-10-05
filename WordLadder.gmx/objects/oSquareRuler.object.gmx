@@ -464,6 +464,8 @@ else if cheat == 'CANCEL'
   }
 else if cheat == 'ALMI'
   chAlmi = true
+else if cheat == 'CALLHIM'
+  instance_create(0,0,oCallhim)
       
 //refresh
 cheat = ''

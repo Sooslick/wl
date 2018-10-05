@@ -503,7 +503,7 @@ with Net {event_user(3)}
           {
           Stat.words++
           Stat.lettersa += string_length(currWord)
-          Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
+          //Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
           }
         words++
         Stat.LenWord = currWord
@@ -519,7 +519,7 @@ with Net {event_user(3)}
         Cube.Rot = true
         Cube.LengthErrTick = 0
         Cube.LengthErr = false
-        Timer+= (string_length(currWord)-1)*SecPerLetter - Timer div 60
+        //Timer+= (string_length(currWord)-1)*SecPerLetter - Timer div 60
         currWord = string_char_at(currWord, string_length(currWord))
         //shift prog
         if Shift

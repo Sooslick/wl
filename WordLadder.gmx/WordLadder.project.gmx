@@ -71,6 +71,7 @@
     <sprite>sprites\sArrowScroll</sprite>
     <sprite>sprites\sPreved</sprite>
     <sprite>sprites\sAlmi</sprite>
+    <sprite>sprites\sCallhim</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -159,6 +160,7 @@
     <object>objects\oDevMenu</object>
     <object>objects\oPreved</object>
     <object>objects\oAlmi</object>
+    <object>objects\oCallhim</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>
