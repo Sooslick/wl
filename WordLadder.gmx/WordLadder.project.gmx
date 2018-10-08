@@ -3,8 +3,8 @@
   <Configs name="configs">
     <Config>Configs\Default</Config>
   </Configs>
-  <datafiles number="3" name="datafiles">
-    <datafiles number="3" name="res">
+  <datafiles number="4" name="datafiles">
+    <datafiles number="4" name="res">
       <datafile>
         <name>MAINTABLE.dat</name>
         <exists>-1</exists>
@@ -23,7 +23,7 @@
         <filename>MAINTABLE.dat</filename>
       </datafile>
     </datafiles>
-    <datafiles number="3" name="dict">
+    <datafiles number="4" name="dict">
       <datafile>
         <name>EN.dat</name>
         <exists>-1</exists>
@@ -42,6 +42,23 @@
         <filename>EN.dat</filename>
       </datafile>
     </datafiles>
+    <datafile>
+      <name>changelog.txt</name>
+      <exists>-1</exists>
+      <size>1937</size>
+      <exportAction>2</exportAction>
+      <exportDir></exportDir>
+      <overwrite>0</overwrite>
+      <freeData>-1</freeData>
+      <removeEnd>0</removeEnd>
+      <store>0</store>
+      <ConfigOptions>
+        <Config name="Default">
+          <CopyToMask>9223372036854775807</CopyToMask>
+        </Config>
+      </ConfigOptions>
+      <filename>changelog.txt</filename>
+    </datafile>
   </datafiles>
   <NewExtensions/>
   <sounds name="sound"/>
@@ -72,6 +89,7 @@
     <sprite>sprites\sPreved</sprite>
     <sprite>sprites\sAlmi</sprite>
     <sprite>sprites\sCallhim</sprite>
+    <sprite>sprites\sScream</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -161,6 +179,7 @@
     <object>objects\oPreved</object>
     <object>objects\oAlmi</object>
     <object>objects\oCallhim</object>
+    <object>objects\oScreamer</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>

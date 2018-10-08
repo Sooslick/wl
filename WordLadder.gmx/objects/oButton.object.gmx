@@ -40,6 +40,10 @@ StartDepth = 1
 
 dsc = 1                     //draw scale
 tsc = 1                     //content text scale
+
+//costyl-debug: forced fix xprev yprev coord
+xp = 0
+yp = 0
 </string>
           </argument>
         </arguments>
@@ -89,6 +93,9 @@ else
         hintTick = 0
         depth = StartDepth
         }
+        
+xp = xprevious
+yp = yprevious
 </string>
           </argument>
         </arguments>
@@ -111,9 +118,10 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if clickable
-  if hover
-    clicked = true
+            <string>if (x == xp) &amp;&amp; (y == yp)
+  if clickable
+    if hover
+      clicked = true
 </string>
           </argument>
         </arguments>

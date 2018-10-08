@@ -251,6 +251,9 @@ if type = network_type_connect
   PtpArrUnban[Players] = 0
   PtpArrUnbanProg[Players] = 0
   PtpArrPos[Players] = Players
+  if GR != -1                   //debug-costyl: ptp reconnect
+    if GR.prepared
+      PtpArrPos[Players] = 250
   Players++
   parent.tc.online = true
   }
@@ -482,14 +485,14 @@ else if type = network_type_data
         GR.Cube.w1 = word
         with GR {event_user(1)}
         if TTNum != -1
-          PtpArrUnban[0]--
+          PtpArrUnban[eid]--
         if Shift
-          PtpArrShift[0]--
+          PtpArrShift[eid]--
         var searching = true;
         while searching
           {
           PtpPos++
-          if PtpPos == Players
+          if PtpPos &gt; PtpPosMax
             {
             PtpPos = 0
             GR.ptpwords++
@@ -702,7 +705,7 @@ else if type = network_type_data
         while searching
           {
           PtpPos++
-          if PtpPos == Players
+          if PtpPos &gt; PtpPosMax
             {
             PtpPos = 0
             GR.ptpwords++
@@ -773,7 +776,7 @@ else if type = network_type_disconnect
       while searching
         {
         PtpPos++
-        if PtpPos == Players
+        if PtpPos &gt; PtpPosMax
           {
           PtpPos = 0
           GR.ptpwords++
@@ -807,14 +810,16 @@ else if type = network_type_disconnect
         GR.Timer = PtpArrTimer[0]
         }
       }
-    else
-      {
-      buffer_seek(buffer_send, buffer_seek_start, 0);
-      buffer_write(buffer_send, buffer_s8, 28)
-      for (var i=1; i&lt;Players; i++)
-          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
-      event_user(4)
-      }
+    }
+    
+  if ptp &amp;&amp; ptpPlayers &lt; 2
+    {
+    buffer_seek(buffer_send, buffer_seek_start, 0);
+    buffer_write(buffer_send, buffer_s8, 28)
+    for (var i=1; i&lt;Players; i++)
+        network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+    event_user(4)
+    with GR {event_user(3)}
     }
     
   //disconnect socket  
@@ -883,7 +888,7 @@ if ptpPlayers &gt; 1
   while searching
     {
     PtpPos++
-    if PtpPos == Players
+    if PtpPos &gt; PtpPosMax
       {
       PtpPos = 0
       GR.ptpwords++
@@ -917,6 +922,7 @@ else
   for (var i=1; i&lt;Players; i++)
       network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
   event_user(4)
+  with GR {event_user(3)}
   }
 </string>
           </argument>
@@ -1339,7 +1345,7 @@ if ptp
   while searching
     {
     PtpPos++
-    if PtpPos == Players
+    if PtpPos &gt; PtpPosMax
       {
       PtpPos = 0
       GR.ptpwords++
@@ -1658,6 +1664,7 @@ for (var i=0; i&lt;Players; i++)
     }
   }
   
+/*
 //debug
 draw_set_font(fDebug)
 draw_set_color(c_aqua)
@@ -1668,8 +1675,8 @@ for (var i=0; i&lt;Players; i++)
   //draw_text(i*50,25,PlsArrWord[i])
   //draw_text(i*50,50,string(PlsArrScore[i]))
   //draw_text(i*50,75,string(PlsArrPos[i]))
-  draw_text(i*70,100,string(PtpArrTimer[i] div 30))
-  draw_text(i*70,125,string(PtpArrPlaying[i]))
+  //draw_text(i*70,100,string(PtpArrTimer[i] div 30))
+  //draw_text(i*70,125,string(PtpArrPlaying[i]))
   draw_text(i*70,150,string(PtpArrShift[i]))
   draw_text(i*70,175,string(PtpArrShiftProg[i]))
   draw_text(i*70,200,string(PtpArrUnban[i]))
@@ -1677,7 +1684,7 @@ for (var i=0; i&lt;Players; i++)
   //draw_text(i*50,250,string(PtpArrPos[i]))
   }
 draw_text(25,300,string(PtpPos))
-draw_text(25,325,string(ptpPlayers))
+draw_text(25,325,string(ptpPlayers))*/
 </string>
           </argument>
         </arguments>
@@ -1702,6 +1709,10 @@ draw_text(25,325,string(ptpPlayers))
             <kind>1</kind>
             <string>if !parent.loaded
   exit
+  
+if Stat != -1
+  if Stat.active
+    exit
 
 draw_set_font(fImpact64)
 draw_set_color(c_white)

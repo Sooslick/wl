@@ -237,7 +237,7 @@ if prepared
         HintTimeUp = true
     }
   //TODO
-  if Timer&lt;=0
+  if Timer&lt;=0 &amp;&amp; myWord
     with Net {event_user(7)}
     
   if prevAnim
@@ -441,18 +441,21 @@ else if prestart
           }
         Stat.banned+= ds_list_size(TabuList)
         //target letters refresh
-        ds_list_clear(TargetList)
-        for (i=0; i&lt;TLQty; i++)
+        if ptpwords &gt; 0
           {
-          var arr;
-          arr[0] = 1.1
-          arr[1] = 1.22
-          arr[2] = 1.333
-          arr[3] = 1.4444
-          var c = funcNewTargetLetter(arr);
-          if ds_list_find_index(TargetList, c) == -1
-            if ds_list_find_index(TabuList,c) == -1
-              ds_list_add(TargetList, c)
+          ds_list_clear(TargetList)
+          for (i=0; i&lt;TLQty; i++)
+            {
+            var arr;
+            arr[0] = 1.1
+            arr[1] = 1.22
+            arr[2] = 1.333
+            arr[3] = 1.4444
+            var c = funcNewTargetLetter(arr);
+            if ds_list_find_index(TargetList, c) == -1
+              if ds_list_find_index(TabuList,c) == -1
+                ds_list_add(TargetList, c)
+            }
           }
           
 with Net {event_user(3)}
@@ -529,17 +532,6 @@ with Net {event_user(3)}
           Stat.shiftsu++
           Shift = false
           }
-        ShiftPB.Prog+= string_length(prevWord) + ds_list_size(TabuList)
-        if ShiftPB.Prog &gt;= ShiftPB.Req
-          {
-          ShiftPB.Prog-= ShiftPB.Req
-          ShiftPB.Req+= MinLen
-          ShiftQty++
-          ShiftA = true
-          Stat.shiftsa++
-          }
-        ShiftPB.Anim = true
-        ShiftPB.AnimXTarget = ShiftPB.Prog / ShiftPB.Req * 1600
         //TT prog
         if TT
           {
@@ -549,17 +541,6 @@ with Net {event_user(3)}
           TTU = true           //TODO check myStat
           Stat.unbansu++
           }
-        TTPB.Prog+= string_length(prevWord) + ds_list_size(TabuList) + (Timer div 1800)
-        if TTPB.Prog &gt;= TTPB.Req
-          {
-          TTPB.Prog-= TTPB.Req
-          TTPB.Req+= TTPB.Req div 42
-          TTQty++
-          TTA = true
-          Stat.unbansa++
-          }
-        TTPB.Anim = true
-        TTPB.AnimXTarget = TTPB.Prog / TTPB.Req * 1600
         //length dec calc
           tmp = string_length(prevWord) + ds_list_size(TabuList) - 9
           if tmp &gt; 0

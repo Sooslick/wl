@@ -114,7 +114,10 @@ if Restarting
   {
   RestartTimer--
   if RestartTimer &lt;= 0
+    {
+    global.GameType = 0
     action_another_room(rGame)
+    }
   }
 </string>
           </argument>
@@ -839,6 +842,10 @@ for (var i=0; i&lt;Players; i++)
             <string>if !parent.loaded
   exit
 
+if Stat != -1
+  if Stat.active
+    exit
+  
 draw_set_font(fImpact64)
 draw_set_color(c_white)
 draw_set_alpha(1)

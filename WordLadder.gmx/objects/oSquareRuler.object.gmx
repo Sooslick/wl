@@ -464,8 +464,10 @@ else if cheat == 'CANCEL'
   }
 else if cheat == 'ALMI'
   chAlmi = true
-else if cheat == 'CALLHIM'
+else if (cheat == 'CALLHIM')||(cheat == 'GAY')
   instance_create(0,0,oCallhim)
+else if string_count('SCR',cheat) &gt; 0
+  instance_create(0,0,oScreamer)
       
 //refresh
 cheat = ''
