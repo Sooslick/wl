@@ -24,5 +24,5 @@ else
 $answer = array("CONTENT" => $final);
 echo(json_encode($answer));
 
-file_put_contents('log/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' getSplash request', FILE_APPEND);
+file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' getSplash request', FILE_APPEND);
 ?>

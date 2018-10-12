@@ -348,6 +348,7 @@ if chRestart
       sqArr[i,j].opSq = 0
       sqArr[i,j].opCon = 0
       sqArr[i,j].revState = 0
+      sqArr[i,j].rot = 0
       }
   }
 </string>
@@ -468,6 +469,26 @@ else if (cheat == 'CALLHIM')||(cheat == 'GAY')
   instance_create(0,0,oCallhim)
 else if string_count('SCR',cheat) &gt; 0
   instance_create(0,0,oScreamer)
+else if cheat == 'BUG'
+  for (i=0; i&lt;ARRMAX; i++)
+    for (j=0; j&lt;ARRMAX; j++)
+      sqArr[i,j].rot = irandom_range(0,359)
+else if string_count('FIX',cheat) &gt; 0
+  for (i=0; i&lt;ARRMAX; i++)
+    for (j=0; j&lt;ARRMAX; j++)
+      sqArr[i,j].rot = 0
+else if cheat == 'DESIGN'
+  {
+  for (i=0; i&lt;ARRMAX; i++)
+    for (j=0; j&lt;ARRMAX; j++)
+      sqArr[i,j].clr = irandom(c_white)
+  cheat = ''
+  exit
+  }
+else if cheat == 'CRUSH'
+  crush++
+else if string_count('DICK',cheat) &gt; 0
+  {} //todo sound
       
 //refresh
 cheat = ''

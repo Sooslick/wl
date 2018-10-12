@@ -11,13 +11,24 @@ else {
 	$ok = false;
 	$err_string = 'No token passed';
 }
-if (!empty($_GET['bytes'])) {
-	$bytes = $_GET['bytes'];}
+if (!empty($_GET['rid'])) {
+	$rid = $_GET['rid'];}
 else {
 	$ok = false;
-	$err_string = 'No bytes passed';
+	$err_string = 'No roomID passed';
 }
 
+//check room
+if ($ok)
+{
+	$fn = '../../wl/rooms/r' . strval($rid);
+	if (!file_exists($fn))
+	{
+		$ok = false;
+		$err_string = 'Room not found';
+	}
+}
+	
 //check main database
 if ($ok)
 {
@@ -54,28 +65,24 @@ if ($ok)
 //update
 if ($ok)
 {
-	$fn = 'saves/save' . strval($pnetid) . '-' . strval(time());
-	$f = fopen($fn, 'w');
-	$bw = fwrite($f, $bytes);
-	$req = "UPDATE wl SET SAVELINK = \"$fn\" WHERE PNETID = $pnetid";
-	$stmt = $pdo->query($req);
-	if ($bw == false) {
+	//write
+	$res = unlink($fn);
+	if ($res == false) {
 		$ok = false;
-		$err_string = 'file write error';
+		$err_string = 'file rm error';
 	}
 }
 
 //return json
 if ($ok)
 {
-	$answer = array("SIZE" => $bw, "SAVELINK" => $fn);
-	echo(json_encode($answer));
-	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' saveFile request: success; PNETID: ' . $pnetid, FILE_APPEND);
+	echo("SUCCESS");
+	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' delRoom request: success; PNETID: ' . $pnetid, FILE_APPEND);
 }
 else
 {
 	$answer = array("ERROR" => $err_string);
 	echo(json_encode($answer));
-	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' saveFile request: fail; Error message: ' . $err_string, FILE_APPEND);
+	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' delRoom request: fail; Error message: ' . $err_string, FILE_APPEND);
 }
 ?>

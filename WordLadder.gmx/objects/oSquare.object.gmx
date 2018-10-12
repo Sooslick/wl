@@ -27,6 +27,7 @@
             <kind>1</kind>
             <string>clr = c_white       //current clr &amp; img
 spr = 0
+rot = 0
 
 content = 0         //texture id
 opSq = 0            //Square opacity
@@ -160,7 +161,7 @@ parent = 0          //SquareRuler
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_sprite_ext(sSquare,spr,x,y,1,1,0,c_white,opSq)
+            <string>draw_sprite_ext(sSquare,spr,x,y,1,1,rot,c_white,opSq)
 //draw_set_font(fDebug)
 if content != -1
   if parent.isReverse

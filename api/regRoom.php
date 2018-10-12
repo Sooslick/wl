@@ -11,12 +11,11 @@ else {
 	$ok = false;
 	$err_string = 'No token passed';
 }
-if (!empty($_GET['bytes'])) {
-	$bytes = $_GET['bytes'];}
+if (!isset($_GET['gmode'])) {
+	$gm = $_GET['gmode'];}
 else {
-	$ok = false;
-	$err_string = 'No bytes passed';
-}
+	$gm = -1;}
+$ip = $_SERVER['REMOTE_ADDR'];
 
 //check main database
 if ($ok)
@@ -54,11 +53,15 @@ if ($ok)
 //update
 if ($ok)
 {
-	$fn = 'saves/save' . strval($pnetid) . '-' . strval(time());
+	$rid = time();
+	$fn = '../../wl/rooms/r' . strval($rid);
 	$f = fopen($fn, 'w');
-	$bw = fwrite($f, $bytes);
-	$req = "UPDATE wl SET SAVELINK = \"$fn\" WHERE PNETID = $pnetid";
-	$stmt = $pdo->query($req);
+	$rcon = strval($rid) . "\n"		//last upd
+	. strval($pnetid) . "\n"		//host pnetid
+	. $ip . "\n"				//host ip
+	. strval($gm) . "\n"			//gametype
+	. "0\n1\n0\n";					 //gamestate, pls, words
+	$bw = fwrite($f, $rcon);
 	if ($bw == false) {
 		$ok = false;
 		$err_string = 'file write error';
@@ -68,14 +71,14 @@ if ($ok)
 //return json
 if ($ok)
 {
-	$answer = array("SIZE" => $bw, "SAVELINK" => $fn);
+	$answer = array("ROOMID" => $rid);
 	echo(json_encode($answer));
-	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' saveFile request: success; PNETID: ' . $pnetid, FILE_APPEND);
+	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' regRoom request: success; PNETID: ' . $pnetid . '; IP: ' . $ip, FILE_APPEND);
 }
 else
 {
 	$answer = array("ERROR" => $err_string);
 	echo(json_encode($answer));
-	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' saveFile request: fail; Error message: ' . $err_string, FILE_APPEND);
+	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' regRoom request: fail; Error message: ' . $err_string, FILE_APPEND);
 }
 ?>

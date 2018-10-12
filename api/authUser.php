@@ -18,7 +18,7 @@ if ((empty($passw))&&(empty($vkid))) {$ok = false; $err_string = 'No login passe
 if ($ok)
 {
 	//ini fields
-	$ini = parse_ini_file("../stuff/phpcfg.ini");
+	$ini = parse_ini_file("../../stuff/phpcfg.ini");
 	//db connect info
 	$dbs = "mysql:host=127.0.0.1;dbname=" . $ini['db'] . ";charset=utf8";
 	$opt = array(
@@ -103,12 +103,12 @@ if ($ok)
 {
 	$answer = array("PNETID" => $pnetid, "ACCESS_TOKEN" => $at, "DISPLAY_NAME" => $nick, "SAVELINK" => $savelink);
 	echo(json_encode($answer));
-	file_put_contents('log/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' authUser request: success; PNETID: ' . $pnetid . '; Login by: ' . $logtype, FILE_APPEND);
+	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' authUser request: success; PNETID: ' . $pnetid . '; Login by: ' . $logtype, FILE_APPEND);
 }
 else
 {
 	$answer = array("ERROR" => $err_string);
 	echo(json_encode($answer));
-	file_put_contents('log/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' authUser request: fail; Error message: ' . $err_string, FILE_APPEND);
+	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' authUser request: fail; Error message: ' . $err_string, FILE_APPEND);
 }
 ?>
