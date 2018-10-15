@@ -119,6 +119,13 @@ if file_exists(global.cfg)
       global.config[?'SavedIP'] = '127.0.0.1'
     file_text_readln(f)
     
+    s = file_text_read_string(f)
+    if string_copy(s,1,13) = 'ExtraDictVer='
+      global.config[?'ExtraDict'] = real(string_delete(s,1,13))
+    else
+      global.config[?'ExtraDict'] = 1
+    file_text_readln(f)
+    
     file_text_close(f)
     }
 else                //defaults
@@ -135,6 +142,7 @@ else                //defaults
     global.config[?'Sound'] = 100
     global.config[?'Music'] = 100
     global.config[?'SavedIP'] = '127.0.0.1'
+    global.config[?'ExtraDict'] = 1
     }
     
 if global.config[?'Fullscreen']

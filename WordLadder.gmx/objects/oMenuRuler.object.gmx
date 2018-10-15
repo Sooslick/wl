@@ -474,6 +474,17 @@ if html != -1
       checkVersionStr = 'Server outdated'
     else if global.GameVersion &lt; v
       checkVersionStr = 'GAME OUTDATED'
+    //check extra dict ver
+    //TODO LOCALE CHECK
+    var e = real(html[?'EXTRA']);
+    if e != global.config[?'ExtraDict']
+      {
+      //TODO: update ver after downloading;
+      //TODO: downloader obj + progbar
+      //TODO: alert!
+      http_get_file("http://" + html[?'EXTRA_PATH'], "dict/EN_extra.dat")
+      global.config[?'ExtraDict'] = e
+      }
     exit
     }
   }

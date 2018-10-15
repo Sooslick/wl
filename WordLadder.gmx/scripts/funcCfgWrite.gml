@@ -69,4 +69,8 @@
     file_text_write_string(f,s)
     file_text_writeln(f)
     
+    s = 'ExtraDictVer=' + string(global.config[?'ExtraDict'])
+    file_text_write_string(f,s)
+    file_text_writeln(f)
+    
     file_text_close(f)

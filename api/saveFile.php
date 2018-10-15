@@ -65,6 +65,8 @@ if ($ok)
 	}
 }
 
+//TODO: get XP & LV to update db info
+
 //return json
 if ($ok)
 {

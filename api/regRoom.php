@@ -11,7 +11,7 @@ else {
 	$ok = false;
 	$err_string = 'No token passed';
 }
-if (!isset($_GET['gmode'])) {
+if (isset($_GET['gmode'])) {
 	$gm = $_GET['gmode'];}
 else {
 	$gm = -1;}
