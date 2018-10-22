@@ -25,13 +25,85 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>name = ''
-//cursor animation
-cursor = true
-cursortick = 0
+            <string>logdata = ds_map_create();
+caption = 'AUTH'
+
+//if !first launch read last login file
+if !global.config[?'FirstLaunch']
+  if file_exists('profiles/lastlogin.dat')
+    funcLastloginRead(logdata)
+
+if !is_undefined(logdata[?'PNETID'])
+  pnetid = logdata[?'PNETID']
+else
+  pnetid = -1
+  
+if !is_undefined(logdata[?'LOGIN'])
+  name = logdata[?'LOGIN']
+else
+  name = ''
+  
+if !is_undefined(logdata[?'PW']) {
+  pw = logdata[?'PW']
+  enc = true;
+  }
+else {
+  pw = ''
+  enc = false;
+  }
+  
+if !is_undefined(logdata[?'AT'])
+  global.at = logdata[?'AT']
+else
+  global.at = ''
+  
+nameForm = instance_create(800,300,oForm)
+nameForm.content = name
+nameForm.contentSaved = name
+
+pwForm = instance_create(800,440,oForm)
+pwForm.content = pw
+pwForm.contentSaved = pw
+pwForm.hidden = true
+
+spCb = instance_create(800,580,oCheckBox)
+if logdata[?'SAVEPW'] &gt; 0
+  spCb.checked = true
+spCb.content = 'Save Password'
+spCb.hint = 'Allow to game save your password to next launch'
+
+alCb = instance_create(800,720,oCheckBox)
+if logdata[?'AUTOLOG'] &gt; 0
+  alCb.checked = true
+alCb.content = 'Auto Log in'
+alCb.hint = 'Allow to game load your profile automatically'
+
+bLog = instance_create(800,860,oButton)
+bLog.content = 'LOGIN'
+
+bNoLog = instance_create(1100,1000,oButton)
+bNoLog.content = 'SKIP'
+
+bReg = instance_create(500,1000,oButton)
+bReg.content = 'REGISTER'
 
 raskladka_ok = true
 HeldBackspaceTick = 0
+loadrot = 0
+load = false
+
+if logdata[?'AUTOLOG'] &gt; 0
+  {
+  http_get('http://sooslick.flaminggaming.ru/wl/getSave.php?at=' + global.at)
+  nameForm.clickable = false
+  pwForm.clickable = false
+  spCb.clickable = false
+  alCb.clickable = false
+  bLog.clickable = false
+  bNoLog.clickable = false
+  bReg.clickable = false
+  load = true
+  }
 </string>
           </argument>
         </arguments>
@@ -54,7 +126,25 @@ HeldBackspaceTick = 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>global.config[?'FirstLaunch'] = false
+            <string>funcLastloginWrite(logdata);
+ds_map_destroy(logdata);
+global.config[?'FirstLaunch'] = false
+
+//on enter click change globals 
+global.config[?'ProfileFile'] = name
+global.profile[?'PNAME'] = name
+global.profile[?'PLOCALE'] = 0
+global.profile[?'PNETID'] = -1
+global.profile[?'PSINGAMETIME'] = 0
+global.profile[?'PSPLAYTIME'] = 0
+global.profile[?'PSONLINETIME'] = 0
+global.profile[?'PSGAMES'] = 0
+global.profile[?'PSENDS'] = 0
+global.profile[?'PSSERVERS'] = 0
+global.profile[?'PSRESETS']++
+ds_map_destroy(global.profile[?'PSSECTIONS'])
+global.profile[?'PSSECTIONS'] = ds_map_create()
+
 action_another_room(rMenu)
 </string>
           </argument>
@@ -78,22 +168,13 @@ action_another_room(rMenu)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//cursor anim timer
-cursortick++
-if cursortick&gt;=10
-  {
-  cursortick = 0
-  if cursor
-    cursor = false
-  else
-    cursor = true
-  }
+            <string>loadrot+= 10
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="5" enumb="8">
+    <event eventtype="6" enumb="56">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -110,9 +191,111 @@ if cursortick&gt;=10
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>HeldBackspaceTick+= 1
-if HeldBackspaceTick&gt;=25
-  name = string_copy(name,1,string_length(name)-1)
+            <string>if bLog.clicked
+  {
+  bLog.clicked = false
+  enc = true
+  pwForm.contentSaved = sha1_string_utf8(pwForm.contentSaved)
+  http_get('http://sooslick.flaminggaming.ru/wl/authUser.php?login=' + nameForm.contentSaved + '&amp;passw=' + pwForm.contentSaved)
+  nameForm.clickable = false
+  pwForm.clickable = false
+  spCb.clickable = false
+  alCb.clickable = false
+  bLog.clickable = false
+  bNoLog.clickable = false
+  bReg.clickable = false
+  load = true
+  }  
+else if bNoLog.clicked
+  instance_destroy(self,true)
+else if bReg.clicked
+  {
+  bReg.clicked = false
+  url_open('http://sooslick.flaminggaming.ru/reg.php')
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="62">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if async_load[? "status"] != 0
+  exit
+
+var html = json_decode(async_load[? "result"])
+if html != -1
+  {
+  //check pnetid
+  if !is_undefined(html[?'PNETID'])
+    {
+    //todoGET SAVEFILE
+    global.config[?'ProfileFile'] = name
+    funcProfileRead()
+    global.profile[?'PNETID'] = html[?'PNETID']
+    if global.at = ''
+      global.at = html[?'ACCESS_TOKEN']
+      
+    // write login
+    logdata[?'PNETID'] = global.profile[?'PNETID']
+    logdata[?'LOGIN'] = nameForm.contentSaved
+    logdata[?'PW'] = pwForm.contentSaved
+    if spCb.checked
+      logdata[?'SAVEPW'] = 1
+    else
+      logdata[?'SAVEPW'] = 0
+    if alCb.checked
+      logdata[?'AUTOLOG'] = 1
+    else
+      logdata[?'AUTOLOG'] = 0    
+    instance_destroy(self,true)
+    }
+  else
+    {
+    nameForm.clickable = true
+    pwForm.clickable = true
+    pwForm.content = ''
+    pwForm.contentSaved = ''
+    enc = false
+    spCb.clickable = true
+    alCb.clickable = true
+    bLog.clickable = true
+    bNoLog.clickable = true
+    bReg.clickable = true
+    caption = 'AUTH ERROR'
+    load = false
+    }
+  }
+else
+  {
+  nameForm.clickable = true
+  pwForm.clickable = true
+  pwForm.content = ''
+  pwForm.contentSaved = ''
+  enc = false
+  spCb.clickable = true
+  alCb.clickable = true
+  bLog.clickable = true
+  bNoLog.clickable = true
+  bReg.clickable = true
+  caption = 'CONNECTION ERROR'
+  load = false
+  }
 </string>
           </argument>
         </arguments>
@@ -140,135 +323,13 @@ draw_set_alpha(1)
 draw_set_halign(fa_center)
 draw_set_valign(fa_center)
 draw_set_font(fImpact96)
-draw_text(800,100,'WHAT IS YOUR NAME, ANONYMOUS?')
-//name preset
-draw_set_halign(fa_left)
-if cursor
-  draw_text(64,600,name+'|')
-else
-  draw_text(64,600,name)
-//raskladka
-if !raskladka_ok
-  draw_sprite(sCareful,0,0,1134)
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="13">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>//on enter click change globals 
-global.config[?'ProfileFile'] = name
-global.profile[?'PNAME'] = name
-global.profile[?'PLOCALE'] = 0
-global.profile[?'PNETID'] = -1
-global.profile[?'PSINGAMETIME'] = 0
-global.profile[?'PSPLAYTIME'] = 0
-global.profile[?'PSONLINETIME'] = 0
-global.profile[?'PSGAMES'] = 0
-global.profile[?'PSENDS'] = 0
-global.profile[?'PSSERVERS'] = 0
-global.profile[?'PSRESETS']++
-ds_map_destroy(global.profile[?'PSSECTIONS'])
-global.profile[?'PSSECTIONS'] = ds_map_create()
+draw_text(800,100,caption)
 
-//stat &amp; achv
-funcProfileWrite() 
-
-  instance_destroy(self,true)
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="1">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>//TODO: check special symbols aka ?*/\...
-if !keyboard_check(vk_enter)
-  {     
-  //backspace
-  if keyboard_check(vk_backspace)                           //todo: bug
-      name = string_copy(name,1,string_length(name)-1)
-  //layout change???
-  else if keyboard_check(vk_alt)
-      raskladka_ok = true
-  //anykey: check valid
-  else if (ord(keyboard_lastchar)&gt;=32) &amp;&amp; (ord(keyboard_lastchar)&lt;=255)
-    {
-    if (string_length(name)&lt;16)
-        if keyboard_lastchar=='#'       //special symbol
-          name+= '\#'
-        else
-          name+= keyboard_lastchar
-    }
-  //anykey: force EN layout
-  else if (keyboard_lastkey &gt;= 65) &amp;&amp; (keyboard_lastkey &lt;= 90)
-    {
-    if (string_length(name)&lt;16)
-      if keyboard_check(vk_shift)
-        name+= chr(keyboard_lastkey)
-      else
-        name+= chr(keyboard_lastkey + 32)
-    keyboard_lastkey = -1
-    }
-  //something special
-  else if (ord(keyboard_lastchar)&gt;255) 
-      raskladka_ok = false
-  keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...
+if load
+  {
+  draw_sprite_ext(sLoading,0,1500,80,2,2,loadrot,c_white,1)
+  draw_sprite_ext(sLoading,0,1500,80,1,1,-loadrot*2,c_white,1)
   }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="10" enumb="8">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>HeldBackspaceTick = 0
 </string>
           </argument>
         </arguments>

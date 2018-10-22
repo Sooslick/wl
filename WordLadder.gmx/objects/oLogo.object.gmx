@@ -38,7 +38,7 @@ global.DictDS = -1                  //data ds no
 global.config = ds_map_create()
 global.profile = ds_map_create()
 funcCfgRead()
-funcProfileRead()
+//funcProfileRead()
 
 //WINDOW SETTINGS:
 if global.WIN_HEIGHT / global.WIN_WIDTH &gt;=0.75          //4:3 ratio
@@ -66,11 +66,9 @@ if global.config[?'ShowLogo']
       stepno=0
       opacity=1.0
       }
-//IF LOGO SKIPPED:      
-else if global.config[?'FirstLaunch']
+//IF LOGO SKIPPED:  
+//A?    
       action_another_room(rFirst)
-else
-      action_another_room(rMenu)
 </string>
           </argument>
         </arguments>
@@ -99,11 +97,8 @@ switch (frame)
   case 30: stepno=1; break;         //animation case
   case 120: stepno=3; break;        //0: begin
   }                                 //1: black
-if stepno==3                        //2: white
-  if global.config[?'FirstLaunch']  //3: end
+if stepno==3                        //2: white  //3: end
       action_another_room(rFirst)
-  else
-      action_another_room(rMenu)
 </string>
           </argument>
         </arguments>

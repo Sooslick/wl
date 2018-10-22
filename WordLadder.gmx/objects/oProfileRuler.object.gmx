@@ -101,11 +101,14 @@ funcProfileWrite()
             <kind>1</kind>
             <string>if PSelector.clicked
   {
+  /*
   p = instance_create(0,0,oProfileSelector)
   p.parent = parent
   parent.ActiveMenuPtr = p
   parent.Header = 'SELECT PROFILE'
   instance_destroy(self,true)
+  */
+  action_another_room(rFirst)
   }
 else if PNameForm.clicked
   {

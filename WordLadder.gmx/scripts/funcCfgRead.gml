@@ -28,7 +28,7 @@ if file_exists(global.cfg)
     if string_copy(s,1,8) = 'Profile='
       global.config[?'ProfileFile'] = string_delete(s,1,8)
     else
-      global.config[?'ProfileFile'] = 'anonymous'       //default profile FIX PLZ
+      global.config[?'ProfileFile'] = ''       //default profile FIX PLZ
     file_text_readln(f)
         
     //SCREEN CONFIG
@@ -132,7 +132,7 @@ else                //defaults
     {
     global.config[?'ShowLogo'] = true
     global.config[?'FirstLaunch'] = true
-    global.config[?'ProfileFile'] = 'noob'
+    global.config[?'ProfileFile'] = ''
     global.WIN_WIDTH = display_get_width()
     global.WIN_HEIGHT = display_get_height()
     global.config[?'Fullscreen'] = true

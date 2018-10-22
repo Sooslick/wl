@@ -125,6 +125,7 @@ sSpec[2] = ''
   if B1.clicked
     {
     funcProfileWrite()
+    //funcProfileSend()
     action_another_room(rMenu)
     }
   else

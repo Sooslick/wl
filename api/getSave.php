@@ -5,18 +5,8 @@
 //check _GET parameters
 $ok = true;
 $err_string = '';
-if (!empty($_GET['access_token'])) {
-	$at = $_GET['access_token'];}
-else {
-	$ok = false;
-	$err_string = 'No token passed';
-}
-if (!empty($_GET['bytes'])) {
-	$bytes = $_GET['bytes'];}
-else {
-	$ok = false;
-	$err_string = 'No bytes passed';
-}
+if (!empty($_GET['at'])) {$at = $_GET['at'];}
+else {$ok = false; $err_string = 'No access token passed';}
 
 //check main database
 if ($ok)
@@ -39,45 +29,37 @@ if ($ok)
 	}
 }
 
+
 if ($ok)
 {	
-	//log by pnetid
 	$req = "SELECT PNETID FROM main_users WHERE ACCESS_TOKEN = \"$at\"";
 	//db select
 	$stmt = $pdo->query($req);
 	$response = $stmt->fetch();
 	if (empty($response)) {$ok = false; $err_string = 'User not found';}
-	else {
-		$pnetid = $response['PNETID'];}
+	else {$pnetid = $response['PNETID'];}
 }
 
 //update
 if ($ok)
 {
-	$fn = 'saves/save' . strval($pnetid);
-	$f = fopen($fn, 'w');
-	$bw = fwrite($f, $bytes);
-	$req = "UPDATE wl SET SAVELINK = \"$fn\" WHERE PNETID = $pnetid";
+	$req = "SELECT SAVELINK FROM wl WHERE PNETID = $pnetid";
 	$stmt = $pdo->query($req);
-	if ($bw == false) {
-		$ok = false;
-		$err_string = 'file write error';
-	}
+	$response = $stmt->fetch();
+	$savelink = $response['SAVELINK'];
 }
-
-//TODO: get XP & LV to update db info
 
 //return json
 if ($ok)
 {
-	$answer = array("SIZE" => $bw, "SAVELINK" => $fn);
+	$answer = array("PNETID" => $pnetid, "SAVELINK" => $savelink);
 	echo(json_encode($answer));
-	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' saveFile request: success; PNETID: ' . $pnetid, FILE_APPEND);
+	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' getSave request: success; PNETID: ' . $pnetid, FILE_APPEND);
 }
 else
 {
 	$answer = array("ERROR" => $err_string);
 	echo(json_encode($answer));
-	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' saveFile request: fail; Error message: ' . $err_string, FILE_APPEND);
+	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' getSave request: fail; Error message: ' . $err_string, FILE_APPEND);
 }
 ?>
