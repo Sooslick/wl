@@ -18,16 +18,16 @@
     file_text_writeln(f)
         
     //PROFILE SELECTOR
-    s = 'Profile=' + global.config[?'ProfileFile']
+    s = 'ProfileFile=' + global.config[?'ProfileFile']
     file_text_write_string(f,s)
     file_text_writeln(f)
         
     //SCREEN CONFIG
-    s = 'ScreenW=' + string(global.WIN_WIDTH)
+    s = 'ScreenW=' + string(global.config[?'ScreenW'])
     file_text_write_string(f,s)
     file_text_writeln(f)
     
-    s = 'ScreenH=' + string(global.WIN_HEIGHT)
+    s = 'ScreenH=' + string(global.config[?'ScreenH'])
     file_text_write_string(f,s)
     file_text_writeln(f)
     

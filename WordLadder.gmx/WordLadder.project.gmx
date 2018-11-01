@@ -115,22 +115,29 @@
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrCheck.gml</script>
     <script>scripts\funcChrDecode.gml</script>
-    <script>scripts\funcCfgRead.gml</script>
-    <script>scripts\funcCfgWrite.gml</script>
-    <script>scripts\funcProfileRead.gml</script>
-    <script>scripts\funcProfileWrite.gml</script>
     <script>scripts\funcProfileSend.gml</script>
-    <script>scripts\formatTimeString.gml</script>
     <script>scripts\funcSetWinResFromString.gml</script>
     <script>scripts\funcCheckGuiHover.gml</script>
     <script>scripts\funcNewTabuLetter.gml</script>
     <script>scripts\funcNewTargetLetter.gml</script>
     <script>scripts\funcGetWord.gml</script>
-    <script>scripts\funcReadLong.gml</script>
-    <script>scripts\funcWriteLong.gml</script>
     <script>scripts\checkWord.gml</script>
-    <script>scripts\funcLastloginRead.gml</script>
-    <script>scripts\funcLastloginWrite.gml</script>
+    <scripts name="datarw">
+      <script>scripts\funcConfigRead.gml</script>
+      <script>scripts\funcCfgRead.gml</script>
+      <script>scripts\funcCfgWrite.gml</script>
+      <script>scripts\funcProfileRead.gml</script>
+      <script>scripts\funcProfileWrite.gml</script>
+      <script>scripts\funcLastloginRead.gml</script>
+      <script>scripts\funcLastloginWrite.gml</script>
+    </scripts>
+    <scripts name="dataformat">
+      <script>scripts\funcReadLong.gml</script>
+      <script>scripts\funcWriteLong.gml</script>
+      <script>scripts\formatTimeString.gml</script>
+      <script>scripts\formatBool.gml</script>
+      <script>scripts\formatReal.gml</script>
+    </scripts>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shLinear.shader</shader>
@@ -144,6 +151,7 @@
     <font>fonts\fCube</font>
     <font>fonts\fHint</font>
     <font>fonts\fChat</font>
+    <font>fonts\fLogo</font>
   </fonts>
   <objects name="objects">
     <objects name="GameGeneralGroup">

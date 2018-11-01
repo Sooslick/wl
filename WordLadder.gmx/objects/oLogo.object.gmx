@@ -25,10 +25,11 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//0.0.1.8          1*8 + 256*1 + *0 + *0
+            <string>//Game Version 0.0.1.8          1*8 + 256*1 + *0 + *0   todo
 global.GameVersion = 264
 global.versionName = 'Demo 0.0.1.8: server upd'
 
+//init globals
 randomize()
 global.cfg = 'config.cfg'
 global.SaveCorrupted = false
@@ -37,10 +38,17 @@ global.DictLoaded = -1              //loaded locale
 global.DictDS = -1                  //data ds no
 global.config = ds_map_create()
 global.profile = ds_map_create()
-funcCfgRead()
-//funcProfileRead()
+//todo: string to val in cfgreader
+//todo: fix cfgwrite
+funcConfigRead()                    //read cfg file. TODO: apply new parameters
+//funcCfgRead()                       //read cfg old. Todo: cfg -&gt; new DS Map
+funcProfileRead()
 
 //WINDOW SETTINGS:
+//TODO REPLACE THIS CODE
+//debug-costyl
+global.WIN_HEIGHT = display_get_height()
+global.WIN_WIDTH = display_get_width()
 if global.WIN_HEIGHT / global.WIN_WIDTH &gt;=0.75          //4:3 ratio
   {
   global.DRAW_SCALE = global.WIN_WIDTH / 1600           //black lines on top &amp; bottom
@@ -54,21 +62,29 @@ else
   global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2 
   }
 window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
+
 window_set_fullscreen(global.config[?'Fullscreen'])
 //window_center()
 //display_reset(0,true)
 display_set_gui_size(1600,1200)
 
-//LOGO Code:
+//LOGO Code and init anim vars:
 frame=0
+circles = 0
+cx[0] = 0
+cy[0] = 600
+cs[0] = 0
+csf = -1
+drawstr = 'SOOSLICK ART PROJECT'
 if global.config[?'ShowLogo']
       {
       stepno=0
       opacity=1.0
       }
-//IF LOGO SKIPPED:  
-//A?    
-      action_another_room(rFirst)
+//IF LOGO SKIPPED:     
+else
+      //action_another_room(rFirst)
+      action_another_room(rDev)
 </string>
           </argument>
         </arguments>
@@ -91,14 +107,28 @@ if global.config[?'ShowLogo']
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>frame++
+            <string>  frame++
+if frame &lt; 30 {
+  if frame &lt; 16  {
+    circles++
+    cx[circles] = irandom_range(circles*100,circles*100-99)
+    cy[circles] = irandom_range(400,800)
+    cs[circles] = 20
+    }
+  for (var i=0; i&lt;=circles; i++)
+    cs[i]+= 20
+  }
 switch (frame)
   {
   case 30: stepno=1; break;         //animation case
   case 120: stepno=3; break;        //0: begin
   }                                 //1: black
 if stepno==3                        //2: white  //3: end
-      action_another_room(rFirst)
+  {
+  if (surface_exists(csf))
+    surface_free(csf)
+  action_another_room(rDev)
+  }
 </string>
           </argument>
         </arguments>
@@ -121,35 +151,71 @@ if stepno==3                        //2: white  //3: end
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>shader_set(shLinear)
-  var shader_params = shader_get_uniform(shLinear, "tense");
-  shader_set_uniform_f(shader_params, 1 - frame/987);
-  draw_sprite(LogoWhite,0,800,600)
-  shader_reset()
+            <string>draw_set_font(fLogo)
+draw_set_valign(fa_center)
+draw_set_halign(fa_center)
+draw_set_alpha(1)
+
+//draw linear blur fx
+shader_set(shLinear)
+var shader_params = shader_get_uniform(shLinear, "tense");
+shader_set_uniform_f(shader_params, 1 - frame/777);
+draw_set_color(c_white)
+draw_text(800,600,drawstr)
+shader_reset()
+
+//black on white
 if stepno==0
   {
   draw_sprite_ext(sPixel,0,0,0,1600,1200,0,c_white,1)
-  draw_sprite(LogoBlack,0,800,600)
+  draw_set_color(0)
+  draw_text(800,600,drawstr)
+  if (!surface_exists(csf))
+    csf = surface_create(1600,1200)
+  surface_set_target(csf)
+  draw_clear_alpha(0,0)
+  draw_set_color(0)
+  draw_set_alpha(1)
+  for (var i=0; i&lt;=circles; i++)
+    draw_circle(cx[i],cy[i],cs[i],false)
+  draw_set_blend_mode_ext(bm_src_alpha,bm_dest_alpha)
+  draw_set_color(c_white)
+  draw_text(800,600,drawstr)
+  draw_set_blend_mode(bm_normal)
+  surface_reset_target()
+  draw_surface(csf,0,0)
   }
+  
+//fading
 else if stepno==1
   {
-  draw_sprite_ext(LogoWhite,0,800,600,1,1,2,c_red,0.5)
-  draw_sprite_ext(LogoWhite,0,800,600,1,1,358,c_aqua,0.5)
+  draw_set_alpha(0.5)
+  draw_set_color(c_red)
+  draw_text_transformed(800,600,drawstr,1,1,2)
+  draw_set_color(c_aqua)
+  draw_text_transformed(800,600,drawstr,1,1,358)
+  draw_set_alpha(1)
   draw_sprite(LogoWhite,0,800,600)
   draw_sprite_ext(sPixel,0,0,0,1600,1200,0,c_white,opacity)
   opacity/=2
   if opacity&lt;0.01 stepno=2
   }
+  
+//white on black
 else if stepno==2
   {
+  draw_set_alpha(0.5)
+  draw_set_color(c_red)
   switch (frame)
     {
-    case 65: draw_sprite_ext(LogoWhite,0,800,800,1.25,1.25,10,c_red,0.5); break;
-    case 67: case 69: draw_sprite_ext(LogoWhite,0,800,600,1.5,1.5,10,c_red,0.5); break;
-    case 75: case 76: draw_sprite_ext(LogoWhite,0,800,400,1.5,1.5,8,c_red,0.5); break;
-    default: draw_sprite_ext(LogoWhite,0,800,600,1,1,2,c_red,0.5); break;
+    case 65: draw_text_transformed(800,800,drawstr,1.25,1.25,10); break;
+    case 67: case 69: draw_text_transformed(800,600,drawstr,1.5,1.5,10); break;
+    case 75: case 76: draw_text_transformed(800,400,drawstr,1.5,1.5,8); break;
+    default: draw_text_transformed(800,600,drawstr,1,1,2); break;
     }
-  draw_sprite_ext(LogoWhite,0,800,600,1,1,358,c_aqua,0.5)
+  draw_set_color(c_aqua)
+  draw_text_transformed(800,600,drawstr,1,1,358)
+  draw_set_alpha(1)
   draw_sprite(LogoWhite,0,800,600)
   }
 </string>
