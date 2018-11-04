@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>5</depth>
+  <depth>0</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,40 +25,19 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>s = file_find_first('profiles/*.save',0);
-pcount = 0;
-while s&lt;&gt;''
-  {
-//  f = file_bin_open('profiles/' + s,0)        //TODO .save check
-//  q = file_bin_read_byte(f);
-//  if q==131
-//    {
-    pfs[pcount] = s;                             //pfs: profiles array
-    pcount++  
-//    }           
-//  file_bin_close(f);
-  s = file_find_next();
-  }
-file_find_close();
- 
-//TODO: REPLACE oButton -&gt; O SCROLLING BUTTON
- 
-for (j=0; j&lt;pcount; j++)
-  {
-  b[j] = instance_create(300,j*140+280,oButton)                     
-  b[j].content = string_copy(pfs[j],1,string_length(pfs[j])-5)
-  b[j].font    = fImpact64
-  }  
+            <string>loadrot = 0
+if global.userdata[?'AT'] != ''
+  http_get('http://sooslick.flaminggaming.ru/wl/getSave.php?at=' + global.userdata[?'AT'])
   
-b[pcount] = instance_create(300,pcount*140+300,oButton)
-b[pcount].content = 'NEW PROFILE'
-b[pcount].font    = fImpact64
+//todo: locali
+drawstr = 'Connecting...'
+//todo: flash fx
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="1" enumb="0">
+    <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -75,14 +54,13 @@ b[pcount].font    = fImpact64
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>for (j=0; j&lt;=pcount; j++)
-  instance_destroy(b[j])
+            <string>loadrot+= 10
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="7" enumb="62">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -99,35 +77,55 @@ b[pcount].font    = fImpact64
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//if new profile
-if b[pcount].clicked
+            <string>//data not loaded completely
+if async_load[? "status"] &gt; 0
+  exit
+
+//error
+if async_load[? "status"] &lt; 0
   {
-  p = instance_create(0,0,oProfileCreator)
-  p.parent = parent
-  parent.ActiveMenuPtr = p
-  parent.Header = 'ENTER USERNAME'
-  instance_destroy(self,true)
+  instance_create(0,0,oProfileCreatorFirst)
+  instance_destroy(self)
   }
-else    //testing every button
-  for (i=0; i&lt;pcount; i++)
-    if b[i].clicked
+  
+//answer loaded
+var html = json_decode(async_load[? "result"])
+if html != -1
+  {
+  //check pnetid
+  if !is_undefined(html[?'PNETID'])
+    {
+    if html[?'PNETID'] != global.userdata[?'PNETID']
       {
-      global.config[?'ProfileFile'] = b[i].content       //set profile to 
-      funcProfileRead()
-      p = instance_create(0,0,oProfileRuler)
-      p.parent = parent
-      parent.ActiveMenuPtr = p
-      parent.Header = 'PROFILE SETTINGS'
-      instance_destroy(self,true)
-      test = false
-      break
+      instance_create(0,0,oProfileCreatorFirst)
+      instance_destroy(self)
       }
+    //todoGET SAVEFILE BT PASSED LINK
+    //TODO check method
+    funcLastloginWrite();
+    funcProfileRead()
+    global.config[?'FirstLaunch'] = false
+    action_another_room(rMenu)
+    }
+  else
+    {
+    //pnetid error
+    instance_create(0,0,oProfileCreatorFirst)
+    instance_destroy(self)
+    }
+  }
+else
+  {
+  //answer error
+  instance_create(0,0,oProfileCreatorFirst)
+  instance_destroy(self)
+  }
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="10" enumb="27">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -144,11 +142,9 @@ else    //testing every button
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>p = instance_create(0,0,oProfileRuler)
-p.parent = parent
-parent.ActiveMenuPtr = p
-parent.Header = 'PROFILE SETTINGS'
-instance_destroy(self,true)
+            <string>drawTextPreset(fImpact96, c_white, 1, fa_center, fa_center)
+draw_text(800,600,drawstr)
+drawLoading(loadrot)
 </string>
           </argument>
         </arguments>

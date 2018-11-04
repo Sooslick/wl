@@ -31,18 +31,19 @@ global.versionName = 'Demo 0.0.1.8: server upd'
 
 //init globals
 randomize()
+display_set_gui_size(1600,1200)
 global.cfg = 'config.cfg'
 global.SaveCorrupted = false
 global.GameType = 0                 //gametypes: 1-4 solo; 11-12 mp
 global.DictLoaded = -1              //loaded locale
-global.DictDS = -1                  //data ds no
-global.config = ds_map_create()
-global.profile = ds_map_create()
-//todo: string to val in cfgreader
+global.DictDS = -1                  //data map id
+global.config = ds_map_create()     //config map
+global.profile = ds_map_create()    //profile map
+//TODO
+global.userdata = ds_map_create()   //userdata map
 //todo: fix cfgwrite
 funcConfigRead()                    //read cfg file. TODO: apply new parameters
-//funcCfgRead()                       //read cfg old. Todo: cfg -&gt; new DS Map
-funcProfileRead()
+funcLastloginRead()
 
 //WINDOW SETTINGS:
 //TODO REPLACE THIS CODE
@@ -64,9 +65,6 @@ else
 window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
 
 window_set_fullscreen(global.config[?'Fullscreen'])
-//window_center()
-//display_reset(0,true)
-display_set_gui_size(1600,1200)
 
 //LOGO Code and init anim vars:
 frame=0
@@ -83,8 +81,7 @@ if global.config[?'ShowLogo']
       }
 //IF LOGO SKIPPED:     
 else
-      //action_another_room(rFirst)
-      action_another_room(rDev)
+      action_another_room(rFirst)
 </string>
           </argument>
         </arguments>
@@ -127,7 +124,7 @@ if stepno==3                        //2: white  //3: end
   {
   if (surface_exists(csf))
     surface_free(csf)
-  action_another_room(rDev)
+  action_another_room(rFirst)
   }
 </string>
           </argument>
@@ -151,16 +148,12 @@ if stepno==3                        //2: white  //3: end
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_font(fLogo)
-draw_set_valign(fa_center)
-draw_set_halign(fa_center)
-draw_set_alpha(1)
+            <string>drawTextPreset(fLogo, c_white, 1, fa_center, fa_center)
 
 //draw linear blur fx
 shader_set(shLinear)
 var shader_params = shader_get_uniform(shLinear, "tense");
 shader_set_uniform_f(shader_params, 1 - frame/777);
-draw_set_color(c_white)
 draw_text(800,600,drawstr)
 shader_reset()
 
@@ -175,7 +168,6 @@ if stepno==0
   surface_set_target(csf)
   draw_clear_alpha(0,0)
   draw_set_color(0)
-  draw_set_alpha(1)
   for (var i=0; i&lt;=circles; i++)
     draw_circle(cx[i],cy[i],cs[i],false)
   draw_set_blend_mode_ext(bm_src_alpha,bm_dest_alpha)
@@ -218,6 +210,29 @@ else if stepno==2
   draw_set_alpha(1)
   draw_sprite(LogoWhite,0,800,600)
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="27">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>stepno=3
 </string>
           </argument>
         </arguments>

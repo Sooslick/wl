@@ -46,7 +46,7 @@ PAch.content = 'STATISTICS'
 PAch.font = fImpact64
 //profile selector
 PSelector = instance_create(300,1000,oButton)
-PSelector.content = 'SELECT PROFILE'
+PSelector.content = 'LOG OUT'
 PSelector.font = fImpact64
 
 //connected: db
@@ -101,13 +101,7 @@ funcProfileWrite()
             <kind>1</kind>
             <string>if PSelector.clicked
   {
-  /*
-  p = instance_create(0,0,oProfileSelector)
-  p.parent = parent
-  parent.ActiveMenuPtr = p
-  parent.Header = 'SELECT PROFILE'
-  instance_destroy(self,true)
-  */
+  global.userdata[?'AT'] = ''
   action_another_room(rFirst)
   }
 else if PNameForm.clicked

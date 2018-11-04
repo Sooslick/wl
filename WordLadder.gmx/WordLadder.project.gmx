@@ -115,7 +115,6 @@
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrCheck.gml</script>
     <script>scripts\funcChrDecode.gml</script>
-    <script>scripts\funcProfileSend.gml</script>
     <script>scripts\funcSetWinResFromString.gml</script>
     <script>scripts\funcCheckGuiHover.gml</script>
     <script>scripts\funcNewTabuLetter.gml</script>
@@ -123,20 +122,28 @@
     <script>scripts\funcGetWord.gml</script>
     <script>scripts\checkWord.gml</script>
     <scripts name="datarw">
-      <script>scripts\funcConfigRead.gml</script>
       <script>scripts\funcCfgRead.gml</script>
       <script>scripts\funcCfgWrite.gml</script>
-      <script>scripts\funcProfileRead.gml</script>
-      <script>scripts\funcProfileWrite.gml</script>
+      <script>scripts\funcConfigRead.gml</script>
       <script>scripts\funcLastloginRead.gml</script>
       <script>scripts\funcLastloginWrite.gml</script>
-    </scripts>
-    <scripts name="dataformat">
+      <script>scripts\funcProfileRead.gml</script>
+      <script>scripts\funcProfileWrite.gml</script>
       <script>scripts\funcReadLong.gml</script>
       <script>scripts\funcWriteLong.gml</script>
-      <script>scripts\formatTimeString.gml</script>
+    </scripts>
+    <scripts name="dataformat">
       <script>scripts\formatBool.gml</script>
+      <script>scripts\formatBoolString.gml</script>
       <script>scripts\formatReal.gml</script>
+      <script>scripts\formatTimeString.gml</script>
+    </scripts>
+    <scripts name="draw">
+      <script>scripts\drawLoading.gml</script>
+      <script>scripts\drawTextPreset.gml</script>
+    </scripts>
+    <scripts name="UI">
+      <script>scripts\uiFormSet.gml</script>
     </scripts>
   </scripts>
   <shaders name="shaders">
@@ -154,6 +161,11 @@
     <font>fonts\fLogo</font>
   </fonts>
   <objects name="objects">
+    <object>objects\oLogo</object>
+    <object>objects\oTimeCounter</object>
+    <object>objects\oSquareTransition</object>
+    <object>objects\oDevMenu</object>
+    <object>objects\oDevDictRd</object>
     <objects name="GameGeneralGroup">
       <object>objects\oDictLoader</object>
       <object>objects\oGameRuler</object>
@@ -182,10 +194,6 @@
       <object>objects\oMenuRuler</object>
       <object>objects\oNewGameRuler</object>
       <object>objects\oOptionsRuler</object>
-      <object>objects\oProfileCreator</object>
-      <object>objects\oProfileCreatorFirst</object>
-      <object>objects\oProfileRuler</object>
-      <object>objects\oProfileSelector</object>
       <object>objects\oSquare</object>
       <object>objects\oSquareRuler</object>
       <object>objects\oStatsDrawer</object>
@@ -193,26 +201,30 @@
       <object>objects\oMultiRuler</object>
       <object>objects\oGameMulti</object>
     </objects>
-    <object>objects\oLogo</object>
-    <object>objects\oButton</object>
-    <object>objects\oCheckBox</object>
-    <object>objects\oConfirmButton</object>
-    <object>objects\oForm</object>
-    <object>objects\oList</object>
-    <object>objects\oSlider</object>
-    <object>objects\oSquareTransition</object>
-    <object>objects\oTimeCounter</object>
-    <object>objects\oDevDictRd</object>
-    <object>objects\oDevMenu</object>
-    <object>objects\oPreved</object>
-    <object>objects\oAlmi</object>
-    <object>objects\oCallhim</object>
-    <object>objects\oScreamer</object>
+    <objects name="UI">
+      <object>objects\oButton</object>
+      <object>objects\oCheckBox</object>
+      <object>objects\oConfirmButton</object>
+      <object>objects\oForm</object>
+      <object>objects\oSlider</object>
+      <object>objects\oList</object>
+    </objects>
+    <objects name="Junk">
+      <object>objects\oScreamer</object>
+      <object>objects\oAlmi</object>
+      <object>objects\oCallhim</object>
+      <object>objects\oPreved</object>
+    </objects>
+    <objects name="Profile">
+      <object>objects\oProfileCreatorFirst</object>
+      <object>objects\oProfileRuler</object>
+      <object>objects\oAutolog</object>
+    </objects>
   </objects>
   <rooms name="rooms">
     <room>rooms\rInit</room>
-    <room>rooms\rMenu</room>
     <room>rooms\rFirst</room>
+    <room>rooms\rMenu</room>
     <room>rooms\rGame</room>
     <room>rooms\rDev</room>
     <room>rooms\rHTP</room>

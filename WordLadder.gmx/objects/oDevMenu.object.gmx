@@ -38,19 +38,12 @@ B4 = instance_create(300,800,oButton)
 B4.content = 'JSON'
 
 drawstr = 
-'ShowLogo=' + string(global.config[?'ShowLogo']) + '#' +
-'FirstLaunch=' + string(global.config[?'FirstLaunch']) + '#' +
-'ProfileFile=' + string(global.config[?'ProfileFile']) + '#' +
-'ScreenW=' + string(global.config[?'ScreenW']) + '#' +
-'ScreenH=' + string(global.config[?'ScreenH']) + '#' +
-'Fullscreen=' + string(global.config[?'Fullscreen']) + '#' +
-'Widescreen=' + string(global.config[?'Widescreen']) + '#' +
-'Localization=' + string(global.config[?'Localization']) + '#' +
-'Master=' + string(global.config[?'Master']) + '#' +
-'Sound=' + string(global.config[?'Sound']) + '#' +
-'Music=' + string(global.config[?'Music']) + '#' +
-'SavedIP=' + string(global.config[?'SavedIP']) + '#' +
-'ExtraDict=' + string(global.config[?'ExtraDict'])
+'ID ' + string(global.userdata[?'PNETID']) + '#' +
+'LOG ' + string(global.userdata[?'LOGIN']) + '#' +
+'PW ' + string(global.userdata[?'PW']) + '#' +
+'AT ' + string(global.userdata[?'AT']) + '#' +
+'SPW ' + string(global.userdata[?'SAVEPW']) + '#' +
+'ALOG ' + string(global.userdata[?'AUTOLOG'])
 </string>
           </argument>
         </arguments>

@@ -30,11 +30,13 @@ font = fImpact64
 hover = 1       //draw cl
 a = 1           //draw alpha
 content = ''    //draw string; set after create call
-contentSaved = content
+contentSaved = ''
+contentDraw = ''
 allowClipboard = false
 active = false  //form focus
 clicked = false //enter pressed
 clickable = true
+hidden = false  //password
 hint = false
 hintTick = 0
 hintMsg = ''
@@ -246,9 +248,9 @@ else
   draw_sprite_ext(sForm,hover,x,y,dsc,dsc,0,c_white,1)
 draw_set_alpha(a)
 if cursor &amp;&amp; active
-  draw_text_transformed((x-244),y,content+'|',tsc,dsc,0)
+  draw_text_transformed((x-244),y,contentDraw+'|',tsc,dsc,0)
 else
-  draw_text_transformed((x-244),y,content,tsc,dsc,0)
+  draw_text_transformed((x-244),y,contentDraw,tsc,dsc,0)
   
 //hint drawing
 if hint &amp;&amp; (hintMsg!='') &amp;&amp; clickable &amp;&amp; !active
@@ -366,6 +368,14 @@ if !keyboard_check(vk_enter)
     //else
     //  play error sound
   keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...
+  if hidden
+    {
+    contentDraw = ''
+    for (var i=0; i&lt;string_length(content); i++)
+      contentDraw+= '*'
+    }
+  else
+    contentDraw = content
   event_user(0)                         //recalculate text scale
   }
 else
