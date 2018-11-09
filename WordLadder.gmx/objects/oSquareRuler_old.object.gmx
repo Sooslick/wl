@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>10</depth>
+  <depth>2</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -26,10 +26,11 @@
           <argument>
             <kind>1</kind>
             <string>//init values
-ARRMAX = 32             //MAINTABLE size const TODO calc on winres
+ARRMAX = 32             //MAINTABLE size const
 tick = 0                //counter
 rot = 0                 //field rotation
 pxByTick = 2            //pixels by tick aka offset speed
+rotReversed = 0
 xOffset = 0             //square x-y offset
 yOffset = 0
 xELeft = 0              //current boundary ID
@@ -39,25 +40,24 @@ yERight = ARRMAX - 1
 isHor = false           //hor or vert movement
 isReverse = false       //upside-down drawing
 revState = 3            //0 wait; 1 op++; 2 op--; 3 begin; 4 ticker;
-animType = 0            //0 line; 1 diag; 2 insta; 3 circle in; 4 circle out;
+animType = 0            //0 line; 1 diag;
 active = false          //is squares clickable?
 cheat = ''
 
-ds = surface_create(2048,2048)
-dsx = -224
-dsy = -424
-
 //squares array init
+f = file_bin_open('res/MAINTABLE.dat',0)
 for (i=0; i&lt;ARRMAX; i++)
   for (j=0; j&lt;ARRMAX; j++)
     {
     sqArr[i,j] = instance_create(i*64,j*64,oSquare)
-    sqArr[i,j].content = chr(irandom_range(65,90))
+    chrCon = file_bin_read_byte(f)
+    sqArr[i,j].content = funcChrEncode(chrCon)
     sqArr[i,j].opSq = 0
     sqArr[i,j].opCon = 0
     sqArr[i,j].revState = 0
     sqArr[i,j].parent = id
     }
+file_bin_close(f)
 
 //cheat states
 chStop = false
@@ -65,6 +65,7 @@ chRestart = false
 chReverse = false
 chFlip = false
 chBlur = false
+chBlurSf = -1
 chAlmi = false
 chAlmiTick = 0
 </string>
@@ -92,8 +93,6 @@ chAlmiTick = 0
             <string>for (i=0; i&lt;ARRMAX; i++)
   for (j=0; j&lt;ARRMAX; j++)
     instance_destroy(sqArr[i,j],true)
-if surface_exists(ds)
-  surface_free(ds)
 </string>
           </argument>
         </arguments>
@@ -133,6 +132,7 @@ else
   if rot &gt;= 360
     rot-= 360
   }
+rotReversed = 360-rot
     
 //OFFSET CHANGING  
 if isHor
@@ -257,6 +257,7 @@ switch revState             //TODO comments
   }  
   
 //PARAMETERS  
+view_angle[0] = rot             //complete 180 rotation
 if ((rot == 80) || (rot == 260))
   {
   if revState == 0
@@ -267,8 +268,6 @@ if ((rot == 80) || (rot == 260))
          isReverse = true
   animType = irandom_range(0,1)
   }
-dsx = -1024*dcos(rot) - 1024*dsin(rot) + 800
-dsy =  1024*dsin(rot) - 1024*dcos(rot) + 600
   
 //////////// ch stop
 }
@@ -280,46 +279,8 @@ if chAlmi
     {
     chAlmiTick = 0
     instance_create(0,0,oAlmi)
-    //todo: perekat
     }
   }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="6" enumb="53">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>if active 
-  if b21.hover!=1 &amp;&amp; b22.hover!=1
-    {
-    var mx = mouse_x - 800;
-    var my = mouse_y - 600;
-    var mrx =  mx*dcos(-rot) + my*dsin(-rot) + 1024
-    var mry = -mx*dsin(-rot) + my*dcos(-rot) + 1024
-    var csq = collision_point(mrx,mry,oSquare,false,true);
-    if csq &gt; 0
-      {
-      csq.clr = irandom_range(6097152,16777215)     //change color
-      csq.spr = 1
-      cheat+= chr(funcChrDecode(csq.content))
-      }
-    }
 </string>
           </argument>
         </arguments>
@@ -366,6 +327,7 @@ if chAlmi
 tick = 0                //counter
 rot = 0                 //field rotation
 pxByTick = 2            //pixels by tick aka offset speed
+rotReversed = 0
 isReverse = false       //upside-down drawing
 revState = 3            //0 wait; 1 op++; 2 op--; 3 begin; 4 ticker;
 
@@ -541,7 +503,7 @@ for (i=0; i&lt;ARRMAX; i++)
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -558,23 +520,20 @@ for (i=0; i&lt;ARRMAX; i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !surface_exists(ds)
-  ds = surface_create(2048,2048)
-draw_surface_ext(ds, dsx, dsy, 1,1, rot, c_white,1)
+            <string>//draw_text(25,25,string(chBlur)) //debug
 
 if chBlur
   {
+  if !surface_exists(chBlurSf)
+    chBlurSf = surface_create(1600,1200)
   shader_set(shLinear)
   var shader_params = shader_get_uniform(shLinear, "tense");
   shader_set_uniform_f(shader_params, 0.8);
-  draw_surface_ext(ds, dsx, dsy, 1,1, rot, c_white,1)
+  draw_surface(chBlurSf,0,0)
   shader_reset()
-  }
-else
-  {
-  surface_set_target(ds)
-  draw_clear_alpha(0,0)
-  surface_reset_target()
+  //draw_surface_ext(chBlurSf,-10,-7,1.0125,1.0125,0,c_white,1)
+  var a = application_get_position();
+  surface_copy_part(chBlurSf, 0,0, application_surface, a[0]-global.DRAW_HOFF,a[1]-global.DRAW_VOFF, 1600,1200)
   }
 </string>
           </argument>

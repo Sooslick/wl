@@ -11,3 +11,5 @@ for (i=1; i<=string_length(s); i++)
     s1+= string_char_at(s,i)
   }
 global.WIN_HEIGHT = real(s1)
+
+//TODO recalc winw, winh, hoff, voff

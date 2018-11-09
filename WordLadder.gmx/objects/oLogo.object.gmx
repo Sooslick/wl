@@ -45,11 +45,9 @@ global.userdata = ds_map_create()   //userdata map
 funcConfigRead()                    //read cfg file. TODO: apply new parameters
 funcLastloginRead()
 
-//WINDOW SETTINGS:
-//TODO REPLACE THIS CODE
-//debug-costyl
-global.WIN_HEIGHT = display_get_height()
-global.WIN_WIDTH = display_get_width()
+//WINDOW OFFSETS CALCULATION:
+global.WIN_HEIGHT = global.config[?'ScreenH']
+global.WIN_WIDTH = global.config[?'ScreenW']
 if global.WIN_HEIGHT / global.WIN_WIDTH &gt;=0.75          //4:3 ratio
   {
   global.DRAW_SCALE = global.WIN_WIDTH / 1600           //black lines on top &amp; bottom
@@ -63,8 +61,8 @@ else
   global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2 
   }
 window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
-
 window_set_fullscreen(global.config[?'Fullscreen'])
+//funcSetWinRes();
 
 //LOGO Code and init anim vars:
 frame=0

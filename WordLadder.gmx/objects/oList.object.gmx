@@ -26,22 +26,37 @@
           <argument>
             <kind>1</kind>
             <string>//pre inits
-font = fImpact64
 hover = false
 hoverElement = -1   //-1: main, 0..N: elements
-active = false      //if true = opened
-clicked = false     //element clicked
-clickable = true
-hint = false
-hintTick = 0
-hintMsg = ''
-StartDepth = 0
-
-dsc = 1                     //draw scale
 
 arr = ds_map_create()
 val = ''
 num = 0
+
+//todo clickable list
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>ds_map_destroy(arr)
 </string>
           </argument>
         </arguments>
@@ -64,7 +79,8 @@ num = 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !active
+            <string>//special checkhover func
+if !active
   {
   if funcCheckGuiHover((x-256*dsc), (y-64*dsc), (x+256*dsc), (y+64*dsc))       
           {
@@ -133,6 +149,7 @@ else
         num = hoverElement
         val = arr[?num]
         }
+      uiOnclick()
       }
     else
       {
@@ -171,12 +188,7 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//DRAW PRE-SETS
-draw_set_font(font)
-draw_set_color(c_white)
-draw_set_halign(fa_left)
-draw_set_valign(fa_center)
-draw_set_alpha(1)
+            <string>drawTextPreset(font, c_white, 1, fa_left, fa_center)
 
 var tsc;
 
@@ -219,26 +231,7 @@ else
     }
   }
   
-//hint drawing
-if hint &amp;&amp; (hintMsg!='') &amp;&amp; clickable &amp;&amp; !active
-  {
-  var my;
-  if window_get_fullscreen()
-    my = (display_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
-  else
-    my = (window_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
-  draw_set_font(fHint)
-  draw_set_halign(fa_left)
-  draw_set_valign(fa_top)
-  var h = string_height_ext(hintMsg, 50, 500) + 12;
-  draw_set_alpha(0.75)
-  draw_set_color(0)
-  draw_rectangle(x - 256*dsc, my - h*dsc, x + 256*dsc, my, false)
-  draw_set_alpha(1)
-  draw_set_color(c_white)
-  h-= 6
-  draw_text_ext_transformed(x - 250*dsc, my - h*dsc, hintMsg, 50,500, dsc, dsc, 0)
-  }
+uiDrawHint()
 </string>
           </argument>
         </arguments>

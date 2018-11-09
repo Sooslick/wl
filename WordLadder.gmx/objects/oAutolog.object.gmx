@@ -32,6 +32,7 @@ if global.userdata[?'AT'] != ''
 //todo: locali
 drawstr = 'Connecting...'
 //todo: flash fx
+//todo check profle headers + load file from server
 </string>
           </argument>
         </arguments>

@@ -25,11 +25,16 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//todo locole
+            <string>//todo fix ui
+//todo background
+//todo load profile
+//todo check profile file headers to validate
+//todo locole
 caption = 'AUTHORIZATION'
 loadrot = 0
 load = false  
 encpw = false
+OnclickEvent = 0
 
 //TODO: Tab event
 //nickname form
@@ -54,7 +59,7 @@ spCb.hint = 'Allow game to save your password for next launch'
 spCb.font = fCube
 spCb.dsc = 0.5
 spCb.tsc = 0.5
-with spCb {event_user(0)}
+with spCb {uiRescale(375)}
 
 //auto-login checkbox
 alCb = instance_create(930,550,oCheckBox)
@@ -65,32 +70,39 @@ alCb.hint = 'Allow game to load your profile automatically'
 alCb.font = fCube
 alCb.dsc = 0.5
 alCb.tsc = 0.5
-with alCb {event_user(0)}
+with alCb {uiRescale(375)}
 
 //login button
 bLog = instance_create(800,700,oButton)
 bLog.content = 'SIGN IN'
+bLog.parent = id
 
 bNoLog = instance_create(800,900,oButton)
 bNoLog.content = 'Play offline'
 bNoLog.font = fCube
 bNoLog.dsc = 0.5
 bNoLog.tsc = 0.5
-with bNoLog {event_user(0)}
+with bNoLog {uiRescale(506)}
+bNoLog.parent = id
 
 bReg = instance_create(800,1000,oButton)
 bReg.content = 'Create account'
 bReg.font = fCube
 bReg.dsc = 0.5
 bReg.tsc = 0.5
-with bReg {event_user(0)}
+with bReg {uiRescale(506)}
+bReg.parent = id
 
 bExit = instance_create(800,1100,oButton)
 bExit.content = 'EXIT'
 bExit.font = fCube
 bExit.dsc = 0.5
 bExit.tsc = 0.5
-with bExit {event_user(0)}
+with bExit {uiRescale(506)}
+bExit.parent = id
+
+clist = ds_list_create()
+ds_list_add(clist, nameForm, pwForm, spCb, alCb, bLog, bNoLog, bReg)
 </string>
           </argument>
         </arguments>
@@ -115,6 +127,7 @@ with bExit {event_user(0)}
             <kind>1</kind>
             <string>funcLastloginWrite();
 funcProfileRead()
+ds_list_destroy(clist)
 global.config[?'FirstLaunch'] = false
 action_another_room(rMenu)
 </string>
@@ -140,59 +153,6 @@ action_another_room(rMenu)
           <argument>
             <kind>1</kind>
             <string>loadrot+= 10
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="6" enumb="56">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>if bLog.clicked
-  {
-  bLog.clicked = false
-  if !encpw
-    {
-    encpw = true
-    pwForm.contentSaved = sha1_string_utf8(pwForm.contentSaved)
-    }
-  http_get('http://sooslick.flaminggaming.ru/wl/authUser.php?login=' + nameForm.contentSaved + '&amp;passw=' + pwForm.contentSaved)
-  nameForm.clickable = false
-  pwForm.clickable = false
-  spCb.clickable = false
-  alCb.clickable = false
-  bLog.clickable = false
-  bNoLog.clickable = false
-  bReg.clickable = false
-  load = true
-  }  
-else if bNoLog.clicked
-  {
-  global.config[?'ProfileFile'] = 'anonymous'
-  //todo change login data
-  instance_destroy(self,true)
-  }
-else if bReg.clicked
-  {
-  bReg.clicked = false
-  url_open('http://sooslick.flaminggaming.ru/reg.php')
-  }
-else if bExit.clicked
-  action_end_game()
 </string>
           </argument>
         </arguments>
@@ -270,18 +230,74 @@ if ok
   }
 
 //error
-nameForm.clickable = true
-pwForm.clickable = true
 pwForm.content = ''
 pwForm.contentSaved = ''
 pwForm.contentDraw = ''
 encpw = false
-spCb.clickable = true
-alCb.clickable = true
-bLog.clickable = true
-bNoLog.clickable = true
-bReg.clickable = true
+uiSetClickable(clist, true)
 load = false
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>ui onclick</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if bLog.clicked
+  {
+  if !encpw {
+    encpw = true
+    pwForm.contentSaved = sha1_string_utf8(pwForm.contentSaved)
+    }
+  http_get('http://sooslick.flaminggaming.ru/wl/authUser.php?login=' + nameForm.contentSaved + '&amp;passw=' + pwForm.contentSaved)
+  uiSetClickable(clist, false)
+  load = true
+  }  
+else if bNoLog.clicked
+  {
+  global.config[?'ProfileFile'] = 'anonymous'
+  //todo change login data
+  instance_destroy(self,true)
+  }
+else if bReg.clicked
+  url_open('http://sooslick.flaminggaming.ru/reg.php')
+else if bExit.clicked
+  action_end_game()
 </string>
           </argument>
         </arguments>

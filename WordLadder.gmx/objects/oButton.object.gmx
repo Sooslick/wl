@@ -27,19 +27,7 @@
             <kind>1</kind>
             <string>//init fields
 sp = sButton  
-font = fImpact96
-hover = 1       //draw cl
-a = 1           //draw alpha
-content = ''    //draw string; set after create call
-clickable = true   
-clicked = false
-hint = false
-hintTick = 0
-hintMsg = ''
-StartDepth = 1
-
-dsc = 1                     //draw scale
-tsc = 1                     //content text scale
+uiCreate()
 
 //costyl-debug: forced fix xprev yprev coord
 xp = 0
@@ -66,34 +54,9 @@ yp = 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if funcCheckGuiHover((x-256*dsc), (y-64*dsc), (x+256*dsc), (y+64*dsc))    
-        {
-        hover = 1            //check cursor pos not by mouse enter/leave event
-        if clickable
-          {  
-          hintTick++    
-          a = 1    
-          }
-        else
-          a = 0.5 
-        if hintTick &gt; 42
-          {
-          hint = true   
-          depth = StartDepth - 2
-          }       
-        }
-else
-        {
-        hover = 0
-        if clickable    
-          a = 0.66
-        else
-          a = 0.25
-        hint = false
-        hintTick = 0
-        depth = StartDepth
-        }
-        
+            <string>uiHoverCheck()
+
+//forcefix prev coords       
 xp = xprevious
 yp = yprevious
 </string>
@@ -118,10 +81,11 @@ yp = yprevious
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (x == xp) &amp;&amp; (y == yp)
+            <string>//if button not animated
+if (x == xp) &amp;&amp; (y == yp)
   if clickable
     if hover
-      clicked = true
+      uiOnclick()
 </string>
           </argument>
         </arguments>
@@ -144,17 +108,8 @@ yp = yprevious
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//debug-costyl
-draw_set_font(font)
-
-//content set func, called after set content string
-tsc = 506 / string_width(content)
-if tsc &gt; 1
-  tsc = 1       //reset scale if it not necessary
-tsc*= dsc   //draw scalability
-
-//depth change?
-StartDepth = depth
+            <string>//todo: replace to uiRescale(506) all event_user0
+uiRescale(506)
 </string>
           </argument>
         </arguments>
@@ -177,11 +132,7 @@ StartDepth = depth
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//DRAW PRE-SETS
-draw_set_font(font)
-draw_set_color(c_white)
-draw_set_halign(fa_center)
-draw_set_valign(fa_center)
+            <string>drawTextPreset(font, c_white, 1, fa_center, fa_center)
 //simple motion blur fx
 if x != xprevious           
   {
@@ -195,26 +146,7 @@ draw_sprite_ext(sp,hover,x,y,dsc,dsc,0,c_white,1)
 draw_set_alpha(a)
 draw_text_transformed(x,y,content,tsc,dsc,0)
 
-//hint drawing
-if hint &amp;&amp; (hintMsg!='') &amp;&amp; clickable
-  {
-  var my;
-  if window_get_fullscreen()
-    my = (display_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
-  else
-    my = (window_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
-  draw_set_font(fHint)
-  draw_set_halign(fa_left)
-  draw_set_valign(fa_top)
-  var h = string_height_ext(hintMsg, 50, 500) + 12;
-  draw_set_alpha(0.75)
-  draw_set_color(0)
-  draw_rectangle(x - 256*dsc, my - h*dsc, x + 256*dsc, my, false)
-  draw_set_alpha(1)
-  draw_set_color(c_white)
-  h-= 6
-  draw_text_ext_transformed(x - 250*dsc, my - h*dsc, hintMsg, 50,500, dsc, dsc, 0)
-  }
+uiDrawHint()
 </string>
           </argument>
         </arguments>

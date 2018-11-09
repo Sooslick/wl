@@ -2,7 +2,7 @@
 var f       //file
 var tmp, s, i, j
 var v       //version byte array
-
+//todo validate all data!
 if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
     {
     f = file_bin_open('profiles/' + global.config[?'ProfileFile'] + '.save',0)
@@ -95,7 +95,7 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
         }        
     file_bin_close(f)
     }
-global.profile[?'PNETID'] = -1
+global.profile[?'PNETID'] = 0
 global.profile[?'PNAME'] = global.config[?'ProfileFile']
 global.profile[?'PLOCALE'] = 0
     

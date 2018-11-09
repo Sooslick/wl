@@ -27,9 +27,9 @@
             <kind>1</kind>
             <string>clr = c_white       //current clr &amp; img
 spr = 0
-rot = 0
+rot = 0             //cheat cmd
 
-content = 0         //texture id
+content = 0
 opSq = 0            //Square opacity
 opCon = 0           //content opacity
 revState = 0        //180
@@ -115,35 +115,6 @@ parent = 0          //SquareRuler
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="4">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>if parent.active 
-  if parent.b21.hover!=1 &amp;&amp; parent.b22.hover!=1
-    {
-    clr = irandom_range(6097152,16777215)     //change color
-    spr = 1
-    parent.cheat+= chr(funcChrDecode(content))
-    }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
     <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
@@ -161,13 +132,15 @@ parent = 0          //SquareRuler
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_sprite_ext(sSquare,spr,x,y,1,1,rot,c_white,opSq)
-//draw_set_font(fDebug)
+            <string>drawTextPreset(fCube,clr,opCon,fa_center,fa_center)
+surface_set_target(parent.ds)
+draw_sprite_ext(sSquare,spr,x,y,1,1,rot,c_white,opSq)
 if content != -1
   if parent.isReverse
-    draw_sprite_ext(sEnglish,content,x+32,y+32,1,1,180,clr,opCon)
+    draw_text_transformed(x+32,y+32,content,1,1,180)
   else
-    draw_sprite_ext(sEnglish,content,x+32,y+32,1,1,0,clr,opCon)
+    draw_text(x+32,y+32,content)
+surface_reset_target()
 </string>
           </argument>
         </arguments>
