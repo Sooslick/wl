@@ -88,6 +88,7 @@
     <sprite>sprites\sAlmi</sprite>
     <sprite>sprites\sCallhim</sprite>
     <sprite>sprites\sScream</sprite>
+    <sprite>sprites\sIcons</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -133,6 +134,7 @@
     </scripts>
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>
+    <script>scripts\funcBoolSwitch.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shLinear.shader</shader>
@@ -177,7 +179,6 @@
       <object>objects\oAchievementsRuler</object>
       <object>objects\oAuthorsCube</object>
       <object>objects\oAuthorsRuler</object>
-      <object>objects\oEasterEggRuler</object>
       <object>objects\oFirstLaunchArrow</object>
       <object>objects\oGameSolo</object>
       <object>objects\oMenuRuler_old</object>
@@ -194,9 +195,11 @@
       <object>objects\oMultiRuler</object>
       <object>objects\oGameMulti</object>
       <object>objects\oMenuCreator</object>
+      <object>objects\oNewsLoader</object>
     </objects>
     <objects name="UI">
       <object>objects\oButton</object>
+      <object>objects\oButtonIcon</object>
       <object>objects\oCheckBox</object>
       <object>objects\oConfirmButton</object>
       <object>objects\oForm</object>
@@ -208,6 +211,7 @@
       <object>objects\oAlmi</object>
       <object>objects\oCallhim</object>
       <object>objects\oPreved</object>
+      <object>objects\oEasterEggRuler</object>
     </objects>
     <objects name="Profile">
       <object>objects\oProfileCreatorFirst</object>

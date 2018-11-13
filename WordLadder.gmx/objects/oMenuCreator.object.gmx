@@ -52,12 +52,18 @@ wait = 30
             <string>wait--
 if wait &lt; 0
   {
-  instance_create(0,0,oFlashFx)
+  fx = instance_create(0,0,oFlashFx)
   mr = instance_create(0,0,oMenuRuler)
   ms = instance_create(0,0,oMenuSecond)
-  ms.bg = bg
-  mr.sec = ms
   mf = instance_create(0,0,oMenuStuff)
+  if global.NewsLoader {
+    instance_create(0,0,oNewsLoader)
+    global.NewsLoader = false
+    }
+  ms.bg = bg
+  bg.ruler = ms
+  ms.ruler = mr
+  mr.sec = ms
   mr.stuff = mf
   instance_destroy()
   }

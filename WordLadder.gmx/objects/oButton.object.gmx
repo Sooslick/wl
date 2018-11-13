@@ -132,11 +132,10 @@ uiRescale(506)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>drawTextPreset(font, c_white, 1, fa_center, fa_center)
+            <string>drawTextPreset(font, c_white, 0.5, fa_center, fa_center)
 //simple motion blur fx
 if x != xprevious           
   {
-  draw_set_alpha(0.5)
   draw_sprite_ext(sp,hover,xprevious,yprevious,dsc,dsc,0,c_white,0.5)
   draw_text_transformed(xprevious,yprevious,content,tsc,dsc,0)
   }

@@ -81,7 +81,7 @@ if op &lt;= thres
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_sprite_ext(sPixel,0,0,0,global.WIN_WIDTH,global.WIN_HEIGHT,0,cl,op)
+            <string>draw_sprite_ext(sPixel,0,-global.DRAW_HOFF*2,-global.DRAW_VOFF*2,3200,2400,0,cl,op)
 </string>
           </argument>
         </arguments>

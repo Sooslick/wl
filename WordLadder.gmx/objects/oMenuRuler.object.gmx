@@ -28,26 +28,39 @@
             <string>//Tech variables
 Header = 'WORD LADDER'
 OnclickEvent = 0
-active = true
-sec = -1                //second menu ptr
-stuff = -1              //stuff ptr
+active = true               //all childs buttons are clickable when active
+sec = -1                    //second menu ptr
+stuff = -1                  //stuff ptr
+posIn = global.G_RIGHT-400
+posOut = global.G_RIGHT+120
 //Buttons init
-bNewGame = instance_create(1200,280,oButton)
+bNewGame = instance_create(posIn,280,oButtonIcon)
 bNewGame.content = 'PLAY'
-bProfile = instance_create(1200,440,oButton)
+bNewGame.icon_xoff = -192
+bNewGame.icon_img = 0
+bProfile = instance_create(posIn,440,oButtonIcon)
 bProfile.content = 'PROFILE'
-bOptions = instance_create(1200,600,oButton)
+bProfile.icon_xoff = -192
+bProfile.icon_img = 1
+bOptions = instance_create(posIn,600,oButtonIcon)
 bOptions.content = 'OPTIONS'
-bAuthors = instance_create(1200,760,oButton)
+bOptions.icon_xoff = -192
+bOptions.icon_img = 2
+bAuthors = instance_create(posIn,760,oButtonIcon)
 bAuthors.content = 'CREDITS'
-bExit = instance_create(1200,920,oButton)
+bAuthors.icon_xoff = -192
+bAuthors.icon_img = 3
+bExit = instance_create(posIn,920,oButtonIcon)
 bExit.content = 'EXIT'
+bExit.icon_xoff = -192
+bExit.icon_img = 4
 bExit.parent = id
-//Buttons anim
+//Buttons clickable + anim vars
 alist = ds_list_create()
 ds_list_add(alist, bNewGame, bProfile, bOptions, bAuthors)
-bAnim = false
-bAnimTick = 0
+Anim = false
+AnimTick = 0     //used to funcTickOffset
+isInside = true
 
 //TODO: UI DRAW SURFACE
 </string>
@@ -56,6 +69,26 @@ bAnimTick = 0
       </action>
     </event>
     <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>mem free</string>
+          </argument>
+        </arguments>
+      </action>
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -78,6 +111,49 @@ instance_destroy(bOptions,true)
 instance_destroy(bAuthors,true)
 instance_destroy(bExit,true)
 ds_list_destroy(alist)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if Anim {
+  AnimTick++
+  var p = funcTickOffset(AnimTick, posIn, posOut, isInside);
+  bNewGame.x = p
+  bProfile.x = p
+  bOptions.x = p
+  bAuthors.x = p
+  bExit.x = p
+  if AnimTick &gt;= 10 {
+    Anim = false
+    AnimTick = 0
+    isInside = funcBoolSwitch(isInside)
+    bNewGame.icon_active = !isInside
+    bProfile.icon_active = !isInside
+    bOptions.icon_active = !isInside
+    bAuthors.icon_active = !isInside
+    bExit.icon_active = !isInside
+    if active
+      uiSetClickable(alist, true)
+    }
+  }
 </string>
           </argument>
         </arguments>
@@ -298,6 +374,26 @@ draw_text(800,100,Header)
     <event eventtype="9" enumb="90">
       <action>
         <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>open dev menu</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
         <id>603</id>
         <kind>7</kind>
         <userelative>0</userelative>
@@ -313,10 +409,7 @@ draw_text(800,100,Header)
           <argument>
             <kind>1</kind>
             <string>if keyboard_check(vk_control) &amp;&amp; keyboard_check(vk_shift)
-  {
-  instance_destroy(self,true)
-  action_another_room(rDev)
-  }
+  room_goto(rDev)
 </string>
           </argument>
         </arguments>

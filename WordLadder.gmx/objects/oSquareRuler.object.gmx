@@ -42,6 +42,7 @@ revState = 3            //0 wait; 1 op++; 2 op--; 3 begin; 4 ticker;
 animType = 0            //0 line; 1 diag; 2 insta; 3 circle in; 4 circle out;
 active = false          //is squares clickable?
 cheat = ''
+ruler = -1              //oMenuSecond instance to check buttons hover
 
 ds = surface_create(2048,2048)
 dsx = -224
@@ -305,8 +306,11 @@ if chAlmi
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if active 
-  if b21.hover!=1 &amp;&amp; b22.hover!=1
+            <string>if ruler == -1
+  exit
+  
+if active 
+  if ruler.bHide.hover!=1 &amp;&amp; ruler.bAccept.hover!=1
     {
     var mx = mouse_x - 800;
     var my = mouse_y - 600;
@@ -317,7 +321,7 @@ if chAlmi
       {
       csq.clr = irandom_range(6097152,16777215)     //change color
       csq.spr = 1
-      cheat+= chr(funcChrDecode(csq.content))
+      cheat+= csq.content
       }
     }
 </string>
@@ -435,37 +439,28 @@ if chRestart
 if cheat == 'STOP'
   chStop = true
 else if (cheat == 'REVERSE')||(cheat == 'TURN')
-  if chReverse
-    chReverse = false
-  else
-    chReverse = true
+  chReverse = funcBoolSwitch(chReverse)
 else if cheat == 'START'
   chStop = false
-else if ((cheat == 'EASTER') || (cheat == 'EASTEREGG'))
-  with parent {bEggClicked = true; event_perform(ev_mouse,ev_global_left_release)}
+//else if ((string_count('EASTER',cheat) &gt; 0) || (string_count('EGG',cheat) &gt; 0))
+//  with parent {bEggClicked = true; event_perform(ev_mouse,ev_global_left_release)}
 else if (cheat == 'PREVED') || (cheat == 'HELLO')
   instance_create(0,0,oPreved)
 else if cheat == 'SPLASH'
   with parent {http_get("http://sooslick.flaminggaming.ru/wl/getSplash.php")}
-else if (cheat == 'EXIT')||(cheat == 'QUIT')
-  {
-  with parent {
-    bExit.clicked = true
-    event_perform(ev_mouse, ev_global_left_release)
-    }
-  }
+//else if (cheat == 'EXIT')||(cheat == 'QUIT')
+//  {
+//  with parent {
+//    bExit.clicked = true
+//    event_perform(ev_mouse, ev_global_left_release)
+//    }
+//  }
 else if cheat == 'BLUR'
   chBlur = true
 else if (cheat == 'FLIP') || (cheat == 'SPIN')
   {
-  if chFlip
-    chFlip = false
-  else
-    chFlip = true
-  if isReverse
-    isReverse = false
-  else
-    isReverse = true
+    chFlip = funcBoolSwitch(chFlip)
+    isReverse = funcBoolSwitch(isReverse)
   }
 else if cheat == 'SHUFFLE'
   for (i=0; i&lt;ARRMAX; i++)
@@ -495,10 +490,7 @@ else if cheat == 'CANCEL'
   if chFlip
     {
     chFlip = false
-    if isReverse
-      isReverse = false
-    else
-      isReverse = true
+    isReverse = funcBoolSwitch(isReverse)
     }
   }
 else if cheat == 'ALMI'
@@ -525,8 +517,8 @@ else if cheat == 'DESIGN'
   }
 else if cheat == 'CRUSH'
   crush++
-else if string_count('DICK',cheat) &gt; 0
-  {} //todo sound
+//else if string_count('DICK',cheat) &gt; 0
+//  {} //todo sound
       
 //refresh
 cheat = ''

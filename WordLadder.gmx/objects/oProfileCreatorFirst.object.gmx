@@ -32,8 +32,8 @@
 //todo locole
 caption = 'AUTHORIZATION'
 loadrot = 0
-load = false  
-encpw = false
+load = false            //true if waiting for http event
+encpw = false           //is password encrypted
 OnclickEvent = 0
 
 //TODO: Tab event
@@ -64,7 +64,7 @@ with spCb {uiRescale(375)}
 //auto-login checkbox
 alCb = instance_create(930,550,oCheckBox)
 if global.userdata[?'AUTOLOG'] &gt; 0
-  alCb.checked = true
+  alCb.checked = true                 //i dont know how it may be possible. Mb autolog error
 alCb.content = 'Auto Sign in'
 alCb.hint = 'Allow game to load your profile automatically'
 alCb.font = fCube
@@ -77,6 +77,7 @@ bLog = instance_create(800,700,oButton)
 bLog.content = 'SIGN IN'
 bLog.parent = id
 
+//offline button
 bNoLog = instance_create(800,900,oButton)
 bNoLog.content = 'Play offline'
 bNoLog.font = fCube
@@ -85,6 +86,7 @@ bNoLog.tsc = 0.5
 with bNoLog {uiRescale(506)}
 bNoLog.parent = id
 
+//open browser to reg
 bReg = instance_create(800,1000,oButton)
 bReg.content = 'Create account'
 bReg.font = fCube
@@ -101,6 +103,7 @@ bExit.tsc = 0.5
 with bExit {uiRescale(506)}
 bExit.parent = id
 
+//clickables list
 clist = ds_list_create()
 ds_list_add(clist, nameForm, pwForm, spCb, alCb, bLog, bNoLog, bReg)
 </string>
@@ -129,7 +132,7 @@ ds_list_add(clist, nameForm, pwForm, spCb, alCb, bLog, bNoLog, bReg)
 funcProfileRead()
 ds_list_destroy(clist)
 global.config[?'FirstLaunch'] = false
-action_another_room(rMenu)
+room_goto(rMenu)
 </string>
           </argument>
         </arguments>
@@ -179,41 +182,35 @@ action_another_room(rMenu)
 //check async load errors
 if async_load[? "status"] &gt; 0
   exit
-if async_load[? "status"] &lt; 0
-  {
+if async_load[? "status"] &lt; 0 {
   ok = false
   caption = 'CONNECTION ERROR'
   }
-  
 //check answer errors
-if ok
-  {
+if ok {
   var html = json_decode(async_load[? "result"])
-  if html == -1
-    {
+  if html == -1 {
     caption = 'SERVER ERROR'
     ok = false
     }
   }
-
 //check answer fields
 if ok
-  if is_undefined(html[?'PNETID'])
-    {
+  if is_undefined(html[?'PNETID']) {
     ok = false
     caption = 'AUTH ERROR'
     }
     //todo: check another fields
-  
 //log 
 if ok
   {
   //TODO GET FILE
+  //update global fields
   global.config[?'ProfileFile'] = nameForm.contentSaved
   global.profile[?'PNETID'] = html[?'PNETID']
   global.userdata[?'AT'] = html[?'ACCESS_TOKEN']
     
-  // write login
+  // write login and update userdata fields
   global.userdata[?'PNETID'] = global.profile[?'PNETID']
   global.userdata[?'LOGIN'] = nameForm.contentSaved
   global.userdata[?'PW'] = pwForm.contentSaved
@@ -278,7 +275,7 @@ load = false
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if bLog.clicked
+            <string>if bLog.clicked   //enc pw and http request
   {
   if !encpw {
     encpw = true

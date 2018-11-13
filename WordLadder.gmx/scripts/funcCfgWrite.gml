@@ -60,6 +60,11 @@
     file_text_write_string(f,s)
     file_text_writeln(f)
     
+    //last loaded news
+    s = 'LastHeadline=' + string(global.config[?'LastHeadline'])
+    file_text_write_string(f,s)
+    file_text_writeln(f)
+    
     //custom gamemode fields
     s = 'CustomStart=' + string(global.config[?'CustomStart'])
     file_text_write_string(f,s)

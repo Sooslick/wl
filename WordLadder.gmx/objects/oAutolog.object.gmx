@@ -25,7 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>loadrot = 0
+            <string>//init vars + http request w/ saved userdata
+loadrot = 0
 if global.userdata[?'AT'] != ''
   http_get('http://sooslick.flaminggaming.ru/wl/getSave.php?at=' + global.userdata[?'AT'])
   
@@ -38,7 +39,70 @@ drawstr = 'Connecting...'
         </arguments>
       </action>
     </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>create login form</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>instance_create(0,0,oProfileCreatorFirst)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>loadrot inc</string>
+          </argument>
+        </arguments>
+      </action>
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -84,10 +148,7 @@ if async_load[? "status"] &gt; 0
 
 //error
 if async_load[? "status"] &lt; 0
-  {
-  instance_create(0,0,oProfileCreatorFirst)
-  instance_destroy(self)
-  }
+  instance_destroy(self, true)      //destroy -&gt; create log in form
   
 //answer loaded
 var html = json_decode(async_load[? "result"])
@@ -96,37 +157,50 @@ if html != -1
   //check pnetid
   if !is_undefined(html[?'PNETID'])
     {
+    //pnetid error
     if html[?'PNETID'] != global.userdata[?'PNETID']
-      {
-      instance_create(0,0,oProfileCreatorFirst)
-      instance_destroy(self)
-      }
+      instance_destroy(self, true)
     //todoGET SAVEFILE BT PASSED LINK
-    //TODO check method
+    //TODO check api method
+    //success
     funcLastloginWrite();
     funcProfileRead()
     global.config[?'FirstLaunch'] = false
-    action_another_room(rMenu)
+    room_goto(rMenu)
     }
   else
-    {
-    //pnetid error
-    instance_create(0,0,oProfileCreatorFirst)
-    instance_destroy(self)
-    }
+    //no pnetid error
+    instance_destroy(self, true)
   }
 else
-  {
   //answer error
-  instance_create(0,0,oProfileCreatorFirst)
-  instance_destroy(self)
-  }
+  instance_destroy(self, true)
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>loading icon</string>
+          </argument>
+        </arguments>
+      </action>
       <action>
         <libid>1</libid>
         <id>603</id>

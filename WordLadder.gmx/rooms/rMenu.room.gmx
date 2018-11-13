@@ -11,8 +11,13 @@
   <colour>0</colour>
   <showcolour>-1</showcolour>
   <code>instance_create(0,0,oMenuCreator)  
-instance_create(0,0,oTimeCounter)</code>
-  <enableViews>0</enableViews>
+instance_create(0,0,oTimeCounter)
+
+view_hview[0] = global.DPORTH
+view_wview[0] = global.DPORTW
+view_yview[0] = (1200-global.DPORTH) / 2
+view_xview[0] = (1600-global.DPORTW) / 2</code>
+  <enableViews>-1</enableViews>
   <clearViewBackground>-1</clearViewBackground>
   <clearDisplayBuffer>-1</clearDisplayBuffer>
   <makerSettings>
@@ -42,7 +47,7 @@ instance_create(0,0,oTimeCounter)</code>
     <background visible="0" foreground="0" name="" x="0" y="0" htiled="-1" vtiled="-1" hspeed="0" vspeed="0" stretch="0"/>
   </backgrounds>
   <views>
-    <view visible="0" objName="&lt;undefined&gt;" xview="0" yview="0" wview="1024" hview="768" xport="0" yport="0" wport="1024" hport="768" hborder="32" vborder="32" hspeed="-1" vspeed="-1"/>
+    <view visible="-1" objName="&lt;undefined&gt;" xview="0" yview="0" wview="1600" hview="1200" xport="0" yport="0" wport="1600" hport="1200" hborder="32" vborder="32" hspeed="-1" vspeed="-1"/>
     <view visible="0" objName="&lt;undefined&gt;" xview="0" yview="0" wview="1024" hview="768" xport="0" yport="0" wport="1024" hport="768" hborder="32" vborder="32" hspeed="-1" vspeed="-1"/>
     <view visible="0" objName="&lt;undefined&gt;" xview="0" yview="0" wview="1024" hview="768" xport="0" yport="0" wport="1024" hport="768" hborder="32" vborder="32" hspeed="-1" vspeed="-1"/>
     <view visible="0" objName="&lt;undefined&gt;" xview="0" yview="0" wview="1024" hview="768" xport="0" yport="0" wport="1024" hport="768" hborder="32" vborder="32" hspeed="-1" vspeed="-1"/>

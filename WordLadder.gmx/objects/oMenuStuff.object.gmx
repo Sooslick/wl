@@ -131,7 +131,7 @@ if html != -1
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -149,14 +149,14 @@ if html != -1
           <argument>
             <kind>1</kind>
             <string>drawTextPreset(fImpact64, c_white, 1, fa_right, fa_bottom)
-draw_text(1590, 1195, stat[State])
+draw_text(global.G_RIGHT-20, global.G_DOWN-2, stat[State])
 
 if active &amp;&amp; motd_ready
   {
   draw_set_color(make_color_rgb(irandom_range(128,255), irandom_range(128,255), irandom_range(128,255)))
   draw_set_alpha(random_range(0.66,0.99))
   draw_set_halign(fa_center)
-  draw_text_transformed(345,345,motd,0.66,0.66,22)
+  draw_text_transformed(345,369,motd,0.66,0.66,22)
   }
 </string>
           </argument>

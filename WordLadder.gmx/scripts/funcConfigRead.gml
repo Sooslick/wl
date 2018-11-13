@@ -45,6 +45,8 @@ if is_undefined(global.config[?'SavedIP'])
     global.config[?'SavedIP'] = '127.0.0.1'
 if is_undefined(global.config[?'ExtraDict'])
     global.config[?'ExtraDict'] = '1'
+if is_undefined(global.config[?'LastHeadline'])
+    global.config[?'LastHeadline'] = '1'
 if is_undefined(global.config[?'CustomStart'])
     global.config[?'CustomStart'] = '0'
 if is_undefined(global.config[?'CustomTimer'])
@@ -100,6 +102,7 @@ global.config[?'Master'] = formatReal(global.config[?'Master'], 100)
 global.config[?'Sound'] = formatReal(global.config[?'Sound'], 100)
 global.config[?'Music'] = formatReal(global.config[?'Music'], 100)
 global.config[?'ExtraDict'] = formatReal(global.config[?'ExtraDict'], 1)
+global.config[?'LastHeadline'] = formatReal(global.config[?'LastHeadline'], 1)
 global.config[?'CustomStart'] = formatReal(global.config[?'CustomStart'],0)
 global.config[?'CustomTimer'] = formatReal(global.config[?'CustomTimer'],0)
 global.config[?'CustomInc'] = formatReal(global.config[?'CustomInc'],0)
