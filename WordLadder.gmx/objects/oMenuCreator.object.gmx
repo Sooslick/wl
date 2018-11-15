@@ -26,7 +26,26 @@
           <argument>
             <kind>1</kind>
             <string>bg = instance_create(0,0, oSquareRuler)
-wait = 30
+if global.NewsLoader
+  wait = 33
+//if it isnt first launch - create objs instantly
+else
+  {
+  fx = instance_create(0,0,oFlashFx)
+  mr = instance_create(0,0,oMenuRuler)
+  ms = instance_create(0,0,oMenuSecond)
+  mf = instance_create(0,0,oMenuStuff)
+  //links
+  ms.bg = bg
+  ms.ruler = mr
+  mr.sec = ms
+  mr.stuff = mf
+  mr.bg = bg
+  bg.ruler = ms
+  bg.main = mr
+  bg.stuff = mf
+  instance_destroy()
+  }
 </string>
           </argument>
         </arguments>
@@ -49,22 +68,24 @@ wait = 30
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>wait--
+            <string>//same as on create event. Should me to refactor this?
+wait--
 if wait &lt; 0
   {
   fx = instance_create(0,0,oFlashFx)
   mr = instance_create(0,0,oMenuRuler)
   ms = instance_create(0,0,oMenuSecond)
   mf = instance_create(0,0,oMenuStuff)
-  if global.NewsLoader {
-    instance_create(0,0,oNewsLoader)
-    global.NewsLoader = false
-    }
+  instance_create(0,0,oNewsLoader)
+  global.NewsLoader = false
   ms.bg = bg
-  bg.ruler = ms
   ms.ruler = mr
   mr.sec = ms
   mr.stuff = mf
+  mr.bg = bg
+  bg.ruler = ms
+  bg.main = mr
+  bg.stuff = mf
   instance_destroy()
   }
 </string>

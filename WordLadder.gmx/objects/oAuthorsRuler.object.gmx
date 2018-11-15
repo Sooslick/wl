@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>6</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,20 +25,33 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>s[0] = ' CREDITS '
-s[1] = ' WORK IN '
-s[2] = ' PROGRESS'
-s[3] = 'STILL    '
-s[4] = '  STAND  '
-s[5] = ' BY      '
+            <string>//string array. TODO get from file!
+s[0] = ' SPECIAL '
+s[1] = ' THANKS: '
+s[2] = ' MORODER '
+s[3] = ' SOOSLICK'
+s[4] = '         '
+s[5] = ' 1234567 '
+//tech variables init
 scurr = 0
 smax = 5
 stick = 0
 spos = 1
-
-Cube = instance_create(800,600,oAuthorsCube)
+parent = -1
+OnclickEvent = 0
+//cube object to draw strings
+Cube = instance_create(1024,1024,oAuthorsCube)
 Cube.parent = id
 Cube.w1 = ' '
+//button init
+bBack = instance_create(300,800,oButton)
+bBack.content = 'BACK'
+bBack.parent = id
+bBack.useParentSurface = true
+bBack.sx = 350
+bBack.sy = 980
+//surface init
+ds = surface_create(1500,900)
 </string>
           </argument>
         </arguments>
@@ -61,7 +74,11 @@ Cube.w1 = ' '
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_destroy(Cube,true)
+            <string>//mem free
+instance_destroy(Cube, true)
+instance_destroy(bBack, true)
+if surface_exists(ds)
+  surface_free(ds)
 </string>
           </argument>
         </arguments>
@@ -84,7 +101,8 @@ Cube.w1 = ' '
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>stick++
+            <string>//cube letter type effect. I dont remember how this code works
+stick++
 if stick&gt;=3
   {
   stick = 0
@@ -104,6 +122,86 @@ if stick&gt;=3
   else
     Cube.w1+= string_char_at(s[scurr],spos)
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>clicked "back"</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//parent - oMenuRuler
+//parent.bAuthors - target button
+with parent.bAuthors {uiOnclick()}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//init surfaces
+if !surface_exists(ds)
+  ds = surface_create(1024,1024)
+surface_set_target(ds)
+draw_clear_alpha(0,0)
+drawTextPreset(fHint, c_white, 1, fa_left, fa_top)
+//draw cube texture
+if surface_exists(Cube.ds)
+  draw_surface_ext(Cube.ds,300,-318,0.75,0.75,0,c_white,1)
+//draw main + BACK
+draw_sprite(sCreds,0,20,50)
+  
+surface_reset_target()
 </string>
           </argument>
         </arguments>

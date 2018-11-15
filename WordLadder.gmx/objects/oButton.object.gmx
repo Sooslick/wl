@@ -54,8 +54,7 @@ yp = 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>uiHoverCheck()
-
+            <string>uiHoverCheck(sx,sy)
 //forcefix prev coords       
 xp = xprevious
 yp = yprevious
@@ -132,7 +131,10 @@ uiRescale(506)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>drawTextPreset(font, c_white, 0.5, fa_center, fa_center)
+            <string>if useParentSurface
+  exit
+  
+drawTextPreset(font, c_white, 0.5, fa_center, fa_center)
 //simple motion blur fx
 if x != xprevious           
   {
@@ -168,7 +170,23 @@ uiDrawHint()
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>// empty line for disable self-drawing
+            <string>if !useParentSurface
+  exit
+
+if parent &lt; 0
+  exit
+  
+if !surface_exists(parent.ds)
+  exit
+  
+surface_set_target(parent.ds)  
+drawTextPreset(font, c_white, 1, fa_center, fa_center)
+draw_sprite_ext(sp,hover,x,y,dsc,dsc,0,c_white,1)
+draw_set_alpha(a)
+draw_text_transformed(x,y,content,tsc,dsc,0)
+
+uiDrawHint()
+surface_reset_target()
 </string>
           </argument>
         </arguments>

@@ -43,11 +43,12 @@ animType = 0            //0 line; 1 diag; 2 insta; 3 circle in; 4 circle out;
 active = false          //is squares clickable?
 cheat = ''
 ruler = -1              //oMenuSecond instance to check buttons hover
-
+main = -1               //oMenuRuler instance to change header
+stuff = -1              //oSquareRuler instance
+//background texture parameters
 ds = surface_create(2048,2048)
 dsx = -224
 dsy = -424
-
 //squares array init
 for (i=0; i&lt;ARRMAX; i++)
   for (j=0; j&lt;ARRMAX; j++)
@@ -59,7 +60,6 @@ for (i=0; i&lt;ARRMAX; i++)
     sqArr[i,j].revState = 0
     sqArr[i,j].parent = id
     }
-
 //cheat states
 chStop = false
 chRestart = false
@@ -68,6 +68,7 @@ chFlip = false
 chBlur = false
 chAlmi = false
 chAlmiTick = 0
+chBw = false
 </string>
           </argument>
         </arguments>
@@ -90,7 +91,8 @@ chAlmiTick = 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>for (i=0; i&lt;ARRMAX; i++)
+            <string>//mem free
+for (i=0; i&lt;ARRMAX; i++)
   for (j=0; j&lt;ARRMAX; j++)
     instance_destroy(sqArr[i,j],true)
 if surface_exists(ds)
@@ -117,7 +119,8 @@ if surface_exists(ds)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !chStop
+            <string>//animation calc
+if !chStop
 {
 //////////
 
@@ -196,11 +199,11 @@ else        //symmetric other-axis shifting
   }
  
 //ANIMATION   
-switch revState             //TODO comments
+switch revState
   {
-  case 1:
-    if animType == 0
-      for (i=0; i&lt;ARRMAX; i++)
+  case 1:                 //change opacity parameter by iterations 
+    if animType == 0      //i dont remember how this code works, but it works
+      for (i=0; i&lt;ARRMAX; i++) 
         sqArr[tick,i].revState = revState
     else
       for (i=0; i&lt;=tick; i++)
@@ -309,13 +312,16 @@ if chAlmi
             <string>if ruler == -1
   exit
   
+//found square obj covered by cursor
 if active 
   if ruler.bHide.hover!=1 &amp;&amp; ruler.bAccept.hover!=1
     {
+    //cursor pos calc
     var mx = mouse_x - 800;
     var my = mouse_y - 600;
     var mrx =  mx*dcos(-rot) + my*dsin(-rot) + 1024
     var mry = -mx*dsin(-rot) + my*dcos(-rot) + 1024
+    //find square + operate it
     var csq = collision_point(mrx,mry,oSquare,false,true);
     if csq &gt; 0
       {
@@ -379,6 +385,7 @@ chReverse = false
 chFlip = false
 chBlur = false
 chAlmi = false
+chBw = false
    
 if chRestart
   {
@@ -435,34 +442,31 @@ if chRestart
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//cheat processor, performed from MenuRuler.b2Accept
-if cheat == 'STOP'
+            <string>//cheat processor, performed from MenuSecond.bAccept
+if cheat == 'STOP'                                  //stops animation
   chStop = true
-else if (cheat == 'REVERSE')||(cheat == 'TURN')
+else if (cheat == 'REVERSE')||(cheat == 'TURN')     //switch rotation direction
   chReverse = funcBoolSwitch(chReverse)
-else if cheat == 'START'
+else if cheat == 'START'                            //start stopped animation
   chStop = false
-//else if ((string_count('EASTER',cheat) &gt; 0) || (string_count('EGG',cheat) &gt; 0))
-//  with parent {bEggClicked = true; event_perform(ev_mouse,ev_global_left_release)}
-else if (cheat == 'PREVED') || (cheat == 'HELLO')
-  instance_create(0,0,oPreved)
-else if cheat == 'SPLASH'
-  with parent {http_get("http://sooslick.flaminggaming.ru/wl/getSplash.php")}
-//else if (cheat == 'EXIT')||(cheat == 'QUIT')
-//  {
-//  with parent {
-//    bExit.clicked = true
-//    event_perform(ev_mouse, ev_global_left_release)
-//    }
-//  }
-else if cheat == 'BLUR'
-  chBlur = true
-else if (cheat == 'FLIP') || (cheat == 'SPIN')
-  {
-    chFlip = funcBoolSwitch(chFlip)
-    isReverse = funcBoolSwitch(isReverse)
+else if ((string_count('EASTER',cheat) &gt; 0) || (string_count('EGG',cheat) &gt; 0)) {
+  var egg = instance_create(0,0,oEasterEggRuler);   //spawn easter egg obj
+  egg.parent = main
+  main.Header = 'EASTER EGG'
   }
-else if cheat == 'SHUFFLE'
+else if (cheat == 'PREVED') || (cheat == 'HELLO')   //spawn preved obj
+  instance_create(0,0,oPreved)
+else if cheat == 'SPLASH'                           //get new splash
+  with stuff {http_get("http://sooslick.flaminggaming.ru/wl/getSplash.php")}
+else if (cheat == 'EXIT')||(cheat == 'QUIT')          //exit game
+  with main.bExit {uiOnclick()}
+else if cheat == 'BLUR'                             //apply shLinear shader
+  chBlur = true
+else if (cheat == 'FLIP') || (cheat == 'SPIN') {      //flip texture vertically
+  chFlip = funcBoolSwitch(chFlip)
+  isReverse = funcBoolSwitch(isReverse)
+  }
+else if cheat == 'SHUFFLE'                            //mix some squares and change content
   for (i=0; i&lt;ARRMAX; i++)
     for (j=0; j&lt;ARRMAX; j++)
       {
@@ -474,58 +478,60 @@ else if cheat == 'SHUFFLE'
       sqArr[i,j].content = sqArr[i1,j1].content
       sqArr[i1,j1].content = tmp
       }
-else if cheat == 'RESTART'
-  {
+else if cheat == 'RESTART' {                      //restart animation with alpha=0 rot=0
   chRestart = true
   event_user(1)
   }
-else if cheat == 'RESET'
+else if cheat == 'RESET'                          //restart animation and reset cheat parameters
   event_user(1)
-else if cheat == 'CANCEL'
-  {
+else if cheat == 'CANCEL' {                       //turn off cheat parameters
   chStop = false
   chReverse = false
   chBlur = false
   chAlmi = false
-  if chFlip
-    {
+  if chFlip {
     chFlip = false
     isReverse = funcBoolSwitch(isReverse)
     }
   }
-else if cheat == 'ALMI'
+else if cheat == 'ALMI'                         //spawns almi obj
   chAlmi = true
-else if (cheat == 'CALLHIM')||(cheat == 'GAY')
+else if (cheat == 'CALLHIM')||(cheat == 'GAY')    //spawns oCallhim with ProfileName
   instance_create(0,0,oCallhim)
-else if string_count('SCR',cheat) &gt; 0
+else if string_count('SCR',cheat) &gt; 0           //BOO
   instance_create(0,0,oScreamer)
-else if cheat == 'BUG'
+else if cheat == 'BUG'                          //sets random rotation to all squares
   for (i=0; i&lt;ARRMAX; i++)
     for (j=0; j&lt;ARRMAX; j++)
       sqArr[i,j].rot = irandom_range(0,359)
-else if string_count('FIX',cheat) &gt; 0
+else if string_count('FIX',cheat) &gt; 0             //cancel BUG effect
   for (i=0; i&lt;ARRMAX; i++)
     for (j=0; j&lt;ARRMAX; j++)
       sqArr[i,j].rot = 0
-else if cheat == 'DESIGN'
-  {
+else if cheat == 'DESIGN' {                       //colorise all letters
   for (i=0; i&lt;ARRMAX; i++)
     for (j=0; j&lt;ARRMAX; j++)
       sqArr[i,j].clr = irandom(c_white)
   cheat = ''
   exit
   }
-else if cheat == 'CRUSH'
+else if cheat == 'CRUSH'                          //exit game by nullpointer error
   crush++
-//else if string_count('DICK',cheat) &gt; 0
-//  {} //todo sound
+else if string_count('DICK',cheat) &gt; 0
+  {} //todo sound
+else if (cheat=='BLACK')||(cheat=='WHITE')          //apply bw shader
+  chBw = true
+else if (string_count('ACCEL', cheat)&gt;0) || (cheat=='FAST')   //accelerate animation
+  pxByTick = 4
+else if cheat=='SLOW'                                 //slower animation
+  pxByTick = 1
       
 //refresh
 cheat = ''
 for (i=0; i&lt;ARRMAX; i++)
   for (j=0; j&lt;ARRMAX; j++)
     {
-    sqArr[i,j].clr = c_white    //change color
+    sqArr[i,j].clr = c_white    //change color to default
     sqArr[i,j].spr = 0
     }
 </string>
@@ -550,10 +556,35 @@ for (i=0; i&lt;ARRMAX; i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !surface_exists(ds)
+            <string>//initial operations
+if !surface_exists(ds)
   ds = surface_create(2048,2048)
+surface_set_target(ds)
+if !chBlur
+  draw_clear_alpha(0,0)
+//draw square objects
+drawTextPreset(fCube,c_white,1,fa_center,fa_center)
+for (i=0; i&lt;ARRMAX; i++)
+  for (j=0; j&lt;ARRMAX; j++)
+    {
+    draw_sprite_ext(sSquare,sqArr[i,j].spr,sqArr[i,j].x,sqArr[i,j].y,1,1,sqArr[i,j].rot,c_white,sqArr[i,j].opSq)
+    if sqArr[i,j].content != -1
+      {
+      draw_set_color(sqArr[i,j].clr)
+      draw_set_alpha(sqArr[i,j].opCon)
+      if isReverse
+        draw_text_transformed(sqArr[i,j].x+32,sqArr[i,j].y+32,sqArr[i,j].content,1,1,180)
+      else
+        draw_text(sqArr[i,j].x+32,sqArr[i,j].y+32,sqArr[i,j].content)
+      }
+    }
+surface_reset_target()
+//apply bw shader
+if chBw
+  shader_set(shBw)
 draw_surface_ext(ds, dsx, dsy, 1,1, rot, c_white,1)
-
+shader_reset()
+//apply linear shader
 if chBlur
   {
   shader_set(shLinear)
@@ -561,12 +592,6 @@ if chBlur
   shader_set_uniform_f(shader_params, 0.8);
   draw_surface_ext(ds, dsx, dsy, 1,1, rot, c_white,1)
   shader_reset()
-  }
-else
-  {
-  surface_set_target(ds)
-  draw_clear_alpha(0,0)
-  surface_reset_target()
   }
 </string>
           </argument>

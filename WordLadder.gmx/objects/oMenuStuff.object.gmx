@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>3</depth>
+  <depth>8</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,9 +25,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>active = true
+            <string>active = true                     //should game to draw splash 
 motd = ''                           //splash
-motd_ready = false
+motd_ready = false                //is http-request completed and content passed
 stat[0] = global.versionName       //version caption
 stat[1] = 'Branch: Dev'           //version branch
 stat[2] = global.versionName      //version status, loaded in http event
@@ -63,7 +63,8 @@ http_get("http://sooslick.flaminggaming.ru/wl/getVersion.php")
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>Tick++
+            <string>//switch state string
+Tick++
 if Tick &gt;= 100
   {
   Tick = 0
@@ -93,18 +94,21 @@ if Tick &gt;= 100
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if async_load[? "status"] != 0
+            <string>//not loaded
+if async_load[? "status"] != 0
   exit
-
+//response is laded
 var html = json_decode(async_load[? "result"])
 if html != -1
   {
+  //getSplash answered
   if !is_undefined(html[?'CONTENT'])
     {
     motd = html[?'CONTENT']
     motd_ready = true
     exit
     }
+  //getVersion answered: get version and extradict version
   if !is_undefined(html[?'VERSION'])
     {
     var v = real(html[?'VERSION'])
@@ -114,6 +118,7 @@ if html != -1
       stat[2] = 'GAME OUTDATED'
     //check extra dict ver
     //TODO LOCALE CHECK
+    //get extradict file from server
     var e = real(html[?'EXTRA']);
     if e != global.config[?'ExtraDict']
       {
@@ -148,14 +153,16 @@ if html != -1
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>drawTextPreset(fImpact64, c_white, 1, fa_right, fa_bottom)
+            <string>//state string
+drawTextPreset(fImpact64, c_white, 1, fa_right, fa_bottom)
 draw_text(global.G_RIGHT-20, global.G_DOWN-2, stat[State])
-
+//splash
 if active &amp;&amp; motd_ready
   {
   draw_set_color(make_color_rgb(irandom_range(128,255), irandom_range(128,255), irandom_range(128,255)))
   draw_set_alpha(random_range(0.66,0.99))
   draw_set_halign(fa_center)
+  draw_set_valign(fa_top)
   draw_text_transformed(345,369,motd,0.66,0.66,22)
   }
 </string>

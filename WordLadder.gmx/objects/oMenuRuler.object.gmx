@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>4</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -28,9 +28,13 @@
             <string>//Tech variables
 Header = 'WORD LADDER'
 OnclickEvent = 0
+lastClicked = -1
 active = true               //all childs buttons are clickable when active
 sec = -1                    //second menu ptr
-stuff = -1                  //stuff ptr
+stuff = -1                  //stuff obj ptr
+bg = -1                     //square ruler ptr
+layer = -1                  //layer obj ptr
+layerObj = -1
 posIn = global.G_RIGHT-400
 posOut = global.G_RIGHT+120
 //Buttons init
@@ -38,22 +42,38 @@ bNewGame = instance_create(posIn,280,oButtonIcon)
 bNewGame.content = 'PLAY'
 bNewGame.icon_xoff = -192
 bNewGame.icon_img = 0
+bNewGame.depth = depth
+bNewGame.StartDepth = depth
+
 bProfile = instance_create(posIn,440,oButtonIcon)
 bProfile.content = 'PROFILE'
-bProfile.icon_xoff = -192
+bProfile.icon_xoff = -186
 bProfile.icon_img = 1
+bProfile.depth = depth
+bProfile.StartDepth = depth
+
 bOptions = instance_create(posIn,600,oButtonIcon)
 bOptions.content = 'OPTIONS'
-bOptions.icon_xoff = -192
+bOptions.icon_xoff = -188
+bOptions.icon_yoff = -4
 bOptions.icon_img = 2
+bOptions.depth = depth
+bOptions.StartDepth = depth
+
 bAuthors = instance_create(posIn,760,oButtonIcon)
 bAuthors.content = 'CREDITS'
-bAuthors.icon_xoff = -192
+bAuthors.icon_xoff = -188
 bAuthors.icon_img = 3
+bAuthors.depth = depth
+bAuthors.StartDepth = depth
+bAuthors.parent = id
+
 bExit = instance_create(posIn,920,oButtonIcon)
 bExit.content = 'EXIT'
-bExit.icon_xoff = -192
+bExit.icon_xoff = -188
 bExit.icon_img = 4
+bExit.depth = depth
+bExit.StartDepth = depth
 bExit.parent = id
 //Buttons clickable + anim vars
 alist = ds_list_create()
@@ -61,8 +81,6 @@ ds_list_add(alist, bNewGame, bProfile, bOptions, bAuthors)
 Anim = false
 AnimTick = 0     //used to funcTickOffset
 isInside = true
-
-//TODO: UI DRAW SURFACE
 </string>
           </argument>
         </arguments>
@@ -134,13 +152,21 @@ ds_list_destroy(alist)
           <argument>
             <kind>1</kind>
             <string>if Anim {
+  //move buttons and bbox
   AnimTick++
   var p = funcTickOffset(AnimTick, posIn, posOut, isInside);
-  bNewGame.x = p
-  bProfile.x = p
-  bOptions.x = p
-  bAuthors.x = p
-  bExit.x = p
+  bNewGame.x = p; bNewGame.sx = p
+  bProfile.x = p; bProfile.sx = p
+  bOptions.x = p; bOptions.sx = p
+  bAuthors.x = p; bAuthors.sx = p
+  bExit   .x = p; bExit   .sx = p
+  //some kind of shitcode: force cancel drawing icons while anim=true
+  bNewGame.icon_active = false
+  bProfile.icon_active = false
+  bOptions.icon_active = false
+  bAuthors.icon_active = false
+  bExit.icon_active = false
+  //anim end code
   if AnimTick &gt;= 10 {
     Anim = false
     AnimTick = 0
@@ -295,43 +321,53 @@ else if bOptions.clicked
     }
   bOptions.clicked = false
   }
-  
+//todo: comment ALL buttons!
 else if bAuthors.clicked
   {
-  if ActiveMenuOpened                 
+  if layerObj == -1
     {
-    if instance_exists(oAuthorsRuler)     
-      {
-      bTick = 1
-      ButtonImgChange.sp = sButton
-      ActiveMenuOpened = false
-      Header = 'RENAME THIS GAME'
-      instance_destroy(ActiveMenuPtr,true) 
-      ActiveMenuPtr = 0
-      b2Hide.clickable = true
-      b2Accept.clickable = true
-      }
-    else
-      {
-      instance_destroy(ActiveMenuPtr,true) 
-      ActiveMenuPtr = instance_create(0,0,oAuthorsRuler)   
-      Header = 'CREDITS' 
-      ButtonImgChange.sp = sButton
-      ButtonImgChange = bAuthors
-      ButtonImgChange.sp = sButtonMark    
-      }
+    Header = 'CREDITS'
+    bAuthors.sp = sButtonMark
+    Anim = true
+    uiSetClickable(alist, false)
+    stuff.active = false
+    with sec {uiSetClickable(alist,false)}
+    layerObj = instance_create(0,0,oAuthorsRuler)
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  else if layerObj.object_index == oAuthorsRuler
+    {
+    Header = 'WORD LADDER'
+    bAuthors.sp = sButton
+    Anim = true                     //main menu: move back
+    uiSetClickable(alist, false)
+    stuff.active = true             //splash: visible
+    with sec {uiSetClickable(alist,true)}
+    layer.Anim = true               //layer: destroy
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = -1
     }
   else
-    {                                    
-    bTick = 1
-    ButtonImgChange = bAuthors
-    ActiveMenuOpened = true
-    Header = 'CREDITS' 
-    ActiveMenuPtr = instance_create(0,0,oAuthorsRuler)
-    b2Hide.clickable = false
-    b2Accept.clickable = false
+    {
+    Header = 'CREDITS'
+    lastClicked.sp = sButton
+    bAuthors.sp = sButtonMark
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oAuthorsRuler) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
     }
-  bAuthors.clicked = false
+  lastClicked = bAuthors
   }
   
 //SAVE DATA &amp; QUIT  

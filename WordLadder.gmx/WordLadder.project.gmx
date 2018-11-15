@@ -89,6 +89,7 @@
     <sprite>sprites\sCallhim</sprite>
     <sprite>sprites\sScream</sprite>
     <sprite>sprites\sIcons</sprite>
+    <sprite>sprites\sCreds</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -135,10 +136,12 @@
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>
     <script>scripts\funcBoolSwitch.gml</script>
+    <script>scripts\funcTickPercent.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shLinear.shader</shader>
     <shader type="GLSLES">shaders\shBw.shader</shader>
+    <shader type="GLSLES">shaders\shGauss.shader</shader>
   </shaders>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>
@@ -181,14 +184,12 @@
       <object>objects\oAuthorsRuler</object>
       <object>objects\oFirstLaunchArrow</object>
       <object>objects\oGameSolo</object>
-      <object>objects\oMenuRuler_old</object>
       <object>objects\oMenuRuler</object>
       <object>objects\oMenuSecond</object>
       <object>objects\oMenuStuff</object>
       <object>objects\oNewGameRuler</object>
       <object>objects\oOptionsRuler</object>
       <object>objects\oSquare</object>
-      <object>objects\oSquareRuler_old</object>
       <object>objects\oSquareRuler</object>
       <object>objects\oStatsDrawer</object>
       <object>objects\oCustomRuler</object>
@@ -196,6 +197,7 @@
       <object>objects\oGameMulti</object>
       <object>objects\oMenuCreator</object>
       <object>objects\oNewsLoader</object>
+      <object>objects\oMenuLayer</object>
     </objects>
     <objects name="UI">
       <object>objects\oButton</object>
@@ -222,7 +224,6 @@
   <rooms name="rooms">
     <room>rooms\rInit</room>
     <room>rooms\rFirst</room>
-    <room>rooms\rMenu_old</room>
     <room>rooms\rMenu</room>
     <room>rooms\rGame</room>
     <room>rooms\rDev</room>

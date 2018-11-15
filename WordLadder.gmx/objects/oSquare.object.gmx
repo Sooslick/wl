@@ -132,7 +132,8 @@ parent = 0          //SquareRuler
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>drawTextPreset(fCube,clr,opCon,fa_center,fa_center)
+            <string>/*  moved to squareRuler: +optimization
+drawTextPreset(fCube,clr,opCon,fa_center,fa_center)
 surface_set_target(parent.ds)
 draw_sprite_ext(sSquare,spr,x,y,1,1,rot,c_white,opSq)
 if content != -1
@@ -140,7 +141,7 @@ if content != -1
     draw_text_transformed(x+32,y+32,content,1,1,180)
   else
     draw_text(x+32,y+32,content)
-surface_reset_target()
+surface_reset_target()*/
 </string>
           </argument>
         </arguments>

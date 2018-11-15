@@ -59,7 +59,7 @@ yp = 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>uiHoverCheck()
+            <string>uiHoverCheck(sx,sy)
 
 //forcefix prev coords       
 xp = xprevious

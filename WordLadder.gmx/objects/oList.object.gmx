@@ -82,7 +82,7 @@ num = 0
             <string>//special checkhover func
 if !active
   {
-  if funcCheckGuiHover((x-256*dsc), (y-64*dsc), (x+256*dsc), (y+64*dsc))       
+  if funcCheckGuiHover((sx-256*dsc), (sy-64*dsc), (sx+256*dsc), (sy+64*dsc))       
           {
           hover = 1            //check cursor pos     //not by mouse enter/leave event
           hoverElement = -1
@@ -107,7 +107,7 @@ else
   hover = 0
   hoverElement = -1
   for (i=0; i&lt;=ds_map_size(arr); i++)
-    if funcCheckGuiHover((x-256*dsc), (y+i*128*dsc-64*dsc), (x+256*dsc), (y+i*128*dsc+64*dsc))   //checking vpos 4 every line
+    if funcCheckGuiHover((sx-256*dsc), (sy+i*128*dsc-64*dsc), (sx+256*dsc), (sy+i*128*dsc+64*dsc))   //checking vpos 4 every line
       {
       hover = 1       
       hoverElement = i-1

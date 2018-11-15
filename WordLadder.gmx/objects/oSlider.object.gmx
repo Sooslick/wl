@@ -55,7 +55,7 @@ currval = 100
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>uiHoverCheck()
+            <string>uiHoverCheck(sx,sy)
 </string>
           </argument>
         </arguments>

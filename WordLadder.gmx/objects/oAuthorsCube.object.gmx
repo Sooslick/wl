@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>1</depth>
+  <depth>8</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,18 +25,64 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>MinLen = 9
+            <string>//cube init
+MinLen = 9
 w1 = '         '
 w2 = '         '
 w3 = '         '
 w4 = '         '
-
+//cube tech vars init
 Rot = false                 //Otherclockwise animation
 RotDeg = 0
 NewWord = true              //new word approach animation
 NewWordX = 0
-
 aps = 0.05                     //alpha per square
+//cube surface
+ds = surface_create(2048,2048)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>mem free</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if surface_exists(ds)
+  surface_free(ds)
 </string>
           </argument>
         </arguments>
@@ -59,7 +105,8 @@ aps = 0.05                     //alpha per square
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if Rot
+            <string>//cube animation: rotate and shift words at rot. ent
+if Rot
   {
   RotDeg+=3
   if RotDeg&gt;=90
@@ -75,6 +122,7 @@ aps = 0.05                     //alpha per square
     }
   aps = 1 / (string_length(w2)-1 + string_length(w3)-1 + string_length(w4)*((90-RotDeg)/90) -2)
   }
+//new word approaching
 if NewWord
   {
   if NewWordX &lt; 576     //64 * 9 const MinLen
@@ -87,7 +135,7 @@ if NewWord
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -104,18 +152,18 @@ if NewWord
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_font(fCube)
-draw_set_color(c_white)
-draw_set_halign(fa_center)
-draw_set_valign(fa_center)
-draw_set_alpha(1)
-
+            <string>//init surface
+drawTextPreset(fCube, c_white, 1, fa_center, fa_center)
+if !surface_exists(ds) {
+  ds = surface_create(2048,2048)
+  draw_clear_alpha(0,0)
+  }
+surface_set_target(ds)
 //fader
 draw_sprite_ext(sFadedCircle,0,x,y,MinLen*2.5,MinLen*2.5,0,0,1)
-
 //w1
-j = MinLen*32 - 32
-tmp = 9 // MinLen
+var j = MinLen*32 - 32;
+var tmp = 9; // MinLen
 for (i=0; i&lt;tmp; i++)
   {
   xd = x-j+64*i
@@ -130,7 +178,7 @@ for (i=0; i&lt;tmp; i++)
   draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,1)       
   draw_text_transformed(xd,yd,string_char_at(w1,i+1), 1,1,RotDeg)
   }  
-  
+//w2
 for (i=1; i&lt;string_length(w2); i++)
   {
   xd = x-j
@@ -146,7 +194,6 @@ for (i=1; i&lt;string_length(w2); i++)
   draw_sprite_ext(sSquareCenter,0,xd,yd,1,1,RotDeg,c_white,draw_get_alpha()) 
   draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)-i), 1,1,RotDeg+90)
   }
-  
 //w3
 for (i=1; i&lt;string_length(w3); i++)
   {
@@ -163,7 +210,6 @@ for (i=1; i&lt;string_length(w3); i++)
   draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,draw_get_alpha()) 
   draw_text_transformed(xd, yd,string_char_at(w3,string_length(w3)-i), 1,1,RotDeg+180)
   }
-
 //w4    
 i=1
 while (draw_get_alpha() &gt; 0)
@@ -182,13 +228,14 @@ while (draw_get_alpha() &gt; 0)
   draw_text_transformed(xd, yd, string_char_at(w4,string_length(w4)-i), 1,1,RotDeg+270)
   i++
   } 
-
 //Fading
 if !Rot &amp;&amp; NewWord
   {
   draw_sprite_ext(sSquareFaded,0,x-j+NewWordX-32,y-j-32,0.25,0.25,RotDeg,c_black,1) 
   draw_sprite_ext(sPixel,0,x-j+NewWordX+32,y-j-32,tmp*64-NewWordX,64,0,c_black,1)
   }
+  
+surface_reset_target()
 </string>
           </argument>
         </arguments>

@@ -58,7 +58,7 @@ cursortick = 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>uiHoverCheck()
+            <string>uiHoverCheck(sx,sy)
         
 if !keyboard_check(vk_backspace)
   HeldBackspaceTick = 0

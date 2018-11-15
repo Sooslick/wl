@@ -10,7 +10,10 @@ hintTick = 0
 hintMsg = ''
 StartDepth = 1
 parent = -1
-parentOnclickEvent = -1
+
+useParentSurface = false
+sx = x          //button offset on surfaces
+sy = y
 
 dsc = 1                     //draw scale
 tsc = 1                     //content text scale
