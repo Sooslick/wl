@@ -95,16 +95,15 @@
   <paths name="paths"/>
   <scripts name="scripts">
     <script>scripts\funcTickOffset.gml</script>
+    <script>scripts\funcTickInterpolate.gml</script>
     <script>scripts\funcChrCheck.gml</script>
     <script>scripts\funcSetWinResFromString.gml</script>
-    <script>scripts\funcSetWinRes.gml</script>
     <script>scripts\funcCheckGuiHover.gml</script>
     <script>scripts\funcNewTabuLetter.gml</script>
     <script>scripts\funcNewTargetLetter.gml</script>
     <script>scripts\funcGetWord.gml</script>
     <script>scripts\checkWord.gml</script>
     <scripts name="datarw">
-      <script>scripts\funcCfgRead.gml</script>
       <script>scripts\funcCfgWrite.gml</script>
       <script>scripts\funcConfigRead.gml</script>
       <script>scripts\funcLastloginRead.gml</script>
@@ -137,6 +136,7 @@
     <script>scripts\funcChrDecode.gml</script>
     <script>scripts\funcBoolSwitch.gml</script>
     <script>scripts\funcTickPercent.gml</script>
+    <script>scripts\funcResChanged.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shLinear.shader</shader>

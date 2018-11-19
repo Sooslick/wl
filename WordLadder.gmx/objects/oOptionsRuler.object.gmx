@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>6</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,86 +25,94 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//Screen Resolution
-ResChanged = false
-RSelector = instance_create(300,280,oList)
-RSelector.val = string(global.WIN_WIDTH) + 'x' + string(global.WIN_HEIGHT)
-RSelector.num = -1
+            <string>OnclickEvent = 0
+//Screen Resolution list
+bSelector = instance_create(300,100,oList)
+bSelector.val = string(global.WIN_WIDTH) + 'x' + string(global.WIN_HEIGHT)
+bSelector.num = -1
+bSelector.depth--
+bSelector.StartDepth = bSelector.depth
 var DGW = display_get_width();
 var DGH = display_get_height();
 if global.config[?'Widescreen']
   {
-  ds_map_add(RSelector.arr,0,'1024x576')
-  if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=648) ds_map_add(RSelector.arr,1,'1152x648')
-  if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=720) ds_map_add(RSelector.arr,2,'1280x720') 
-  if (DGW&gt;=1366)&amp;&amp;(DGH&gt;=768) ds_map_add(RSelector.arr,3,'1366x768') 
-  if (DGW&gt;=1536)&amp;&amp;(DGH&gt;=864) ds_map_add(RSelector.arr,4,'1536x864') 
-  if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=900) ds_map_add(RSelector.arr,5,'1600x900') 
-  if (DGW&gt;=1920)&amp;&amp;(DGH&gt;=1080) ds_map_add(RSelector.arr,6,'1920x1080')
+  ds_map_add(bSelector.arr,0,'1024x576')
+  if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=648) ds_map_add(bSelector.arr,1,'1152x648')
+  if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=720) ds_map_add(bSelector.arr,2,'1280x720') 
+  if (DGW&gt;=1366)&amp;&amp;(DGH&gt;=768) ds_map_add(bSelector.arr,3,'1366x768') 
+  if (DGW&gt;=1536)&amp;&amp;(DGH&gt;=864) ds_map_add(bSelector.arr,4,'1536x864') 
+  if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=900) ds_map_add(bSelector.arr,5,'1600x900') 
+  if (DGW&gt;=1920)&amp;&amp;(DGH&gt;=1080) ds_map_add(bSelector.arr,6,'1920x1080')
   }                            
 else
   {
-  ds_map_add(RSelector.arr,0,'800x600') 
-  if (DGW&gt;=1024)&amp;&amp;(DGH&gt;=768) ds_map_add(RSelector.arr,1,'1024x768') 
-  if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=864) ds_map_add(RSelector.arr,2,'1152x864')
-  if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=960) ds_map_add(RSelector.arr,3,'1280x960')
-  if (DGW&gt;=1400)&amp;&amp;(DGH&gt;=1050) ds_map_add(RSelector.arr,4,'1400x1050') 
-  if (DGW&gt;=1440)&amp;&amp;(DGH&gt;=1080) ds_map_add(RSelector.arr,5,'1440x1080') 
-  if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=1200) ds_map_add(RSelector.arr,6,'1600x1200') 
+  ds_map_add(bSelector.arr,0,'800x600') 
+  if (DGW&gt;=1024)&amp;&amp;(DGH&gt;=768) ds_map_add(bSelector.arr,1,'1024x768') 
+  if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=864) ds_map_add(bSelector.arr,2,'1152x864')
+  if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=960) ds_map_add(bSelector.arr,3,'1280x960')
+  if (DGW&gt;=1400)&amp;&amp;(DGH&gt;=1050) ds_map_add(bSelector.arr,4,'1400x1050') 
+  if (DGW&gt;=1440)&amp;&amp;(DGH&gt;=1080) ds_map_add(bSelector.arr,5,'1440x1080') 
+  if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=1200) ds_map_add(bSelector.arr,6,'1600x1200') 
   }
-
-//fullscreen
-Full = instance_create(300,440,oCheckBox) 
-Full.content = 'Fullscreen'
-Full.checked = global.config[?'Fullscreen']
-
-//widescreen
-Wide = instance_create(300,600,oCheckBox) 
-with (Wide)
-  {
-  content = 'Widescreen'
-  checked = global.config[?'Widescreen']
-  event_user(0)
+//FULLSCREEN SWITCH
+bFull = instance_create(300,260,oCheckBox) 
+bFull.content = 'Fullscreen'
+bFull.checked = global.config[?'Fullscreen']
+with (bFull) {uiRescale(375)}
+//WIdESCREEN SWITCH
+bWide = instance_create(300,420,oCheckBox) 
+bWide.content = 'Widescreen'
+bWide.checked = global.config[?'Widescreen']
+with (bWide) {uiRescale(375)}
+//SHOWLOGO SWITCH
+bShowLogo = instance_create(300,580,oCheckBox)
+bShowLogo.content = 'Show Logo'
+bShowLogo.checked = global.config[?'ShowLogo']
+with (bShowLogo) {uiRescale(375)}
+//LOCALISATION LIST aka LOCALE (unclickable) TODO!
+bLang = instance_create(950,100,oList)
+ds_map_add(bLang.arr,0,'English')
+ds_map_add(bLang.arr,1,'Russian')
+bLang.num = global.config[?'Localization']
+bLang.val = bLang.arr[?global.config[?'Localization']]
+bLang.clickable = false
+//todo clickable -&gt; list
+bLang.parent = id
+bLang.useParentSurface = true
+bLang.sx = 1000
+bLang.sy = 280
+//Sound &amp; music: MASTER SLIDER
+bMaster = instance_create(950,260,oSlider)
+bMaster.content = 'MASTER'
+bMaster.currval = global.config[?'Master']
+//Sound &amp; music: SOUND SLIDER
+bSound = instance_create(950,420,oSlider)
+bSound.content = 'SOUND'
+bSound.currval = global.config[?'Sound']
+//Sound &amp; music: MUSIC SLIDER
+bMusic = instance_create(950,580,oSlider)
+bMusic.content = 'MUSIC'
+bMusic.currval = global.config[?'Music']
+//BACK BUTTON
+bBack = instance_create(300,800,oButton)
+bBack.content = 'BACK'
+//RESTORE DEFAULTS BUTTON
+bReset = instance_create(1200,800,oButton)
+bReset.content = 'RESTORE DEFAULTS'
+bReset.font = fImpact64  
+with (bReset) {uiRescale(500)}
+//CLICKABLE LIST
+alist = ds_list_create()
+ds_list_add(alist, bSelector,bFull,bWide,bShowLogo,/*bLang,*/bMaster,bSound,bMusic,bBack,bReset)
+//CLICKABLES GENERAL FIELDS REINIT
+for (var i=0; i&lt;ds_list_size(alist); i++) {
+  alist[|i].parent = id
+  alist[|i].useParentSurface = true
+  alist[|i].sx = alist[|i].x+50
+  alist[|i].sy = alist[|i].y+180
   }
-
-//lang create olist aka locale
-PLang = instance_create(900,280,oList)
-ds_map_add(PLang.arr,0,'English')
-ds_map_add(PLang.arr,1,'Russian')
-PLang.num = global.config[?'Localization']
-PLang.val = PLang.arr[?global.config[?'Localization']]
-PLang.clickable = false
-
-//showlogo
-ShowLogo = instance_create(300,760,oCheckBox) 
-with (ShowLogo) 
-  {
-  content = 'Show Logo'
-  checked = global.config[?'ShowLogo']
-  event_user(0)
-  }
-
-//reset
-Reset = instance_create(300,920,oButton)  
-with (Reset)
-  {
-  content = 'RESTORE DEFAULTS'
-  font = fImpact64
-  event_user(0)
-  }
-
-//Sound &amp; music
-Master = instance_create(900,440,oSlider)
-Master.content = 'MASTER'
-Master.currval = global.config[?'Master']
-
-Sound = instance_create(900,600,oSlider)
-Sound.content = 'SOUND'
-Sound.currval = global.config[?'Sound']
-
-Music = instance_create(900,760,oSlider)
-Music.content = 'MUSIC'
-Music.currval = global.config[?'Music']
+//surface init
+ds = surface_create(1500,900)
 </string>
           </argument>
         </arguments>
@@ -127,59 +135,56 @@ Music.currval = global.config[?'Music']
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>  //rewrite config fields
-global.config[?'Fullscreen'] = Full.checked
-if global.config[?'Fullscreen']
-  {
-  global.WIN_WIDTH = display_get_width()
-  global.WIN_HEIGHT = display_get_height()
-  }
-  //RESET WINDOW SETTINGS
-if ResChanged
-    {
-    if global.WIN_HEIGHT / global.WIN_WIDTH &gt;=0.75          //4:3 ratio
-      {
-      global.DRAW_SCALE = global.WIN_WIDTH / 1600           //black lines on top &amp; bottom
-      global.DRAW_VOFF = (global.WIN_HEIGHT - 1200*global.DRAW_SCALE) / 2
-      global.DRAW_HOFF = 0
-      }
-    else 
-      {
-      global.DRAW_SCALE = global.WIN_HEIGHT / 1200          //black on left &amp; right
-      global.DRAW_VOFF = 0
-      global.DRAW_HOFF = (global.WIN_WIDTH - 1600*global.DRAW_SCALE) / 2 
-      }
-    window_set_size(global.WIN_WIDTH,global.WIN_HEIGHT)
-    window_set_fullscreen(global.config[?'Fullscreen'])
-    window_center()
-    display_set_gui_size(1600,1200)
-    }
-//OTHER FIELDS
-global.config[?'ShowLogo'] = ShowLogo.checked
-global.config[?'Widescreen'] = Wide.checked
-global.config[?'Localization'] = PLang.num
-global.config[?'Master'] = Master.currval
-global.config[?'Sound'] = Sound.currval
-global.config[?'Music'] = Music.currval
-  
-  //rewrite cfg file and back
-  funcCfgWrite()
-  
-instance_destroy(RSelector,true)
-instance_destroy(Full,true)
-instance_destroy(Wide,true)
-instance_destroy(PLang,true)
-instance_destroy(ShowLogo,true)
-instance_destroy(Reset,true)
-instance_destroy(Master,true)
-instance_destroy(Sound,true)
-instance_destroy(Music,true)
+            <string>//CONFIG FIELDS
+funcSetWinResFromString(bSelector.val)
+global.config[?'ShowLogo'] = bShowLogo.checked
+global.config[?'Fullscreen'] = bFull.checked
+global.config[?'Widescreen'] = bWide.checked
+global.config[?'Localization'] = bLang.num
+global.config[?'Master'] = bMaster.currval
+global.config[?'Sound'] = bSound.currval
+global.config[?'Music'] = bMusic.currval
+funcCfgWrite()
+//mem free
+instance_destroy(bSelector,true)
+instance_destroy(bFull,true)
+instance_destroy(bWide,true)
+instance_destroy(bLang,true)
+instance_destroy(bShowLogo,true)
+instance_destroy(bReset,true)
+instance_destroy(bMaster,true)
+instance_destroy(bSound,true)
+instance_destroy(bMusic,true)
+instance_destroy(bBack,true)
+ds_list_destroy(alist)
+if surface_exists(ds)
+  surface_free(ds)
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>ui clicked</string>
+          </argument>
+        </arguments>
+      </action>
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -196,86 +201,103 @@ instance_destroy(Music,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if RSelector.clicked
-  {
-  if RSelector.active
-    {
-    Full.clickable = false
-    Wide.clickable = false
-    PLang.clickable = false
-    ShowLogo.clickable = false
-    Reset.clickable = false
-    RSelector.clicked = false
+            <string>//bSELECTOR LIST -&gt; RES CHANGE
+if bSelector.clicked {
+  if bSelector.active {
+    uiSetClickable(alist, false)
+    bSelector.clickable = true
     }
-  else
-    {
-    Full.clickable = true
-    Wide.clickable = true
-    PLang.clickable = true
-    ShowLogo.clickable = true
-    Reset.clickable = true
-    RSelector.clicked = false
-    funcSetWinResFromString(RSelector.val)
-    ResChanged = true
+  else {
+    uiSetClickable(alist, true)
+    funcSetWinResFromString(bSelector.val)
+    funcResChanged()
     }
   }
-else if Full.clicked
-  {
-  ResChanged = true
-  Full.clicked = false
+//FULLSCREEN SWITCH
+else if bFull.clicked {
+  funcSetWinResFromString(bSelector.val)
+  global.config[?'Fullscreen'] = bFull.checked
+  funcResChanged()      //Instant switch full/window and recalc globals
+  //bugs with surfaces and gui?
   }
-else if Wide.clicked
-  {
-  Wide.clicked = false
-  ds_map_clear(RSelector.arr)
+//WIDESCREEN SWITCH
+else if bWide.clicked {
+  ds_map_clear(bSelector.arr)
   var DGW = display_get_width();
   var DGH = display_get_height();
-  if Wide.checked
-    {
-    ds_map_add(RSelector.arr,0,'1024x576')
-    if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=648) ds_map_add(RSelector.arr,1,'1152x648')
-    if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=720) ds_map_add(RSelector.arr,2,'1280x720') 
-    if (DGW&gt;=1366)&amp;&amp;(DGH&gt;=768) ds_map_add(RSelector.arr,3,'1366x768') 
-    if (DGW&gt;=1536)&amp;&amp;(DGH&gt;=864) ds_map_add(RSelector.arr,4,'1536x864') 
-    if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=900) ds_map_add(RSelector.arr,5,'1600x900') 
-    if (DGW&gt;=1920)&amp;&amp;(DGH&gt;=1080) ds_map_add(RSelector.arr,6,'1920x1080')
+  if bWide.checked {
+    ds_map_add(bSelector.arr,0,'1024x576')
+    if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=648) ds_map_add(bSelector.arr,1,'1152x648')
+    if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=720) ds_map_add(bSelector.arr,2,'1280x720') 
+    if (DGW&gt;=1366)&amp;&amp;(DGH&gt;=768) ds_map_add(bSelector.arr,3,'1366x768') 
+    if (DGW&gt;=1536)&amp;&amp;(DGH&gt;=864) ds_map_add(bSelector.arr,4,'1536x864') 
+    if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=900) ds_map_add(bSelector.arr,5,'1600x900') 
+    if (DGW&gt;=1920)&amp;&amp;(DGH&gt;=1080) ds_map_add(bSelector.arr,6,'1920x1080')
     }                            
-  else
-    {
-    ds_map_add(RSelector.arr,0,'800x600') 
-    if (DGW&gt;=1024)&amp;&amp;(DGH&gt;=768) ds_map_add(RSelector.arr,1,'1024x768') 
-    if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=864) ds_map_add(RSelector.arr,2,'1152x864')
-    if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=960) ds_map_add(RSelector.arr,3,'1280x960')
-    if (DGW&gt;=1400)&amp;&amp;(DGH&gt;=1050) ds_map_add(RSelector.arr,4,'1400x1050') 
-    if (DGW&gt;=1440)&amp;&amp;(DGH&gt;=1080) ds_map_add(RSelector.arr,5,'1440x1080') 
-    if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=1200) ds_map_add(RSelector.arr,6,'1600x1200') 
+  else {
+    ds_map_add(bSelector.arr,0,'800x600') 
+    if (DGW&gt;=1024)&amp;&amp;(DGH&gt;=768) ds_map_add(bSelector.arr,1,'1024x768') 
+    if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=864) ds_map_add(bSelector.arr,2,'1152x864')
+    if (DGW&gt;=1280)&amp;&amp;(DGH&gt;=960) ds_map_add(bSelector.arr,3,'1280x960')
+    if (DGW&gt;=1400)&amp;&amp;(DGH&gt;=1050) ds_map_add(bSelector.arr,4,'1400x1050') 
+    if (DGW&gt;=1440)&amp;&amp;(DGH&gt;=1080) ds_map_add(bSelector.arr,5,'1440x1080') 
+    if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=1200) ds_map_add(bSelector.arr,6,'1600x1200') 
     }
   }
-else if Master.clicked
-  Master.clicked = false
-else if Sound.clicked
-  Sound.clicked = false
-else if Music.clicked
-  Music.clicked = false
-else if Reset.clicked
-  {
-  //Button properties
-  Reset.clicked = false
-  Reset.clickable = false
-  Reset.checked = true
-  Reset.content = 'RESTORED'
-  //cfg
-  global.ShowLogo = true
-  global.WIN_WIDTH = display_get_width()
-  global.WIN_HEIGHT = display_get_height()
-  //TODO: recalculate screen properties
-  //TODO: change oList.val
-  global.FULL = true
-  global.Master = 100
-  global.Sound = 100
-  global.Music = 100
-  ResChanged = true
+//RESET
+else if bReset.clicked {
+  //TODO confirm button
+  //Reset button properties
+  bReset.checked = true
+  bReset.content = 'RESTORED'
+  //cfg and buttons
+  global.config[?'ShowLogo'] = true
+  bShowLogo.checked = true
+  global.config[?'ScreenW'] = display_get_width()
+  global.config[?'ScreenH'] = display_get_height()
+  bSelector.val = string(global.config[?'ScreenW']) + 'x' + string(global.config[?'ScreenH'])
+  bSelector.num = -1
+  global.config[?'Fullscreen'] = true
+  bFull.checked = true
+  global.config[?'Master'] = 100
+  bMaster.currval = 100
+  global.config[?'Sound'] = 100
+  bSound.currval = 100
+  global.config[?'Music'] = 100
+  bMusic.currval = 100
+  funcResChanged()
   }
+else if bBack.clicked
+  //parent - oMenuRuler
+  //parent.bAuthors - target button
+  with parent.bOptions {uiOnclick()}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if !surface_exists(ds)
+  ds = surface_create(1024,1024)
+surface_set_target(ds)
+draw_clear_alpha(0,0)
+surface_reset_target()
 </string>
           </argument>
         </arguments>

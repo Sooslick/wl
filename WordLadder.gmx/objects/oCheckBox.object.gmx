@@ -74,12 +74,8 @@ checked = false
           <argument>
             <kind>1</kind>
             <string>if clickable
-  if hover
-    {
-    if checked
-      checked = false
-    else
-      checked = true
+  if hover {
+    checked = funcBoolSwitch(checked)
     uiOnclick()
     }
 </string>
@@ -128,15 +124,15 @@ uiRescale(375)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>drawTextPreset(font, c_white, 1, fa_right, fa_center)
+            <string>if useParentSurface
+  exit
 
+drawTextPreset(font, c_white, 1, fa_right, fa_center)
 //MAIN DRAW BUTTON 
-draw_set_alpha(1)
 draw_sprite_ext(sButton,hover,x,y,dsc,dsc,0,c_white,1)
 draw_set_alpha(a)
 draw_text_transformed(x+120*dsc,y,content,tsc,dsc,0) 
-
-draw_set_alpha(1)
+//DRAW CHECKBOX
 if checked
   draw_sprite_ext(sCheckBox,hover+2,x+192*dsc,y,dsc,dsc,0,c_white,1)
 else
@@ -165,7 +161,30 @@ uiDrawHint()
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>// empty line for disable self-drawing
+            <string>if !useParentSurface
+  exit
+
+if parent &lt; 0
+  exit
+  
+if !surface_exists(parent.ds)
+  exit
+
+surface_set_target(parent.ds) 
+drawTextPreset(font, c_white, 1, fa_right, fa_center)
+//MAIN DRAW BUTTON 
+draw_sprite_ext(sButton,hover,x,y,dsc,dsc,0,c_white,1)
+draw_set_alpha(a)
+draw_text_transformed(x+120*dsc,y,content,tsc,dsc,0) 
+//DRAW CHECKBOX
+if checked
+  draw_sprite_ext(sCheckBox,hover+2,x+192*dsc,y,dsc,dsc,0,c_white,1)
+else
+  draw_sprite_ext(sCheckBox,hover,x+192*dsc,y,dsc,dsc,0,c_white,1)
+  
+uiDrawHint()
+  
+surface_reset_target()
 </string>
           </argument>
         </arguments>

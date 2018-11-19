@@ -30,6 +30,7 @@ Child = -1
 bg = -1         //bg obj: stole surface to draw blur fx
 Anim = true
 AnimTick = 0
+AnimTickMax = 20
 AnimType = 0    //0: in, 1: out, 2: hor in, 3: hor out
 //anim params (consts?)
 cx = global.G_RIGHT + 50
@@ -43,6 +44,7 @@ sfx = global.G_RIGHT + 1000
 sfy = -global.G_RIGHT
 sfr = -90
 sfa = 0
+sfsc = 1
 </string>
           </argument>
         </arguments>
@@ -96,28 +98,45 @@ if Child != -1
   {
   //animation tick
   AnimTick+= 1
-  var p = funcTickPercent(AnimTick);
-  if AnimTick &gt;= 10 {
+  var p = funcTickInterpolate(AnimTick, AnimTickMax);
+  if AnimTick &gt;= AnimTickMax {
     AnimTick = 0
     Anim = false
     }
   switch AnimType {
     case 0:                 //anim rot in
       var ag = 90*p + 90;
-      sfx = cR*dcos(ag) + cx
-      sfy = -cR*dsin(ag) + cy
-      sfr = 90*p - 90
+      var cRb = cR * (1.5-p/2);
+      sfx = cRb*dcos(ag) + cx
+      sfy = -cRb*dsin(ag) + cy
+      sfr = -45 + 45*p
       sfa = p
+      sfsc = 2-p
       break;
     case 1:               //anim rot out
       var ag = 90*p+180;
-      sfx = cR*dcos(ag) + cx
-      sfy = -cR*dsin(ag) + cy
-      sfr = 90*p
+      var cRb = cR * (1+p/2);
+      sfx = cRb*dcos(ag) + cx
+      sfy = -cRb*dsin(ag) + cy
+      sfr = 45*p
       sfa = 1-p
+      sfsc = 1+p
       if AnimTick == 0
         instance_destroy(self, true)
       break;
+    case 2:             //anim shift in
+      sfx = cx - (global.G_RIGHT*p)
+      sfy = cy
+      sfr = 0
+      sfa = p
+      break
+    case 3:             //anim shift out
+      sfx = 50 - (global.G_RIGHT*p)
+      sfy = cy
+      sfr = 0
+      sfa = p
+      if AnimTick == 0
+        instance_destroy(self, true)
     }
   }
 </string>
@@ -153,7 +172,7 @@ if bg != -1
   if surface_exists(bg.ds)
     {
     //apply blur to texture from background, calc offsets and rotation
-    var xoff = sfx - bg.dsx - view_xview[0];
+    var xoff = sfx - bg.dsx - view_xview[0];  //smth is wrong. TODO!
     var yoff = sfy - bg.dsy - view_yview[0];
     var rR   = sfr - bg.rot;
     var Sc   = 1200 / global.DPORTH
@@ -178,7 +197,7 @@ for (var i=12; i&lt;18; i++)
   draw_rectangle(0+i,0+i,1499-i,899-i,true)
 //post-operations    
 surface_reset_target()
-draw_surface_ext(sf,sfx,sfy,1,1,sfr,c_white,sfa)
+draw_surface_ext(sf,sfx,sfy,sfsc,sfsc,sfr,c_white,sfa)
 </string>
           </argument>
         </arguments>

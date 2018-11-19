@@ -1,6 +1,6 @@
     //GAME LOGO
-    f = file_text_open_write(global.cfg)
-    s = 'ShowLogo=' + formatBoolString(global.config[?'ShowLogo'], true)
+    var f = file_text_open_write(global.cfg);
+    var s = 'ShowLogo=' + formatBoolString(global.config[?'ShowLogo'], true);
     file_text_write_string(f,s)
     file_text_writeln(f)
       

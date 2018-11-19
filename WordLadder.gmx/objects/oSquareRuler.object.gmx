@@ -457,7 +457,7 @@ else if ((string_count('EASTER',cheat) &gt; 0) || (string_count('EGG',cheat) &gt
 else if (cheat == 'PREVED') || (cheat == 'HELLO')   //spawn preved obj
   instance_create(0,0,oPreved)
 else if cheat == 'SPLASH'                           //get new splash
-  with stuff {http_get("http://sooslick.flaminggaming.ru/wl/getSplash.php")}
+  with stuff {http_get(global.domain+'wl/getSplash.php')}
 else if (cheat == 'EXIT')||(cheat == 'QUIT')          //exit game
   with main.bExit {uiOnclick()}
 else if cheat == 'BLUR'                             //apply shLinear shader

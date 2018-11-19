@@ -26,14 +26,14 @@
           <argument>
             <kind>1</kind>
             <string>//pre inits
+uiCreate()
+active = false      //opened
 hover = false
 hoverElement = -1   //-1: main, 0..N: elements
 
 arr = ds_map_create()
 val = ''
 num = 0
-
-//todo clickable list
 </string>
           </argument>
         </arguments>
@@ -154,7 +154,7 @@ else
     else
       {
       active = false
-      clicked = true
+      uiOnclick()
       }
     }
   else
@@ -162,7 +162,7 @@ else
     if hover
       {
       active = true
-      clicked = true
+      uiOnclick()
       }
     }
   }
@@ -188,7 +188,10 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>drawTextPreset(font, c_white, 1, fa_left, fa_center)
+            <string>if useParentSurface
+  exit
+
+drawTextPreset(font, c_white, 1, fa_left, fa_center)
 
 var tsc;
 
@@ -254,7 +257,62 @@ uiDrawHint()
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>// empty line for disable self-drawing
+            <string>if !useParentSurface
+  exit
+
+if parent &lt; 0
+  exit
+  
+if !surface_exists(parent.ds)
+  exit
+  
+surface_set_target(parent.ds) 
+drawTextPreset(font, c_white, 1, fa_left, fa_center)
+
+var tsc;
+
+//MAIN DRAW BUTTON  
+if !active
+  {
+  tsc = (366 / string_width(val))
+  if tsc &gt; 1 tsc = 1
+  tsc*= dsc
+  draw_sprite_ext(sList,hover,x,y,dsc,dsc,0,c_white,1)      //if list closed
+  if clickable
+    draw_set_alpha(hover+0.66)
+  else
+    draw_set_alpha((hover+0.5)/2)
+  draw_text_transformed((x-240*dsc),y,val,tsc,dsc,0)
+  }
+else
+  {
+  tsc = 366 / string_width(val)
+  if tsc &gt; 1 tsc = 1
+  tsc*= dsc
+  draw_sprite_ext(sList,2,x,y,dsc,dsc,0,c_white,1)      //if list opened
+  draw_text_transformed((x-240*dsc),y,val,tsc,dsc,0)
+  for (i=0; i&lt;ds_map_size(arr); i++)
+    {
+    if hoverElement==i    
+       {
+       draw_set_alpha(1)                                          //list positions
+       draw_sprite_ext(sList,4,x,(y+128*dsc+i*128*dsc),dsc,dsc,0,c_white,1)
+       }
+    else
+       {
+       draw_set_alpha(0.66)
+       draw_sprite_ext(sList,3,x,(y+128*dsc+i*128*dsc),dsc,dsc,0,c_white,1)
+       }
+    tsc = 490 / string_width(arr[?i])
+    if tsc &gt; 1 tsc = 1
+    tsc*= dsc
+    draw_text_transformed((x-240*dsc),(y+128*dsc+i*128*dsc),arr[?i],tsc,dsc,0)
+    }
+  }
+  
+uiDrawHint()
+  
+surface_reset_target()
 </string>
           </argument>
         </arguments>

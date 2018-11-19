@@ -59,6 +59,7 @@ bOptions.icon_yoff = -4
 bOptions.icon_img = 2
 bOptions.depth = depth
 bOptions.StartDepth = depth
+bOptions.parent = id
 
 bAuthors = instance_create(posIn,760,oButtonIcon)
 bAuthors.content = 'CREDITS'
@@ -286,40 +287,50 @@ else if bProfile.clicked
   
 else if bOptions.clicked
   {
-  if ActiveMenuOpened                 
+  if layerObj == -1
     {
-    if instance_exists(oOptionsRuler)     
-      {
-      bTick = 1
-      ButtonImgChange.sp = sButton
-      ActiveMenuOpened = false
-      Header = 'RENAME THIS GAME'
-      instance_destroy(ActiveMenuPtr,true) 
-      ActiveMenuPtr = 0
-      b2Hide.clickable = true
-      b2Accept.clickable = true
-      }
-    else
-      {
-      instance_destroy(ActiveMenuPtr,true) 
-      ActiveMenuPtr = instance_create(0,0,oOptionsRuler)     
-      Header = 'GAME OPTIONS' 
-      ButtonImgChange.sp = sButton
-      ButtonImgChange = bOptions
-      ButtonImgChange.sp = sButtonMark   
-      }
+    Header = 'SETTINGS'
+    bOptions.sp = sButtonMark
+    Anim = true
+    uiSetClickable(alist, false)
+    stuff.active = false
+    with sec {uiSetClickable(alist,false)}
+    layerObj = instance_create(0,0,oOptionsRuler)
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  else if layerObj.object_index == oOptionsRuler
+    {
+    Header = 'WORD LADDER'
+    bOptions.sp = sButton
+    Anim = true                     //main menu: move back
+    uiSetClickable(alist, false)
+    stuff.active = true             //splash: visible
+    with sec {uiSetClickable(alist,true)}
+    layer.Anim = true               //layer: destroy
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = -1
     }
   else
-    {                                    
-    bTick = 1
-    ButtonImgChange = bOptions
-    ActiveMenuOpened = true
-    Header = 'GAME OPTIONS' 
-    ActiveMenuPtr = instance_create(0,0,oOptionsRuler)
-    b2Hide.clickable = false
-    b2Accept.clickable = false
+    {
+    Header = 'SETTINGS'
+    lastClicked.sp = sButton
+    bOptions.sp = sButtonMark
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oOptionsRuler) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
     }
-  bOptions.clicked = false
+  lastClicked = bOptions
   }
 //todo: comment ALL buttons!
 else if bAuthors.clicked

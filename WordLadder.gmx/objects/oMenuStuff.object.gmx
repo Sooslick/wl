@@ -39,8 +39,8 @@ else
 Tick = 0
 State = 0
 
-http_get("http://sooslick.flaminggaming.ru/wl/getSplash.php")
-http_get("http://sooslick.flaminggaming.ru/wl/getVersion.php")
+http_get(global.domain+'wl/getSplash.php')
+http_get(global.domain+'wl/getVersion.php')
 </string>
           </argument>
         </arguments>

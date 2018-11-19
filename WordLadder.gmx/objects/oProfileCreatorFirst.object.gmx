@@ -281,7 +281,7 @@ load = false
     encpw = true
     pwForm.contentSaved = sha1_string_utf8(pwForm.contentSaved)
     }
-  http_get('http://sooslick.flaminggaming.ru/wl/authUser.php?login=' + nameForm.contentSaved + '&amp;passw=' + pwForm.contentSaved)
+  http_get(global.domain+'wl/authUser.php?login=' + nameForm.contentSaved + '&amp;passw=' + pwForm.contentSaved)
   uiSetClickable(clist, false)
   load = true
   }  
@@ -292,7 +292,7 @@ else if bNoLog.clicked
   instance_destroy(self,true)
   }
 else if bReg.clicked
-  url_open('http://sooslick.flaminggaming.ru/reg.php')
+  url_open(global.domain+'reg.php')
 else if bExit.clicked
   action_end_game()
 </string>

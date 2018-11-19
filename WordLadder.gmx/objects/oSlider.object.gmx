@@ -129,7 +129,7 @@ currval = 100
             <kind>1</kind>
             <string>if clicked
   {
-  currval = ((window_mouse_get_x()-global.DRAW_HOFF) / global.DRAW_SCALE  - (minx)) /
+  currval = ((window_mouse_get_x()-global.DRAW_HOFF) / global.DRAW_SCALE  - (minx + (sx-x))) /
   (maxx - minx) * (maxval - minval)
   if currval &lt; minval
     currval = minval
@@ -182,12 +182,14 @@ uiRescale(506)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>drawTextPreset(font, c_white, 1, fa_center, fa_center)
+            <string>if useParentSurface
+  exit
+
+drawTextPreset(font, c_white, 0.8, fa_center, fa_center)
 
 var posx = (currval-minval)/(maxval-minval) * (maxx-minx) + minx
 
 //DRAW SLIDER RECT
-draw_set_alpha(0.8)
 draw_rectangle((x-256*dsc),(y-64*dsc),posx,(y+64*dsc),false)
 
 //MAIN DRAW BUTTON  
@@ -221,7 +223,34 @@ uiDrawHint()
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//empty line to override default drawevent
+            <string>if !useParentSurface
+  exit
+
+if parent &lt; 0
+  exit
+  
+if !surface_exists(parent.ds)
+  exit
+  
+surface_set_target(parent.ds) 
+drawTextPreset(font, c_white, 0.8, fa_center, fa_center)
+
+var posx = (currval-minval)/(maxval-minval) * (maxx-minx) + minx
+
+//DRAW SLIDER RECT
+draw_rectangle((x-256*dsc),(y-64*dsc),posx,(y+64*dsc),false)
+
+//MAIN DRAW BUTTON  
+draw_set_alpha(1)
+draw_sprite_ext(sButton,hover,x,y,dsc,dsc,0,c_white,1)
+draw_set_alpha(a)
+draw_text_transformed(x,y,content,tsc,dsc,0)
+draw_set_alpha(1)
+draw_sprite_ext(sSlider,hover,posx,y,dsc,dsc,0,c_white,1)
+
+uiDrawHint()
+  
+surface_reset_target()
 </string>
           </argument>
         </arguments>

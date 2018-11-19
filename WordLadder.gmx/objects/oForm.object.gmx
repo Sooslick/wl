@@ -184,11 +184,13 @@ uiRescale(490)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>drawTextPreset(font, c_white, 1, fa_left, fa_center)
+            <string>if useParentSurface
+  exit
+
+drawTextPreset(font, c_white, 1, fa_left, fa_center)
 //MAIN DRAW BUTTON  
-draw_set_alpha(1)
 if active
-  draw_sprite_ext(sForm,2    ,x,y,dsc,dsc,0,c_white,1)
+  draw_sprite_ext(sForm,2,x,y,dsc,dsc,0,c_white,1)
 else
   draw_sprite_ext(sForm,hover,x,y,dsc,dsc,0,c_white,1)
 draw_set_alpha(a)
@@ -220,7 +222,31 @@ uiDrawHint()
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>// empty line for disable self-drawing
+            <string>if !useParentSurface
+  exit
+
+if parent &lt; 0
+  exit
+  
+if !surface_exists(parent.ds)
+  exit
+  
+surface_set_target(parent.ds) 
+drawTextPreset(font, c_white, 1, fa_left, fa_center)
+//MAIN DRAW BUTTON  
+if active
+  draw_sprite_ext(sForm,2,x,y,dsc,dsc,0,c_white,1)
+else
+  draw_sprite_ext(sForm,hover,x,y,dsc,dsc,0,c_white,1)
+draw_set_alpha(a)
+if cursor &amp;&amp; active
+  draw_text_transformed((x-244),y,contentDraw+'|',tsc,dsc,0)
+else
+  draw_text_transformed((x-244),y,contentDraw,tsc,dsc,0)
+  
+uiDrawHint()
+  
+surface_reset_target()
 </string>
           </argument>
         </arguments>

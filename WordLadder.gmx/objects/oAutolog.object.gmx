@@ -28,7 +28,7 @@
             <string>//init vars + http request w/ saved userdata
 loadrot = 0
 if global.userdata[?'AT'] != ''
-  http_get('http://sooslick.flaminggaming.ru/wl/getSave.php?at=' + global.userdata[?'AT'])
+  http_get(global.domain+'wl/getSave.php?at=' + global.userdata[?'AT'])
   
 //todo: locali
 drawstr = 'Connecting...'

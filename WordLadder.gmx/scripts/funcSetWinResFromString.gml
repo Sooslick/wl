@@ -4,12 +4,10 @@ for (i=1; i<=string_length(s); i++)
   {
   if string_char_at(s,i) == 'x'
     {
-    global.WIN_WIDTH = real(s1)
+    global.config[?'ScreenW'] = real(s1)
     s1 = ''
     }
   else
     s1+= string_char_at(s,i)
   }
-global.WIN_HEIGHT = real(s1)
-
-//TODO recalc winw, winh, hoff, voff
+global.config[?'ScreenH'] = real(s1)
