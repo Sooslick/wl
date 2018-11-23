@@ -203,11 +203,11 @@ if surface_exists(ds)
             <kind>1</kind>
             <string>//bSELECTOR LIST -&gt; RES CHANGE
 if bSelector.clicked {
-  if bSelector.active {
+  if bSelector.active {             //list opened
     uiSetClickable(alist, false)
     bSelector.clickable = true
     }
-  else {
+  else {                            //list closed
     uiSetClickable(alist, true)
     funcSetWinResFromString(bSelector.val)
     funcResChanged()
@@ -224,7 +224,7 @@ else if bFull.clicked {
 else if bWide.clicked {
   ds_map_clear(bSelector.arr)
   var DGW = display_get_width();
-  var DGH = display_get_height();
+  var DGH = display_get_height();       //refill ds map (as in a create event)
   if bWide.checked {
     ds_map_add(bSelector.arr,0,'1024x576')
     if (DGW&gt;=1152)&amp;&amp;(DGH&gt;=648) ds_map_add(bSelector.arr,1,'1152x648')
@@ -293,7 +293,8 @@ else if bBack.clicked
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !surface_exists(ds)
+            <string>//redraw texture
+if !surface_exists(ds)
   ds = surface_create(1024,1024)
 surface_set_target(ds)
 draw_clear_alpha(0,0)

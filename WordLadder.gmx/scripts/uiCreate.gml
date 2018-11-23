@@ -19,3 +19,6 @@ dsc = 1                     //draw scale
 tsc = 1                     //content text scale
 
 //todo label feature
+//todo ui constructor script
+
+ds_map_add(global.uiObjects, id, false)

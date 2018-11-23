@@ -42,39 +42,40 @@ bNewGame = instance_create(posIn,280,oButtonIcon)
 bNewGame.content = 'PLAY'
 bNewGame.icon_xoff = -192
 bNewGame.icon_img = 0
-bNewGame.depth = depth
-bNewGame.StartDepth = depth
+bNewGame.depth = 0
+bNewGame.StartDepth = 0
 
 bProfile = instance_create(posIn,440,oButtonIcon)
 bProfile.content = 'PROFILE'
 bProfile.icon_xoff = -186
 bProfile.icon_img = 1
-bProfile.depth = depth
-bProfile.StartDepth = depth
+bProfile.depth = 0
+bProfile.StartDepth = 0
+bProfile.parent = id
 
 bOptions = instance_create(posIn,600,oButtonIcon)
 bOptions.content = 'OPTIONS'
 bOptions.icon_xoff = -188
 bOptions.icon_yoff = -4
 bOptions.icon_img = 2
-bOptions.depth = depth
-bOptions.StartDepth = depth
+bOptions.depth = 0
+bOptions.StartDepth = 0
 bOptions.parent = id
 
 bAuthors = instance_create(posIn,760,oButtonIcon)
 bAuthors.content = 'CREDITS'
 bAuthors.icon_xoff = -188
 bAuthors.icon_img = 3
-bAuthors.depth = depth
-bAuthors.StartDepth = depth
+bAuthors.depth = 0
+bAuthors.StartDepth = 0
 bAuthors.parent = id
 
 bExit = instance_create(posIn,920,oButtonIcon)
 bExit.content = 'EXIT'
 bExit.icon_xoff = -188
 bExit.icon_img = 4
-bExit.depth = depth
-bExit.StartDepth = depth
+bExit.depth = 0
+bExit.StartDepth = 0
 bExit.parent = id
 //Buttons clickable + anim vars
 alist = ds_list_create()
@@ -247,42 +248,50 @@ if bNewGame.clicked
 //similar sections    
 else if bProfile.clicked
   {
-  if ActiveMenuOpened                 
+  if layerObj == -1
     {
-    if instance_exists(oProfileRuler)     
-      {
-      bTick = 1
-      ButtonImgChange.sp = sButton
-      ActiveMenuOpened = false
-      Header = 'RENAME THIS GAME'
-      instance_destroy(ActiveMenuPtr,true) 
-      ActiveMenuPtr = 0
-      b2Hide.clickable = true
-      b2Accept.clickable = true
-      }
-    else
-      {
-      instance_destroy(ActiveMenuPtr,true) 
-      ActiveMenuPtr = instance_create(0,0,oProfileRuler)  
-      ActiveMenuPtr.parent = id
-      Header = 'PROFILE SETTINGS' 
-      ButtonImgChange.sp = sButton
-      ButtonImgChange = bProfile
-      ButtonImgChange.sp = sButtonMark    
-      }
+    Header = 'PROFILE'
+    bProfile.sp = sButtonMark
+    Anim = true
+    uiSetClickable(alist, false)
+    stuff.active = false
+    with sec {uiSetClickable(alist,false)}
+    layerObj = instance_create(0,0,oProfileRuler)
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  else if layerObj.object_index == oProfileRuler
+    {
+    Header = 'WORD LADDER'
+    bProfile.sp = sButton
+    Anim = true                     //main menu: move back
+    uiSetClickable(alist, false)
+    stuff.active = true             //splash: visible
+    with sec {uiSetClickable(alist,true)}
+    layer.Anim = true               //layer: destroy
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = -1
     }
   else
-    {                                    
-    bTick = 1
-    ButtonImgChange = bProfile
-    ActiveMenuOpened = true
-    Header = 'PROFILE SETTINGS' 
-    ActiveMenuPtr = instance_create(0,0,oProfileRuler)
-    ActiveMenuPtr.parent = id
-    b2Hide.clickable = false
-    b2Accept.clickable = false
+    {
+    Header = 'PROFILE'
+    lastClicked.sp = sButton
+    bProfile.sp = sButtonMark
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oProfileRuler) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
     }
-  bProfile.clicked = false  
+  lastClicked = bProfile
   }
   
 else if bOptions.clicked

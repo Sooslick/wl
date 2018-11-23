@@ -1,4 +1,6 @@
 //check PROFILE_STRUCT README 4 ADDITIONAL INFO
+
+//todo: mem free; validate file
 var f       //file
 var tmp, s, i, j
 var v       //version byte array

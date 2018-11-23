@@ -131,6 +131,8 @@
       <script>scripts\uiRescale.gml</script>
       <script>scripts\uiDrawHint.gml</script>
       <script>scripts\uiSetClickable.gml</script>
+      <script>scripts\uiDestroy.gml</script>
+      <script>scripts\uiSetActive.gml</script>
     </scripts>
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>
@@ -179,7 +181,6 @@
       <object>objects\oGameChat</object>
     </objects>
     <objects name="MainMenuGroup">
-      <object>objects\oAchievementsRuler</object>
       <object>objects\oAuthorsCube</object>
       <object>objects\oAuthorsRuler</object>
       <object>objects\oFirstLaunchArrow</object>
@@ -191,7 +192,6 @@
       <object>objects\oOptionsRuler</object>
       <object>objects\oSquare</object>
       <object>objects\oSquareRuler</object>
-      <object>objects\oStatsDrawer</object>
       <object>objects\oCustomRuler</object>
       <object>objects\oMultiRuler</object>
       <object>objects\oGameMulti</object>
@@ -218,6 +218,7 @@
     <objects name="Profile">
       <object>objects\oProfileCreatorFirst</object>
       <object>objects\oProfileRuler</object>
+      <object>objects\oProfileStats</object>
       <object>objects\oAutolog</object>
     </objects>
   </objects>

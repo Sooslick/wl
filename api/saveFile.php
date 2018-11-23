@@ -11,8 +11,8 @@ else {
 	$ok = false;
 	$err_string = 'No token passed';
 }
-if (!empty($_GET['bytes'])) {
-	$bytes = $_GET['bytes'];}
+if (!empty($_POST['bytes'])) {
+	$bytes = $_POST['bytes'];}
 else {
 	$ok = false;
 	$err_string = 'No bytes passed';

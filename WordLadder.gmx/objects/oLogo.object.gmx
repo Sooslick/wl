@@ -40,6 +40,7 @@ global.DictDS = -1                  //loaded locale map id
 global.config = ds_map_create()     //config map
 global.profile = ds_map_create()    //profile map
 global.userdata = ds_map_create()   //userdata map
+global.uiObjects = ds_map_create()  //ui objects pointers, Key: ptr, value: state
 //todo: fix cfgwrite
 funcConfigRead()                    //read cfg file. TODO: apply new parameters
 funcLastloginRead()                 //read userdata to sign in

@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>2</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -166,6 +166,7 @@ if !surface_exists(sf)
   sf = surface_create(1500,900)  //2048, 1024
 surface_set_target(sf)
 draw_clear_alpha(0,1)
+//TODO global surface holder: creating oMenuLayer causes freezes
 
 //blur fx
 if bg != -1

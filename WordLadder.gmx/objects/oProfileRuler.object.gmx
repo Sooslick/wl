@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>6</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,31 +25,63 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//nickname
-PNameForm = instance_create(300,280,oForm)
-with PNameForm
-  {
-  content      = global.profile[?'PNAME']
-  contentSaved = global.profile[?'PNAME']
-  event_user(0)
-  }
+            <string>//todo stat reset button!
+
+OnclickEvent = 0
+//nickname
+PNameForm = instance_create(300,100,oForm)
+uiFormSet(PNameForm, global.profile[?'PNAME'])
+with PNameForm uiRescale(510)
+PNameForm.parent = id
+PNameForm.useParentSurface = true
+PNameForm.sx = 350
+PNameForm.sy = 280
 //lang
-PLang = instance_create(300,440,oList)
+PLang = instance_create(300,260,oList)
+PLang.fonr = fImpact64
 ds_map_add(PLang.arr,0,'English')
 ds_map_add(PLang.arr,1,'Russian')
 PLang.num = global.profile[?'PLOCALE']
 PLang.val = PLang.arr[?global.profile[?'PLOCALE']]
 PLang.clickable = false
+PLang.parent = id
+PLang.useParentSurface = true
+PLang.sx = 350
+PLang.sy = 440
 //achievements menu
-PAch = instance_create(300,680,oButton)
+//todo: stat &amp; achv 2 buttons
+PAch = instance_create(300,420,oButton)
 PAch.content = 'STATISTICS'
 PAch.font = fImpact64
+PAch.parent = id
+PAch.useParentSurface = true
+PAch.sx = 350
+PAch.sy = 600
 //profile selector
-PSelector = instance_create(300,1000,oButton)
+PSelector = instance_create(300,640,oButton)
 PSelector.content = 'LOG OUT'
 PSelector.font = fImpact64
-
-//connected: db
+PSelector.parent = id
+PSelector.useParentSurface = true
+PSelector.sx = 350
+PSelector.sy = 820
+//back
+PBack = instance_create(300,800,oButton)
+PBack.content = 'BACK'
+PBack.parent = id
+PBack.useParentSurface = true
+PBack.sx = 350
+PBack.sy = 980
+//confirm
+bConf = -1
+bYes = -1
+bNo = -1
+//clickables
+alist = ds_list_create()
+ds_list_add(alist, PNameForm,/*PLang,*/PAch,PSelector,PBack)
+//surface
+ds = surface_create(1500,900)
+//connected: db todo1
 </string>
           </argument>
         </arguments>
@@ -72,17 +104,22 @@ PSelector.font = fImpact64
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_destroy(PSelector,true)
+            <string>funcProfileWrite()
+//mem free
+instance_destroy(PSelector,true)
 instance_destroy(PNameForm,true)
 instance_destroy(PLang,true)
 instance_destroy(PAch,true)
-funcProfileWrite()
+instance_destroy(PBack,true)
+ds_list_destroy(alist)
+if surface_exists(ds)
+  surface_free(ds)
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -99,48 +136,92 @@ funcProfileWrite()
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if PSelector.clicked
-  {
-  global.userdata[?'AT'] = ''
-  action_another_room(rFirst)
+            <string>//LOG OUT BUTTON
+if PSelector.clicked {
+  bConf = instance_create(0,0,oConfirmButton);
+  bConf.parent = id
+  bConf.content = 'Log out?'
+  with bConf event_user(0) //set parent for buttons
+  bYes = bConf.bYes
+  bNo = bConf.bNo
+  uiSetClickable(alist, false)
   }
+//NAME FORM CLICKED
 else if PNameForm.clicked
-  {
-  global.profile[?'PNAME'] = PNameForm.content
-  PNameForm.clicked = false
-  }
-else if PLang.clicked
-  {
+  global.profile[?'PNAME'] = PNameForm.contentSaved
+//GAME LANGUAGE CHANGED
+else if PLang.clicked {
   if PLang.active
-    {
-    PSelector.clickable = false
-    PNameForm.clickable = false
-    PAch.clickable = false
-    PLang.clicked = false
-    }
-  else
-    {
-    PSelector.clickable = true
-    PNameForm.clickable = true
-    PAch.clickable = true
-    PLang.clicked = false
+    uiSetClickable(alist, false)
+  else {
+    uiSetClickable(alist, true)
     global.profile[?'PLOCALE'] = PLang.num
     }
   }
-else if PAch.clicked
-  {
-  p = instance_create(0,0,oAchievementsRuler)
-  p.parent = parent
-  parent.ActiveMenuPtr = p
-  parent.Header = 'STATISTICS'
-  instance_destroy(self,true)
+//ACHV MENU
+else if PAch.clicked {
+  with parent {
+    Header = 'STATISTICS'
+    lastClicked.sp = sButton
+    lastClicked = -1
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oProfileStats) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  uiSetClickable(alist,false)
   }
+//parent -&gt; oMenuRuler; 
+else if PBack.clicked
+  with parent.bProfile uiOnclick()
+//cnfir
+else if bYes != -1 {
+  if bYes.clicked {
+    global.userdata[?'AT'] = ''
+    global.userdata[?'PW'] = ''
+    instance_destroy(self, true)
+    room_goto(rFirst)
+    }
+  if bNo.clicked {
+    instance_destroy(bConf)
+    uiSetClickable(alist,true)
+    }
+  }
+  
+  
+//reset
+/*
+  {    
+    global.profile[?'PSINGAMETIME'] = 0
+    global.profile[?'PSPLAYTIME'] = 0
+    global.profile[?'PSONLINETIME'] = 0
+    global.profile[?'PSGAMES'] = 0
+    global.profile[?'PSENDS'] = 0
+    global.profile[?'PSSERVERS'] = 0
+    global.profile[?'PSRESETS']++
+    global.profile[?'GM1'] = 0
+    global.profile[?'GM2'] = 0
+    global.profile[?'PSLV'] = 0
+    global.profile[?'PSXP'] = 0 
+    ds_map_destroy(global.profile[?'PSSECTIONS'])
+    global.profile[?'PSSECTIONS'] = ds_map_create()
+    instance_destroy(bAlert,true)
+    bAlert = 0
+    bReset.clickable = true
+    bBack.clickable = true
+    }
+    */
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -157,36 +238,18 @@ else if PAch.clicked
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_font(fImpact64)
-draw_set_alpha(1)
-draw_set_colour(c_white)
-//draw_text(800*global.DRAW_SCALE,1000*global.DRAW_SCALE,global.PNAME)
-//draw_text(800*global.DRAW_SCALE,1100*global.DRAW_SCALE,global.Profile)
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="10" enumb="13">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>//checking form
-if PNameForm.clicked
-  global.profile[?'PNAME'] = PNameForm.content
+            <string>drawTextPreset(fImpact64, c_white, 1, fa_center, fa_top)
+surface_set_target(ds)
+draw_clear_alpha(0,0)
+draw_text(960, 50, global.config[?'ProfileFile'])
+draw_set_halign(fa_left)
+draw_text(580, 150, 'Display name: '+global.profile[?'PNAME'])
+draw_text(580, 250, 'Player Net ID: '+string(global.profile[?'PNETID']))
+draw_text(580, 350, 'Games played: '+string(global.profile[?'PSGAMES']))
+draw_text(580, 450, 'Games ended: '+string(global.profile[?'PSENDS']))
+draw_text(580, 550, 'Servers visited: '+string(global.profile[?'PSSERVERS']))
+draw_text(580, 700, 'Ingame: '+formatTimeString(global.profile[?'PSINGAMETIME']))
+surface_reset_target()
 </string>
           </argument>
         </arguments>

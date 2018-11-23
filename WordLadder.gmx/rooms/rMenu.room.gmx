@@ -10,7 +10,8 @@
   <persistent>0</persistent>
   <colour>0</colour>
   <showcolour>-1</showcolour>
-  <code>instance_create(0,0,oMenuCreator)  
+  <code>ds_map_clear(global.uiObjects)
+instance_create(0,0,oMenuCreator)  
 instance_create(0,0,oTimeCounter)
 
 view_hview[0] = global.DPORTH

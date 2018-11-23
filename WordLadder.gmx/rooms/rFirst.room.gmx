@@ -10,7 +10,8 @@
   <persistent>0</persistent>
   <colour>0</colour>
   <showcolour>-1</showcolour>
-  <code>if global.userdata[?'AUTOLOG'] &gt; 0
+  <code>ds_map_clear(global.uiObjects)
+if global.userdata[?'AUTOLOG'] &gt; 0
   instance_create(0,0,oAutolog)
 else
   instance_create(0,0,oProfileCreatorFirst)</code>

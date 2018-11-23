@@ -29,11 +29,14 @@
 loadrot = 0
 if global.userdata[?'AT'] != ''
   http_get(global.domain+'wl/getSave.php?at=' + global.userdata[?'AT'])
+else
+  instance_destroy(self, true)
   
 //todo: locali
 drawstr = 'Connecting...'
 //todo: flash fx
 //todo check profle headers + load file from server
+//todo timeout
 </string>
           </argument>
         </arguments>

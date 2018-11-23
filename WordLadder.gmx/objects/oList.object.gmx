@@ -57,6 +57,7 @@ num = 0
           <argument>
             <kind>1</kind>
             <string>ds_map_destroy(arr)
+uiDestroy()
 </string>
           </argument>
         </arguments>

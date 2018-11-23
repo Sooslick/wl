@@ -1,9 +1,10 @@
-Current struct: v0.0.0.1
+Current struct: v0.0.0.5
 
 bytes	info
 
     GENERAL
-4	Header / Save Version (0.0.0.1)
+4	Header / Save Version (long: 5)
+//4	Last Save Timestamp
 4	PNETID
 1	N = Name Length
 N	Name String
@@ -19,8 +20,8 @@ N	Name String
 4	Total stat resets
 1	Simple Passed
 1	Complicated Passed
-1	Player Lv		//
-4	Player XP		//
+1	Player Lv
+4	Player XP
 
  SPECIFIED STAT
 1	M = Sections count
@@ -53,6 +54,8 @@ N	Name String
 26x4	Words
 ^ VARIABLE, CHECK LOCALE ISSUES
 TODO!
+
+todo: saed endless sessions
 _______________________________________
 
 Sections:
@@ -72,6 +75,8 @@ Sections:
 
 100 = Overall Online
 101 = Last Online
+
+//vs?
 ___________________________
 
 Locales:
