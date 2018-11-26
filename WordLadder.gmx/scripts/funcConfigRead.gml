@@ -50,9 +50,9 @@ if is_undefined(global.config[?'LastHeadline'])
 if is_undefined(global.config[?'CustomStart'])
     global.config[?'CustomStart'] = '0'
 if is_undefined(global.config[?'CustomTimer'])
-    global.config[?'CustomTimer'] = '0'
+    global.config[?'CustomTimer'] = '4'
 if is_undefined(global.config[?'CustomInc'])
-    global.config[?'CustomInc'] = '0'
+    global.config[?'CustomInc'] = '2'
 if is_undefined(global.config[?'CustomDec'])
     global.config[?'CustomDec'] = '0'
 if is_undefined(global.config[?'CustomUnbans'])
@@ -64,15 +64,15 @@ if is_undefined(global.config[?'CustomHints'])
 if is_undefined(global.config[?'CustomBans'])
     global.config[?'CustomBans'] = '0'
 if is_undefined(global.config[?'CustomVowels'])
-    global.config[?'CustomVowels'] = '0'
+    global.config[?'CustomVowels'] = '20'
 if is_undefined(global.config[?'CustomGreens'])
     global.config[?'CustomGreens'] = '0'
 if is_undefined(global.config[?'MultiStart'])
     global.config[?'MultiStart'] = '0'
 if is_undefined(global.config[?'MultiTimer'])
-    global.config[?'MultiTimer'] = '0'
+    global.config[?'MultiTimer'] = '4'
 if is_undefined(global.config[?'MultiInc'])
-    global.config[?'MultiInc'] = '0'
+    global.config[?'MultiInc'] = '2'
 if is_undefined(global.config[?'MultiDec'])
     global.config[?'MultiDec'] = '0'
 if is_undefined(global.config[?'MultiUnbans'])
@@ -84,7 +84,7 @@ if is_undefined(global.config[?'MultiHints'])
 if is_undefined(global.config[?'MultiBans'])
     global.config[?'MultiBans'] = '0'
 if is_undefined(global.config[?'MultiVowels'])
-    global.config[?'MultiVowels'] = '0'
+    global.config[?'MultiVowels'] = '20'
 if is_undefined(global.config[?'MultiGreens'])
     global.config[?'MultiGreens'] = '0'
 if is_undefined(global.config[?'MultiMode'])
@@ -104,8 +104,8 @@ global.config[?'Music'] = formatReal(global.config[?'Music'], 100)
 global.config[?'ExtraDict'] = formatReal(global.config[?'ExtraDict'], 1)
 global.config[?'LastHeadline'] = formatReal(global.config[?'LastHeadline'], 1)
 global.config[?'CustomStart'] = formatReal(global.config[?'CustomStart'],0)
-global.config[?'CustomTimer'] = formatReal(global.config[?'CustomTimer'],0)
-global.config[?'CustomInc'] = formatReal(global.config[?'CustomInc'],0)
+global.config[?'CustomTimer'] = formatReal(global.config[?'CustomTimer'],4)
+global.config[?'CustomInc'] = formatReal(global.config[?'CustomInc'],2)
 global.config[?'CustomDec'] = formatReal(global.config[?'CustomDec'],0)
 global.config[?'CustomUnbans'] = formatBool(global.config[?'CustomUnbans'],true)
 global.config[?'CustomShifts'] = formatBool(global.config[?'CustomShifts'],true)
@@ -114,8 +114,8 @@ global.config[?'CustomBans'] = formatReal(global.config[?'CustomBans'],0)
 global.config[?'CustomVowels'] = formatReal(global.config[?'CustomVowels'],0)
 global.config[?'CustomGreens'] = formatReal(global.config[?'CustomGreens'],0)
 global.config[?'MultiStart'] = formatReal(global.config[?'MultiStart'],0)
-global.config[?'MultiTimer'] = formatReal(global.config[?'MultiTimer'],0)
-global.config[?'MultiInc'] = formatReal(global.config[?'MultiInc'],0)
+global.config[?'MultiTimer'] = formatReal(global.config[?'MultiTimer'],4)
+global.config[?'MultiInc'] = formatReal(global.config[?'MultiInc'],2)
 global.config[?'MultiDec'] = formatReal(global.config[?'MultiDec'],0)
 global.config[?'MultiUnbans'] = formatBool(global.config[?'MultiUnbans'],true)
 global.config[?'MultiShifts'] = formatBool(global.config[?'MultiShifts'],true)

@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>6</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,28 +25,46 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//game settings presets
-P1 = instance_create(300,280,oButton)
+            <string>//tech
+OnclickEvent = 0
+//game buttons
+P1 = instance_create(300,100,oButton)
 P1.content = 'SIMPLE'
+//advanced mb not clickable by default. In this case should not add it to alist
+P2 = instance_create(300,260,oButton)
+P2.content = 'ADVANCED'
+if global.profile[?"GM1"] == 0
+  P2.clickable = false
+with(P2) {uiRescale(500)}
+P2.parent = id
+P2.useParentSurface = true
+P2.sx = P2.x + 50
+P2.sy = P2.y + 180
 
-P2 = instance_create(300,440,oButton)
-with(P2)
-  {
-  content = 'ADVANCED'
-  if global.profile[?"GM1"] == 0
-    clickable = false
-  event_user(0)
-  }
-
-P3 = instance_create(300,600,oButton)
+P3 = instance_create(300,420,oButton)
 P3.content = 'ENDLESS'
 
-PCustom = instance_create(300,800,oButton)
+PCustom = instance_create(300,580,oButton)
 PCustom.content = 'CUSTOM GAME'
-with PCustom {event_user(0)}
+with PCustom {uiRescale(500)}
 
-PBack = instance_create(300,1000,oButton)
+PBack = instance_create(300,800,oButton)
 PBack.content = 'BACK'
+//clickables list
+alist = ds_list_create()
+ds_list_add(alist, P1,P3,PCustom,PBack)
+//buttons ds fields
+for (var i=0; i&lt;ds_list_size(alist); i++) {
+  alist[|i].parent = id
+  alist[|i].useParentSurface = true
+  alist[|i].sx = alist[|i].x + 50
+  alist[|i].sy = alist[|i].y + 180
+  }
+//if advanced is missed
+if P2.clickable
+  ds_list_add(alist, P2)
+//surface
+ds = surface_create(1500,900)
 </string>
           </argument>
         </arguments>
@@ -69,17 +87,21 @@ PBack.content = 'BACK'
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_destroy(P1,true)
+            <string>//mem free
+instance_destroy(P1,true)
 instance_destroy(P2,true)
 instance_destroy(P3,true)
 instance_destroy(PCustom,true)
 instance_destroy(PBack,true)
+ds_list_destroy(alist)
+if surface_exists(ds)
+  surface_free(ds)
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -96,43 +118,46 @@ instance_destroy(PBack,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if P1.clicked
-  {
+            <string>if P1.clicked {
   global.GameType = 1
-  action_another_room(rGame)
+  //todo settings preset
+  room_goto(rGame)
   }
-else if P2.clicked
-  {
+else if P2.clicked {
   global.GameType = 2
-  action_another_room(rGame)
+  //todo settings preset
+  room_goto(rGame)
   }
-else if P3.clicked
-  {
+else if P3.clicked {
   global.GameType = 3
-  action_another_room(rGame)
+  //todo settings preset
+  room_goto(rGame)
   }
-else if PCustom.clicked
-  {
-  p = instance_create(0,0,oCustomRuler)
-  p.parent = parent
-  parent.ActiveMenuPtr = p
-  parent.Header = 'CUSTOM GAME SETTINGS'
-  instance_destroy(self,true)
+else if PCustom.clicked {
+  with parent {
+    Header = "CUSTOM GAME SETTINGS"
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oCustomRuler) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  uiSetClickable(alist,false)
   }
-else if PBack.clicked
-  {
-  p = instance_create(0,0,oNewGameRuler)
-  p.parent = parent
-  parent.ActiveMenuPtr = p
-  parent.Header = 'NEW GAME'
-  instance_destroy(self,true)
+else if PBack.clicked {
+  with parent.bNewGame {uiOnclick()}
+  uiSetClickable(alist,false)
   }
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -149,19 +174,23 @@ else if PBack.clicked
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_color(c_white)
-draw_set_alpha(0.9)
-draw_set_font(fImpact64)
-draw_set_halign(fa_left)
-draw_set_valign(fa_top)
+            <string>//init surfaces
+if !surface_exists(ds)
+  ds = surface_create(1024,1024)
+surface_set_target(ds)
+draw_clear_alpha(0,0)
+//hints
+drawTextPreset(fImpact64, c_white, 1, fa_left, fa_top)
 if P1.hover &gt; 0
-  draw_text_ext(600,250,'Type the words in squares and complete a simple task!',72,900)
+  draw_text_ext(600,30,'Type the words in squares and complete a simple task!',80,800)
 else if P2.hover &gt; 0
-  draw_text_ext(600,250,'Check the capacity of your vocabulary and complete the same task again!',72,900)
+  draw_text_ext(600,30,'Check the capacity of your vocabulary and complete the same task again!',80,800)
 else if P3.hover &gt; 0
-  draw_text_ext(600,250,'How long will your vocabulary last? Try to score the most points!',72,900)
+  draw_text_ext(600,30,'How long will your vocabulary last? Try to score the most points!',80,800)
 else if PCustom.hover &gt; 0
-  draw_text_ext(600,250,'Play a customized game!',72,900)
+  draw_text_ext(600,30,'Play a customized game!',80,800)
+  
+surface_reset_target()
 </string>
           </argument>
         </arguments>

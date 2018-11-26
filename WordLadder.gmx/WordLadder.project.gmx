@@ -181,23 +181,24 @@
       <object>objects\oGameChat</object>
     </objects>
     <objects name="MainMenuGroup">
-      <object>objects\oAuthorsCube</object>
-      <object>objects\oAuthorsRuler</object>
-      <object>objects\oFirstLaunchArrow</object>
-      <object>objects\oGameSolo</object>
+      <object>objects\oMenuCreator</object>
       <object>objects\oMenuRuler</object>
       <object>objects\oMenuSecond</object>
       <object>objects\oMenuStuff</object>
-      <object>objects\oNewGameRuler</object>
-      <object>objects\oOptionsRuler</object>
-      <object>objects\oSquare</object>
-      <object>objects\oSquareRuler</object>
-      <object>objects\oCustomRuler</object>
-      <object>objects\oMultiRuler</object>
-      <object>objects\oGameMulti</object>
-      <object>objects\oMenuCreator</object>
       <object>objects\oNewsLoader</object>
+      <object>objects\oSquareRuler</object>
+      <object>objects\oSquare</object>
+      <object>objects\oOptionsRuler</object>
+      <object>objects\oAuthorsRuler</object>
+      <object>objects\oAuthorsCube</object>
       <object>objects\oMenuLayer</object>
+      <objects name="NewGameGroup">
+        <object>objects\oNewGameRuler</object>
+        <object>objects\oGameSolo</object>
+        <object>objects\oGameMulti</object>
+        <object>objects\oMultiRuler</object>
+        <object>objects\oCustomRuler</object>
+      </objects>
     </objects>
     <objects name="UI">
       <object>objects\oButton</object>
@@ -207,6 +208,7 @@
       <object>objects\oForm</object>
       <object>objects\oSlider</object>
       <object>objects\oList</object>
+      <object>objects\oFirstLaunchArrow</object>
     </objects>
     <objects name="Junk">
       <object>objects\oScreamer</object>
@@ -219,6 +221,7 @@
       <object>objects\oProfileCreatorFirst</object>
       <object>objects\oProfileRuler</object>
       <object>objects\oProfileStats</object>
+      <object>objects\oProfileAchvs</object>
       <object>objects\oAutolog</object>
     </objects>
   </objects>

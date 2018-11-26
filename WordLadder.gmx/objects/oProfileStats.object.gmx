@@ -32,8 +32,8 @@ Right = false           //nxt page hover
 DrawStr[0] = 'Select gamemode first.'
 DrawStr[1] = ''
 DrawStr[2] = ''
-Lines = 1
-Sc = 1
+Lines = 1               //used to rescale stat layer
+Sc = 1                  //stat layer scaling
 Header = ''
 gm = -1                 //Selected gamemode
 MarkedButton = -1
@@ -42,58 +42,59 @@ OnclickEvent = 0
 //anim
 
 //buttons
+//checkbpx only last game
 bCb = instance_create(224,80,oCheckBox)
 bCb.content = 'Last game only'
 bCb.font = fImpact64
 bCb.dsc = 0.75
 bCb.tsc = 0.7
 with bCb {uiRescale(375)}
-
+//overall game stat
 b0 = instance_create(140,180,oButton)
 b0.content = 'OVERALL'
 b0.font = fImpact64
 b0.dsc = 0.66
 b0.tsc = 0.6
 b0.image_angle = 180
-
+//simple mode stats
 b1 = instance_create(140,270,oButton)
 b1.content = 'SIMPLE'
 b1.font = fImpact64
 b1.dsc = 0.66
 b1.tsc = 0.6
 b1.image_angle = 180
-
+//advanced mode stats
 b2 = instance_create(140,360,oButton)
 b2.content = 'ADVANCED'
 b2.font = fImpact64
 b2.dsc = 0.66
 b2.tsc = 0.6
 b2.image_angle = 180
-
+//endless mde stats
 b3 = instance_create(140,450,oButton)
 b3.content = 'ENDLESS'
 b3.font = fImpact64
 b3.dsc = 0.66
 b3.tsc = 0.6
 b3.image_angle = 180
-
+//custom game stats
 b4 = instance_create(140,540,oButton)
 b4.content = 'CUSTOM'
 b4.font = fImpact64
 b4.dsc = 0.66
 b4.tsc = 0.6
 b4.image_angle = 180
-
+//coop games stats
 b10 = instance_create(140,630,oButton)
 b10.content = 'CO-OP'
 b10.font = fImpact64
 b10.dsc = 0.66
 b10.tsc = 0.6
 b10.image_angle = 180
-
+//return
 bBack = instance_create(300,800, oButton)
 bBack.content = 'BACK'
-
+//switch to oProfileAchvs
 bAch = instance_create(1200,800, oButton)
 bAch.content = 'ACHIEVEMENTS'
 with bAch {uiRescale(505)}
@@ -101,16 +102,15 @@ with bAch {uiRescale(505)}
 //clickables list
 alist = ds_list_create()
 ds_list_add(alist, bCb,b0,b1,b2,b3,b4,b10,bBack,bAch)
-
+//general button fields
 for (var i=0; i&lt;ds_list_size(alist); i++) {
   alist[|i].parent = id
   alist[|i].useParentSurface = true
   alist[|i].sx = alist[|i].x + 50
   alist[|i].sy = alist[|i].y + 180
   }
-
+//main surface
 ds = surface_create(1500,900)
-
 </string>
           </argument>
         </arguments>
@@ -133,7 +133,8 @@ ds = surface_create(1500,900)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_destroy(bCb, true)
+            <string>//mem free
+instance_destroy(bCb, true)
 instance_destroy(b0, true)
 instance_destroy(b1, true)
 instance_destroy(b2, true)
@@ -167,7 +168,8 @@ if surface_exists(ds)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if funcCheckGuiHover(610,950,750,1080) {
+            <string>//Stat page arrows: check hover
+if funcCheckGuiHover(610,950,750,1080) {
     Left = true
     Right = false
     }
@@ -201,7 +203,8 @@ else {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if Left
+            <string>//stats page arrow clicked
+if Left
   {
   Page--
   if Page &lt; 0
@@ -257,7 +260,8 @@ else if Right
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>var SECTMAP = global.profile[?'PSSECTIONS'];
+            <string>//select data map from profile
+var SECTMAP = global.profile[?'PSSECTIONS'];
 switch gm
   {
   case 0:   Header = 'OVERALL';       break
@@ -277,6 +281,7 @@ if !is_undefined(SECTMAP[?gm])
   SECTMAP = SECTMAP[?gm]
   switch Page {
     case 0:
+      //general fields
       DrawStr[0] = 'words: '+string(SECTMAP[?'PSWORDS']) +
       '#inputs: '+string(SECTMAP[?'PSINPUTS']) +
       '#letters typed: '+string(SECTMAP[?'PSLETTERS']) +
@@ -299,6 +304,7 @@ if !is_undefined(SECTMAP[?gm])
       Lines = 17
       break
     case 1:
+      //check words in lens map
       DrawStr[0] = "WORD'S LENGTH:#"
       DrawStr[1] = '#'
       DrawStr[2] = '#'
@@ -335,10 +341,12 @@ if !is_undefined(SECTMAP[?gm])
       Lines = percol+1
       break
     case 2:
+      //check first letters only
       DrawStr[0] = "WORD THAT START WITH#"
       DrawStr[1] = '#'
       DrawStr[2] = '#'
       var map = SECTMAP[?'PSLENGTHMAP'];
+      //parse datamap
       for(j=0; j&lt;26; j++)
         {
         var src = ds_map_find_first(map);
@@ -350,6 +358,7 @@ if !is_undefined(SECTMAP[?gm])
           qty+= dest[?funcChrDecode(j)]
           src = ds_map_find_next(map,src)
           }
+        //format columns
         if j &lt; 9
           DrawStr[0]+= chr(funcChrDecode(j)) + ': ' + string(qty) + '#'
         else if j &lt; 18
@@ -363,11 +372,13 @@ if !is_undefined(SECTMAP[?gm])
   }
 else
   {
+  //datamap not exists
   DrawStr[0] = 'Stat unavailable.'
   DrawStr[1] = ''
   DrawStr[2] = ''
   Lines = 1
   }
+//rescale
 if Lines &gt; 7
   Sc = 7 / Lines
 </string>
@@ -412,7 +423,8 @@ if Lines &gt; 7
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if bCb.clicked {
+            <string>//recalc lastgame / overall
+if bCb.clicked {
   if (MarkedButton != -1) &amp;&amp; (MarkedButton != b0)
     if bCb.checked
       gm++
@@ -420,6 +432,7 @@ if Lines &gt; 7
       gm--
     event_user(1)
   }
+//recalc overall + button mark
 else if b0.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b0
@@ -427,6 +440,7 @@ else if b0.clicked {
   gm = 0
   event_user(1)
   }
+//recalc simple
 else if b1.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b1
@@ -437,6 +451,7 @@ else if b1.clicked {
     gm = 10
   event_user(1)
   }
+//recalc adv
 else if b2.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b2
@@ -447,6 +462,7 @@ else if b2.clicked {
     gm = 20
   event_user(1)
   }
+//recalc endless
 else if b3.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b3
@@ -457,6 +473,7 @@ else if b3.clicked {
     gm = 30
   event_user(1)
   }
+//rec cstom
 else if b4.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b4
@@ -467,6 +484,7 @@ else if b4.clicked {
     gm = 40
   event_user(1)
   }
+//rec mpl
 else if b10.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b10
@@ -477,10 +495,12 @@ else if b10.clicked {
     gm = 100
   event_user(1)
   }
+//return to ProfileRuler
 else if bBack.clicked {
   with parent.bProfile {uiOnclick()}
   uiSetClickable(alist,false)
   }
+//switch to AchvRuler
 else if bAch.clicked {
   with parent {
     Header = 'ACHIEVEMENTS'
@@ -492,7 +512,7 @@ else if bAch.clicked {
     layer.bg = bg
     layer.Child = layerObj
     layer.depth = depth
-    layerAnimType = 2
+    layer.AnimType = 2
     layerObj.parent = id
     }
   uiSetClickable(alist,false)
@@ -519,17 +539,17 @@ else if bAch.clicked {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !surface_exists(ds)
+            <string>//prepare ds
+if !surface_exists(ds)
   ds = surface_create(1500,900)
 surface_set_target(ds)
 draw_clear_alpha(0,0)
-
 drawTextPreset(fImpact96, c_white, 1, fa_center, fa_top)
 //MAIN DRAW   
 draw_text(900,10,Header)
 draw_set_font(fCube)
 draw_set_halign(fa_left)
-
+//formatted  columns draw (if scaled or not scaled)
 if Lines &gt; 7 {
   draw_text_transformed(400, 150, DrawStr[0], Sc, Sc, 0)
   draw_text_transformed(750, 150, DrawStr[1], Sc, Sc, 0)

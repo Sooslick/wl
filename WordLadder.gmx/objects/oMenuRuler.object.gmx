@@ -44,6 +44,7 @@ bNewGame.icon_xoff = -192
 bNewGame.icon_img = 0
 bNewGame.depth = 0
 bNewGame.StartDepth = 0
+bNewGame.parent = id
 
 bProfile = instance_create(posIn,440,oButtonIcon)
 bProfile.content = 'PROFILE'
@@ -207,42 +208,50 @@ ds_list_destroy(alist)
             <string>//check buttons pressed
 if bNewGame.clicked
   {
-  if ActiveMenuOpened                       //if button menu is opened
+  if layerObj == -1
     {
-    if instance_exists(oNewGameRuler)       //same button: close menu
-      {
-      bTick = 1
-      ButtonImgChange.sp = sButton
-      ActiveMenuOpened = false
-      Header = 'RENAME THIS GAME'
-      instance_destroy(ActiveMenuPtr,true) 
-      ActiveMenuPtr = 0
-      b2Hide.clickable = true
-      b2Accept.clickable = true
-      }
-    else
-      {
-      instance_destroy(ActiveMenuPtr,true) 
-      ActiveMenuPtr = instance_create(0,0,oNewGameRuler)        //else switch menu 
-      ActiveMenuPtr.parent = id
-      Header = 'GAME PREFERENCES' 
-      ButtonImgChange.sp = sButton
-      ButtonImgChange = bNewGame
-      ButtonImgChange.sp = sButtonMark
-      }
+    Header = 'PLAY WORD LADDER'
+    bNewGame.sp = sButtonMark
+    Anim = true
+    uiSetClickable(alist, false)
+    stuff.active = false
+    with sec {uiSetClickable(alist,false)}
+    layerObj = instance_create(0,0,oNewGameRuler)
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  else if layerObj.object_index == oNewGameRuler
+    {
+    Header = 'WORD LADDER'
+    bNewGame.sp = sButton
+    Anim = true                     //main menu: move back
+    uiSetClickable(alist, false)
+    stuff.active = true             //splash: visible
+    with sec {uiSetClickable(alist,true)}
+    layer.Anim = true               //layer: destroy
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = -1
     }
   else
-    {                                       //menu closed: open &amp; deactivate b2
-    bTick = 1
-    ButtonImgChange = bNewGame
-    ActiveMenuOpened = true
-    ActiveMenuPtr = instance_create(0,0,oNewGameRuler)
-    ActiveMenuPtr.parent = id
-    Header = 'GAME PREFERENCES' 
-    b2Hide.clickable = false
-    b2Accept.clickable = false
+    {
+    Header = 'PLAY WORD LADDER'
+    lastClicked.sp = sButton
+    bNewGame.sp = sButtonMark
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oNewGameRuler) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
     }
-  bNewGame.clicked = false
+  lastClicked = bNewGame
   }
 
 //similar sections    

@@ -32,10 +32,6 @@ OnclickEvent = 0
 PNameForm = instance_create(300,100,oForm)
 uiFormSet(PNameForm, global.profile[?'PNAME'])
 with PNameForm uiRescale(510)
-PNameForm.parent = id
-PNameForm.useParentSurface = true
-PNameForm.sx = 350
-PNameForm.sy = 280
 //lang
 PLang = instance_create(300,260,oList)
 PLang.fonr = fImpact64
@@ -46,39 +42,37 @@ PLang.val = PLang.arr[?global.profile[?'PLOCALE']]
 PLang.clickable = false
 PLang.parent = id
 PLang.useParentSurface = true
-PLang.sx = 350
-PLang.sy = 440
+PLang.sx = PLang.x + 50
+PLang.sy = PLang.y + 180
 //achievements menu
-//todo: stat &amp; achv 2 buttons
-PAch = instance_create(300,420,oButton)
-PAch.content = 'STATISTICS'
+PAch = instance_create(900,260,oButton)
+PAch.content = 'ACHIEVEMENTS'
 PAch.font = fImpact64
-PAch.parent = id
-PAch.useParentSurface = true
-PAch.sx = 350
-PAch.sy = 600
+//stats
+PStat = instance_create(900,100,oButton)
+PStat.content = 'STATISTICS'
+PStat.font = fImpact64
 //profile selector
-PSelector = instance_create(300,640,oButton)
+PSelector = instance_create(300,500,oButton)
 PSelector.content = 'LOG OUT'
 PSelector.font = fImpact64
-PSelector.parent = id
-PSelector.useParentSurface = true
-PSelector.sx = 350
-PSelector.sy = 820
 //back
 PBack = instance_create(300,800,oButton)
 PBack.content = 'BACK'
-PBack.parent = id
-PBack.useParentSurface = true
-PBack.sx = 350
-PBack.sy = 980
 //confirm
 bConf = -1
 bYes = -1
 bNo = -1
 //clickables
 alist = ds_list_create()
-ds_list_add(alist, PNameForm,/*PLang,*/PAch,PSelector,PBack)
+ds_list_add(alist, PNameForm,/*PLang,*/PAch,PStat,PSelector,PBack)
+
+for (var i=0; i&lt;ds_list_size(alist); i++) {
+  alist[|i].parent = id
+  alist[|i].useParentSurface = true
+  alist[|i].sx = alist[|i].x + 50
+  alist[|i].sy = alist[|i].y + 180
+  }
 //surface
 ds = surface_create(1500,900)
 //connected: db todo1
@@ -110,6 +104,7 @@ instance_destroy(PSelector,true)
 instance_destroy(PNameForm,true)
 instance_destroy(PLang,true)
 instance_destroy(PAch,true)
+instance_destroy(PStat,true)
 instance_destroy(PBack,true)
 ds_list_destroy(alist)
 if surface_exists(ds)
@@ -138,6 +133,7 @@ if surface_exists(ds)
             <kind>1</kind>
             <string>//LOG OUT BUTTON
 if PSelector.clicked {
+  //create confirmation window
   bConf = instance_create(0,0,oConfirmButton);
   bConf.parent = id
   bConf.content = 'Log out?'
@@ -161,6 +157,24 @@ else if PLang.clicked {
 //ACHV MENU
 else if PAch.clicked {
   with parent {
+    Header = 'ACHIEVEMENTS'
+    lastClicked.sp = sButton
+    lastClicked = -1
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oProfileAchvs) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  uiSetClickable(alist,false)
+  }
+//STAT MENU
+else if PStat.clicked {
+  with parent {
     Header = 'STATISTICS'
     lastClicked.sp = sButton
     lastClicked = -1
@@ -182,12 +196,15 @@ else if PBack.clicked
 //cnfir
 else if bYes != -1 {
   if bYes.clicked {
+    //reset userdata 
     global.userdata[?'AT'] = ''
     global.userdata[?'PW'] = ''
+    global.userdata[?'AUTOLOG'] = 0
     instance_destroy(self, true)
     room_goto(rFirst)
     }
   if bNo.clicked {
+    //destroy conf window
     instance_destroy(bConf)
     uiSetClickable(alist,true)
     }
@@ -238,17 +255,18 @@ else if bYes != -1 {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>drawTextPreset(fImpact64, c_white, 1, fa_center, fa_top)
+            <string>drawTextPreset(fCube, c_white, 1, fa_center, fa_top)
 surface_set_target(ds)
 draw_clear_alpha(0,0)
-draw_text(960, 50, global.config[?'ProfileFile'])
+//profile generai fields
+draw_text(800, 350, global.config[?'ProfileFile'])
 draw_set_halign(fa_left)
-draw_text(580, 150, 'Display name: '+global.profile[?'PNAME'])
-draw_text(580, 250, 'Player Net ID: '+string(global.profile[?'PNETID']))
-draw_text(580, 350, 'Games played: '+string(global.profile[?'PSGAMES']))
-draw_text(580, 450, 'Games ended: '+string(global.profile[?'PSENDS']))
-draw_text(580, 550, 'Servers visited: '+string(global.profile[?'PSSERVERS']))
-draw_text(580, 700, 'Ingame: '+formatTimeString(global.profile[?'PSINGAMETIME']))
+draw_text(650, 420, 'Display name: '+global.profile[?'PNAME'])
+draw_text(650, 490, 'Player Net ID: '+string(global.profile[?'PNETID']))
+draw_text(650, 560, 'Games played: '+string(global.profile[?'PSGAMES']))
+draw_text(650, 630, 'Games ended: '+string(global.profile[?'PSENDS']))
+draw_text(650, 700, 'Servers visited: '+string(global.profile[?'PSSERVERS']))
+draw_text(650, 780, 'Ingame: '+formatTimeString(global.profile[?'PSINGAMETIME']))
 surface_reset_target()
 </string>
           </argument>

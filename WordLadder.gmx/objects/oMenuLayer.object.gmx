@@ -109,7 +109,7 @@ if Child != -1
       var cRb = cR * (1.5-p/2);
       sfx = cRb*dcos(ag) + cx
       sfy = -cRb*dsin(ag) + cy
-      sfr = -45 + 45*p
+      sfr = -30 + 30*p
       sfa = p
       sfsc = 2-p
       break;
@@ -118,7 +118,7 @@ if Child != -1
       var cRb = cR * (1+p/2);
       sfx = cRb*dcos(ag) + cx
       sfy = -cRb*dsin(ag) + cy
-      sfr = 45*p
+      sfr = 30*p
       sfa = 1-p
       sfsc = 1+p
       if AnimTick == 0
@@ -134,7 +134,7 @@ if Child != -1
       sfx = 50 - (global.G_RIGHT*p)
       sfy = cy
       sfr = 0
-      sfa = p
+      sfa = 1-p
       if AnimTick == 0
         instance_destroy(self, true)
     }

@@ -2,10 +2,11 @@
 if hint && (hintMsg!='') && clickable
   {
   var my;
+  var dy = (sy-y)
   if window_get_fullscreen()
-    my = (display_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
+    my = (display_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE - dy
   else
-    my = (window_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE
+    my = (window_mouse_get_y()-global.DRAW_VOFF) / global.DRAW_SCALE - dy
   draw_set_font(fHint)
   draw_set_halign(fa_left)
   draw_set_valign(fa_top)

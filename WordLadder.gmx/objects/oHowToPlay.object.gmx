@@ -444,7 +444,7 @@ if Fading
             <kind>1</kind>
             <string>if BStart&gt;0
   {
-  if BStart.clicked
+  if BStart.hover &gt; 0
     {
     instance_destroy(BStart,true)
     BStart = -1
