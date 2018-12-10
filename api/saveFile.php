@@ -51,6 +51,32 @@ if ($ok)
 		$pnetid = $response['PNETID'];}
 }
 
+//decode
+if ($ok) {
+	//file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' saveFile request log: '.substr($bytes, 0, 24), FILE_APPEND);
+	$decoded = '';
+	$pos = 0;
+	while ($pos < strlen($bytes)) {
+		$decoded.= chr(hexdec($bytes[$pos] . $bytes[$pos+1]));
+		$pos+= 2;
+	}
+	$bytes = $decoded;
+	//validate
+	if (ord($bytes[3])>=6) {
+		$a = 0;
+		for ($i=0; $i<4; $i++)
+			$a = $a*256 + ord($bytes[8+$i]);
+		if ($a != $pnetid) {
+			$ok = false;
+			$err_string = "bad save id: $a";
+		}
+	}
+	else {
+		$ok = false;
+		$err_string = 'bad save version: '.ord($bytes[0]).'.'.ord($bytes[1]).'.'.ord($bytes[2]).'.'.ord($bytes[3]);
+	}
+}
+
 //update
 if ($ok)
 {

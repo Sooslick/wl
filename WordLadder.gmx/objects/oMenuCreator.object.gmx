@@ -26,8 +26,10 @@
           <argument>
             <kind>1</kind>
             <string>bg = instance_create(0,0, oSquareRuler)
-if global.NewsLoader
+if global.NewsLoader {
   wait = 33
+  instance_create(0,0,oSaveLoader)
+  }
 //if it isnt first launch - create objs instantly
 else
   {

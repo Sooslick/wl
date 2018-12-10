@@ -62,7 +62,7 @@ GR = -1         //GameRuler Object
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>loadRot+= 10
+            <string>loadRot+= 5
 if init
   {
   if !loaded

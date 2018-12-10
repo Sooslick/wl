@@ -25,110 +25,195 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//start word length
-bStartLen = instance_create(300,400,oList)
+            <string>OnclickEvent = 0
+////////////////////////
+//START WORD LENGTH LIST
+bStartLen = instance_create(300,220,oList)
 ds_map_add(bStartLen.arr,0,'Start w/ 4')
 ds_map_add(bStartLen.arr,1,'Start w/ 5')
 ds_map_add(bStartLen.arr,2,'Start w/ 6')
-bStartLen.val = 'Start w/ 4'
-bStartLen.num = 0
+//cfg fix
+global.config[?'MultiStart'] = floor(global.config[?'MultiStart'])          //if cfg is wrong
+if (global.config[?'MultiStart'] &lt; 0) || (global.config[?'MultiStart']&gt;11)  //if cfg is oob
+  global.config[?'MultiStart'] = 0
+bStartLen.val = 'Start w/ ' + string(global.config[?'MultiStart']+4)
+bStartLen.num = -1
+//fields
 bStartLen.dsc = 0.84
 bStartLen.hintMsg = 'Word length at the game start'
-bStartLen.StartDepth = -4
-
-//start timer
-bStartTimer = instance_create(300,520,oList)
+bStartLen.depth = depth-3
+bStartLen.StartDepth = depth-4
+//////////////////
+//START TIMER LIST
+bStartTimer = instance_create(300,340,oList)
 ds_map_add(bStartTimer.arr,0,'Timer: 30s')
-ds_map_add(bStartTimer.arr,1,'Timer: 40s')
-ds_map_add(bStartTimer.arr,2,'Timer: 50s')
-ds_map_add(bStartTimer.arr,3,'Timer: 60s')
-bStartTimer.val = 'Timer: auto'
-bStartTimer.num = -1
+ds_map_add(bStartTimer.arr,1,'Timer: 45s')
+ds_map_add(bStartTimer.arr,2,'Timer: 60s')
+ds_map_add(bStartTimer.arr,3,'Timer: auto')
+//cfg check/fix
+global.config[?'MultiTimer'] = floor(global.config[?'MultiTimer'])
+if (global.config[?'MultiTimer'] &gt;= 0) &amp;&amp; (global.config[?'MultiTimer'] &lt;= 3) {
+  bStartTimer.num = global.config[?'MultiTimer']
+  bStartTimer.val = bStartTimer.arr[?bStartTimer.num]
+  }
+else if global.config[?'MultiTimer'] &gt;= 20 {
+  bStartTimer.num = global.config[?'MultiTimer']
+  bStartTimer.val = 'Timer: ' + string(global.config[?'MultiTimer']) + 's'
+  }
+else {
+  bStartTimer.num = 3
+  bStartTimer.val = 'Timer: auto'
+  }
+//fields
 bStartTimer.dsc = 0.84
 bStartTimer.hintMsg = 'The time you have from the start'
-bStartTimer.StartDepth = -3
-
-bSec = instance_create(300,640,oList)
+bStartTimer.depth = depth-3
+bStartTimer.StartDepth = depth-3
+////////////////////////
+//TIMER INCREMENT LIST//
+bSec = instance_create(300,460,oList)
 ds_map_add(bSec.arr,0,'Inc.: 3s')
 ds_map_add(bSec.arr,1,'Inc.: 4s')
 ds_map_add(bSec.arr,2,'Inc.: 5s')
-bSec.val = 'Inc.: 5s'
-bSec.num = 2
+//cfg fix
+global.config[?'MultiInc'] = floor(global.config[?'MultiInc'])          //if cfg is wrong
+if (global.config[?'MultiInc'] &lt; 0) || (global.config[?'MultiInc']&gt;2)  //if cfg is oob
+  global.config[?'MultiInc'] = 2
+bSec.val = 'Inc.: ' + string(global.config[?'MultiInc']+3) + 's'
+bSec.num = global.config[?'MultiInc']
+//fields
 bSec.dsc = 0.84
 bSec.hintMsg = 'Time bonus for every letter in the word'
-bSec.StartDepth = -2
-
-//banned
-bBan = instance_create(1200,400,oList)
+bSec.depth = depth-2
+bSec.StartDepth = depth-2
+////////////////////////
+//BANNED LETTERS SPEED//
+bBan = instance_create(1200,220,oList)
 ds_map_add(bBan.arr,0,'Bans: simple')
 ds_map_add(bBan.arr,1,'Bans: advanced')
 ds_map_add(bBan.arr,2,'Bans: fastest')
-bBan.val = 'Bans: simple'
-bBan.num = 0
+//cfg fix
+global.config[?'MultiBans'] = floor(global.config[?'MultiBans'])          //if cfg is wrong
+if (global.config[?'MultiBans'] &lt; 0) || (global.config[?'MultiBans']&gt;2)   //if cfg is oob
+  global.config[?'MultiBans'] = 0
+bBan.num = global.config[?'MultiBans']
+bBan.val = bBan.arr[?bBan.num]
+//others
 bBan.dsc = 0.84
 bBan.hintMsg = 'The speed of banned letters amount increasing'
-bBan.StartDepth = -1
-
-bVowel = instance_create(1200,520,oSlider)
-bVowel.content = 'Vowels ban %'
+bBan.depth = depth-3
+bBan.StartDepth = depth-3
+/////////////////////////
+//VOWELS BAN PERCENTAGE//
+bVowel = instance_create(1200,340,oSlider)
+bVowel.content = 'VOWELS BAN %'
 bVowel.font = fImpact64
-bVowel.currval = 0
+//cfg fix
+if (global.config[?'MultiVowels'] &lt; 0) || (global.config[?'MultiVowels']&gt;100)
+  global.config[?'MultiVowels'] = 20
+//fields
+bVowel.currval = global.config[?'MultiVowels']
 bVowel.dsc = 0.84
-with bVowel {event_user(0)}
-
-bGreen = instance_create(1200,640,oList)
+bVowel.depth = depth-2
+bVowel.StartDepth = depth-2
+with bVowel {event_user(0)}   //uirescale!
+//////////////////////
+//GREENS LETTERS QTY//
+bGreen = instance_create(1200,460,oList)
 ds_map_add(bGreen.arr,0,'Greens: often')
 ds_map_add(bGreen.arr,1,'Greens: rare')
 ds_map_add(bGreen.arr,2,'Greens: never')
-bGreen.val = 'Greens: often'
-bGreen.num = 0
+//cfg fix
+global.config[?'MultiGreens'] = floor(global.config[?'MultiGreens'])          //if cfg is wrong
+if (global.config[?'MultiGreens'] &lt; 0) || (global.config[?'MultiGreens']&gt;2)   //if cfg is oob
+  global.config[?'MultiGreens'] = 0
+bGreen.num = global.config[?'MultiGreens']
+bGreen.val = bGreen.arr[?bGreen.num]
+//fields
 bGreen.dsc = 0.84
 bGreen.hintMsg = 'Frequency of green letters appearing'
-
-//length dec
-bDec = instance_create(750,400,oList)
+bGreen.depth = depth-2
+bGreen.StartDepth = depth-2
+///////////////////////////////////
+//LENGTH DECREMENTATIORIUM2002002v2
+bDec = instance_create(750,220,oList)
 ds_map_add(bDec.arr,0,'Dec.: often')
 ds_map_add(bDec.arr,1,'Dec.: rare')
 ds_map_add(bDec.arr,2,'Dec.: never')
-bDec.val = 'Dec.: often'
-bDec.num = 0
+//cfg fix
+global.config[?'MultiDec'] = floor(global.config[?'MultiDec'])          //if cfg is wrong
+if (global.config[?'MultiDec'] &lt; 0) || (global.config[?'MultiDec']&gt;2)   //if cfg is oob
+  global.config[?'MultiDec'] = 0
+bDec.num = global.config[?'MultiDec']
+bDec.val = bDec.arr[?bDec.num]
+//fields
 bDec.dsc = 0.84
 bDec.hintMsg = 'Frequency of word length decrease'
-
-//abilities
-bUnban = instance_create(750,520,oCheckBox)
+bDec.depth = depth-3
+bDec.StartDepth = depth-3
+/////////////
+//U N B A N//
+bUnban = instance_create(750,340,oCheckBox)
 bUnban.content = 'Unbans'
-bUnban.checked = true
+bUnban.checked = global.config[?'MultiUnbans']
 bUnban.dsc = 0.84
-with bUnban {event_user(0)}
-
-bShift = instance_create(750,640,oCheckBox)
+bUnban.depth = depth-2
+bUnban.StartDepth = depth-2
+with bUnban {uiRescale(375)}
+//S H I F T//
+bShift = instance_create(750,460,oCheckBox)
 bShift.content = 'Shifts'
-bShift.checked = true
+bShift.checked = global.config[?'MultiShifts']
 bShift.dsc = 0.84
-with bShift {event_user(0)}
-
-bHints = instance_create(750,760,oCheckBox)
+bShift.depth = depth-2
+bShift.StartDepth = depth-2
+with bShift {uiRescale(375)}
+//H I N T S//
+bHints = instance_create(750,580,oCheckBox)
 bHints.content = 'Hints'
-bHints.checked = true
+bHints.checked = global.config[?'MultiHints']
 bHints.dsc = 0.84
-with bHints {event_user(0)}
-
-bType = instance_create(300,760,oList)
+bHints.depth = depth-2
+bHints.StartDepth = depth-2
+with bHints {uiRescale(375)}
+///////////////
+//GAMEMODE/////
+bType = instance_create(300,580,oList)
 ds_map_add(bType.arr,0,'Cooperative')
 ds_map_add(bType.arr,1,'Competitive')
-bType.val = 'Cooperative'
-bType.num = 0
+//cfg fix
+global.config[?'MultiMode'] = floor(global.config[?'MultiMode'])          //if cfg is wrong
+if (global.config[?'MultiMode'] &lt; 0) || (global.config[?'MultiMode']&gt;1)   //if cfg is oob
+  global.config[?'MultiMode'] = 0
+bType.num = global.config[?'MultiMode']
+bType.val = bType.arr[?bType.num]
 bType.dsc = 0.84
 bType.hintMsg = 'Game type'
-bType.StartDepth = -1
-
-//bBack
-bBack = instance_create(300,1000,oButton)
+bType.depth = depth-1
+bType.StartDepth = depth-1
+///////////////
+//bBack &amp; bGo//
+bBack = instance_create(300,800,oButton)
 bBack.content = 'BACK'
-
-bGo = instance_create(1200,1000,oButton)
+bBack.depth = depth-1
+bBack.StartDepth = depth-1
+//
+bGo = instance_create(1200,800,oButton)
 bGo.content = 'START'
+bGo.depth = depth-1
+bGo.StartDepth = depth-1
+//clickable l i s t
+alist = ds_list_create()
+ds_list_add(alist, bStartLen,bStartTimer,bSec,bBan,bVowel,bGreen,bDec,bUnban,bShift,bHints,bType,bBack,bGo)
+//clickables f i e l d s
+for (var i=0; i&lt;ds_list_size(alist); i++) {
+  alist[|i].parent = id
+  alist[|i].useParentSurface = true
+  alist[|i].sx = alist[|i].x + 50
+  alist[|i].sy = alist[|i].y + 180
+  }
+//surface
+ds = surface_create(1500,900)
 </string>
           </argument>
         </arguments>
@@ -164,12 +249,15 @@ instance_destroy(bGreen,true)
 instance_destroy(bBack,true)
 instance_destroy(bGo,true)
 instance_destroy(bType,true)
+ds_list_destroy(alist)
+if surface_exists(ds)
+  surface_free(ds)
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -186,272 +274,106 @@ instance_destroy(bType,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if bStartLen.clicked
-  {
-  if !bStartLen.active
-    {
-    bStartLen.clicked = false
-    bBan.clickable = true
-    bVowel.clickable = true
-    bDec.clickable = true
-    bUnban.clickable = true
-    bShift.clickable = true
-    bHints.clickable = true
-    bStartTimer.clickable = true
-    bSec.clickable = true
-    bGreen.clickable = true
-    bBack.clickable = true
-    bGo.clickable = true
-    bType.clickable = true
+            <string>if bStartLen.clicked {
+  if bStartLen.active {             //list opened
+    uiSetClickable(alist, false)
+    bStartLen.clickable = true
     }
-  else
-    {
-    bStartLen.clicked = false
-    bBan.clickable = false
-    bVowel.clickable = false
-    bDec.clickable = false
-    bUnban.clickable = false
-    bShift.clickable = false
-    bHints.clickable = false
-    bStartTimer.clickable = false
-    bSec.clickable = false
-    bGreen.clickable = false
-    bBack.clickable = false
-    bGo.clickable = false
-    bType.clickable = false
-    }
+  else                            //list closed
+    uiSetClickable(alist, true)
+  
   }
   
-else if bBan.clicked
-  {
-  if !bBan.active
-    {
-    bBan.clicked = false
-    bStartLen.clickable = true
-    bVowel.clickable = true
-    bDec.clickable = true
-    bUnban.clickable = true
-    bShift.clickable = true
-    bHints.clickable = true
-    bStartTimer.clickable = true
-    bSec.clickable = true
-    bGreen.clickable = true
-    bBack.clickable = true
-    bGo.clickable = true
-    bType.clickable = true
+else if bBan.clicked {
+  if bBan.active {             //list opened
+    uiSetClickable(alist, false)
+    bBan.clickable = true
     }
-  else
-    {
-    bBan.clicked = false
-    bStartLen.clickable = false
-    bVowel.clickable = false
-    bDec.clickable = false
-    bUnban.clickable = false
-    bShift.clickable = false
-    bHints.clickable = false
-    bStartTimer.clickable = false
-    bSec.clickable = false
-    bGreen.clickable = false
-    bBack.clickable = false
-    bGo.clickable = false
-    bType.clickable = false
-    }
+  else                            //list closed
+    uiSetClickable(alist, true)
+  
   }
   
-else if bDec.clicked
-  {
-  if !bDec.active
-    {
-    bDec.clicked = false
-    bStartLen.clickable = true
-    bBan.clickable = true
-    bVowel.clickable = true
-    bUnban.clickable = true
-    bShift.clickable = true
-    bHints.clickable = true
-    bStartTimer.clickable = true
-    bSec.clickable = true
-    bGreen.clickable = true
-    bBack.clickable = true
-    bGo.clickable = true
-    bType.clickable = true
+else if bDec.clicked {
+  if bDec.active {             //list opened
+    uiSetClickable(alist, false)
+    bDec.clickable = true
     }
-  else
-    {
-    bDec.clicked = false
-    bStartLen.clickable = false
-    bBan.clickable = false
-    bVowel.clickable = false
-    bUnban.clickable = false
-    bShift.clickable = false
-    bHints.clickable = false
-    bStartTimer.clickable = false
-    bSec.clickable = false
-    bGreen.clickable = false
-    bBack.clickable = false
-    bGo.clickable = false
-    bType.clickable = false
-    }
+  else                            //list closed
+    uiSetClickable(alist, true)
+  
   }
   
-else if bStartTimer.clicked
-  {
-  if !bStartTimer.active
-    {
-    bStartTimer.clicked = false
-    bStartLen.clickable = true
-    bBan.clickable = true
-    bVowel.clickable = true
-    bDec.clickable = true
-    bUnban.clickable = true
-    bShift.clickable = true
-    bHints.clickable = true
-    bSec.clickable = true
-    bGreen.clickable = true
-    bBack.clickable = true
-    bGo.clickable = true
-    bType.clickable = true
+else if bStartTimer.clicked {
+  if bStartTimer.active {             //list opened
+    uiSetClickable(alist, false)
+    bStartTimer.clickable = true
     }
-  else
-    {
-    bStartTimer.clicked = false
-    bStartLen.clickable = false
-    bBan.clickable = false
-    bVowel.clickable = false
-    bDec.clickable = false
-    bUnban.clickable = false
-    bShift.clickable = false
-    bHints.clickable = false
-    bSec.clickable = false
-    bGreen.clickable = false
-    bBack.clickable = false
-    bGo.clickable = false
-    bType.clickable = false
-    }
+  else                            //list closed
+    uiSetClickable(alist, true)
+  
   }
   
-else if bSec.clicked
-  {
-  if !bSec.active
-    {
-    bSec.clicked = false
-    bStartLen.clickable = true
-    bBan.clickable = true
-    bVowel.clickable = true
-    bDec.clickable = true
-    bUnban.clickable = true
-    bShift.clickable = true
-    bHints.clickable = true
-    bStartTimer.clickable = true
-    bGreen.clickable = true
-    bBack.clickable = true
-    bGo.clickable = true
-    bType.clickable = true
+else if bSec.clicked {
+  if bSec.active {             //list opened
+    uiSetClickable(alist, false)
+    bSec.clickable = true
     }
-  else
-    {
-    bSec.clicked = false
-    bStartLen.clickable = false
-    bBan.clickable = false
-    bVowel.clickable = false
-    bDec.clickable = false
-    bUnban.clickable = false
-    bShift.clickable = false
-    bHints.clickable = false
-    bStartTimer.clickable = false
-    bGreen.clickable = false
-    bBack.clickable = false
-    bGo.clickable = false
-    bType.clickable = false
-    }
+  else                            //list closed
+    uiSetClickable(alist, true)
+  
   }
   
-else if bGreen.clicked
-  {
-  if !bGreen.active
-    {
-    bGreen.clicked = false
-    bStartLen.clickable = true
-    bBan.clickable = true
-    bVowel.clickable = true
-    bDec.clickable = true
-    bUnban.clickable = true
-    bShift.clickable = true
-    bHints.clickable = true
-    bStartTimer.clickable = true
-    bSec.clickable = true
-    bBack.clickable = true
-    bGo.clickable = true
-    bType.clickable = true
-    }
-  else
-    {
-    bGreen.clicked = false
-    bStartLen.clickable = false
-    bBan.clickable = false
-    bVowel.clickable = false
-    bDec.clickable = false
-    bUnban.clickable = false
-    bShift.clickable = false
-    bHints.clickable = false
-    bStartTimer.clickable = false
-    bSec.clickable = false
-    bBack.clickable = false
-    bGo.clickable = false
-    bType.clickable = false
-    }
-  }
-  
-else if bType.clicked
-  {
-  if !bType.active
-    {
-    bType.clicked = false
-    bStartLen.clickable = true
-    bBan.clickable = true
-    bVowel.clickable = true
-    bDec.clickable = true
-    bUnban.clickable = true
-    bShift.clickable = true
-    bHints.clickable = true
-    bStartTimer.clickable = true
-    bSec.clickable = true
-    bBack.clickable = true
-    bGo.clickable = true
+else if bGreen.clicked {
+  if bGreen.active {             //list opened
+    uiSetClickable(alist, false)
     bGreen.clickable = true
     }
-  else
-    {
-    bType.clicked = false
-    bStartLen.clickable = false
-    bBan.clickable = false
-    bVowel.clickable = false
-    bDec.clickable = false
-    bUnban.clickable = false
-    bShift.clickable = false
-    bHints.clickable = false
-    bStartTimer.clickable = false
-    bSec.clickable = false
-    bBack.clickable = false
-    bGo.clickable = false
-    bGreen.clickable = false
+  else                            //list closed
+    uiSetClickable(alist, true)
+  
+  }
+  
+else if bType.clicked {
+  if bType.active {             //list opened
+    uiSetClickable(alist, false)
+    bType.clickable = true
     }
-  }  
+  else                            //list closed
+    uiSetClickable(alist, true)
   
-else if bVowel.clicked
-  bVowel.clicked = false
+  }
   
-else if bBack.clicked
-  {
-  p = instance_create(0,0,oGameSolo)
-  p.parent = parent
-  parent.ActiveMenuPtr = p
-  parent.Header = 'SINGLEPLAYER'
-  instance_destroy(self,true)
+else if bBack.clicked {
+  with parent {
+    Header = 'MULTIPLAYER'
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oGameMulti) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  uiSetClickable(alist,false)
   }
   
 else if bGo.clicked
   {
+  global.config[?'CustomStart'] = bStartLen.num
+  global.config[?'CustomTimer'] = bStartTimer.num
+  global.config[?'CustomInc'] = bSec.num
+  global.config[?'CustomDec'] = bDec.num
+  global.config[?'CustomUnbans'] = bUnban.checked
+  global.config[?'CustomShifts'] = bShift.checked
+  global.config[?'CustomHints'] = bHints.checked
+  global.config[?'CustomBans'] = bBan.num
+  global.config[?'CustomVowels'] = bVowel.currval
+  global.config[?'CustomGreens'] = bGreen.num
+  global.config[?'MultiMode'] = bType.num
+  //todo refactor
   global.custom = ds_map_create()
   global.custom[?'StartLen'] = bStartLen.num + 4
   global.custom[?'Banned'] = bBan.num
@@ -463,15 +385,15 @@ else if bGo.clicked
   global.custom[?'StartTimer'] = bStartTimer.num
   global.custom[?'Sec'] = bSec.num + 3
   global.custom[?'Green'] = bGreen.num
-  global.GameType = bType.num+10
-  action_another_room(rGame)
+  global.GameType = 10 + bType.num
+  room_goto(rGame)
   }
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -488,15 +410,17 @@ else if bGo.clicked
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_alpha(1)
-draw_set_font(fImpact64)
-draw_set_halign(fa_center)
-draw_set_valign(fa_center)
-draw_set_color(c_white)
+            <string>if !surface_exists(ds)
+  ds = surface_create(1500,900)
+surface_set_target(ds)
+draw_clear_alpha(0,0)
 
-draw_text(300,280,'GAME START')
-draw_text(750,280,'ABILITIES')
-draw_text(1200,280,'FEATURING')
+drawTextPreset(fImpact64, c_white,1, fa_center, fa_center)
+draw_text(300,100,'GAME START')
+draw_text(750,100,'ABILITIES')
+draw_text(1200,100,'FEATURING')
+
+surface_reset_target()
 </string>
           </argument>
         </arguments>

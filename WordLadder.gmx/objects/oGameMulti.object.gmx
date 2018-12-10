@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>6</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,20 +25,38 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>bIP = instance_create(300,400,oForm)
-bIP.content = global.config[?'SavedIP']
-bIP.contentSaved = global.config[?'SavedIP']
-bIP.allowClipboard = true
-
-bConnect = instance_create(850,400,oButton)
-bConnect.content = 'CONNECT'
-
-bNew = instance_create(300,700,oButton)
+            <string>OnclickEvent = 0
+//form obj id
+bIP = -1
+Anim = false
+AnimTick = 0
+wrong = false
+//UI ELEMENTS: NEW WORDLADDER
+bNew = instance_create(300,100,oButton)
 bNew.content = 'NEW GAME'
-with bNew {event_user(0)}
-
-bBack = instance_create(300,1000,oButton)
+with bNew {uiRescale(505)}
+//CONNECT WORDLADDER
+bConnect = instance_create(300,260,oButton)
+bConnect.content = 'CONNECT'
+//CONNECT WORDLADDER BY IP + animations
+bDirect = instance_create(300,500,oButton)
+bDirect.content = 'CONNECT IP'
+bDirect.font = fImpact64
+with bDirect {uiRescale(500)}
+//back button
+bBack = instance_create(300,800,oButton)
 bBack.content = 'BACK'
+//clickables
+alist = ds_list_create()
+ds_list_add(alist, bNew,bConnect,bDirect,bBack)
+for (var i=0; i&lt;ds_list_size(alist); i++) {
+  alist[|i].parent = id
+  alist[|i].useParentSurface = true
+  alist[|i].sx = alist[|i].x + 50
+  alist[|i].sy = alist[|i].y + 180
+  }
+//sf
+ds = surface_create(1500,900)
 </string>
           </argument>
         </arguments>
@@ -61,17 +79,21 @@ bBack.content = 'BACK'
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>global.config[?'SavedIP'] = bIP.contentSaved
-instance_destroy(bIP,true)
-instance_destroy(bConnect,true)
+            <string>instance_destroy(bConnect,true)
+instance_destroy(bDirect,true)
 instance_destroy(bNew,true)
 instance_destroy(bBack,true)
+if bIP != -1
+  instance_destroy(bIP, true)
+ds_list_destroy(alist)
+if surface_exists(ds)
+  surface_free(ds)
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -88,34 +110,23 @@ instance_destroy(bBack,true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if bBack.clicked
-  {
-  p = instance_create(0,0,oNewGameRuler)
-  p.parent = parent
-  parent.ActiveMenuPtr = p
-  parent.Header = 'NEW GAME'
-  instance_destroy(self,true)
-  }
-else if bConnect.clicked
-  {
-  global.GameType = 0
-  global.IP = bIP.contentSaved
-  action_another_room(rGame)
-  }
-else if bNew.clicked
-  {
-  p = instance_create(0,0,oMultiRuler)
-  p.parent = parent
-  parent.ActiveMenuPtr = p
-  parent.Header = 'ROOM SETTINGS'
-  instance_destroy(self,true)
+            <string>if Anim {
+  AnimTick++
+  if AnimTick &gt; 10 {
+    Anim = false
+    bDirect.clickable = true
+    }
+  else {
+    bDirect.x =  funcTickOffset(AnimTick, 300, 840, true)
+    bDirect.sx = bDirect.x + 50
+    }
   }
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -132,14 +143,132 @@ else if bNew.clicked
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_alpha(1)
-draw_set_font(fImpact64)
-draw_set_halign(fa_left)
-draw_set_valign(fa_center)
-draw_set_color(c_white)
-
-draw_text(50,250,'CONNECT TO IP')
-draw_text(50,550,'OR CREATE NEW ROOM')
+            <string>if bBack.clicked {
+  with parent.bNewGame {uiOnclick()}
+  uiSetClickable(alist,false)
+  }
+else if bConnect.clicked {
+  with parent {
+    Header = "FIND GAMES"
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oMultiFind) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  uiSetClickable(alist,false)
+  }
+else if bDirect.clicked
+  {
+  if (bIP != -1) {
+    if (string_length(bIP.contentSaved)&gt;6) {
+      global.GameType = 0
+      global.IP = bIP.contentSaved
+      room_goto(rGame)
+      }
+    else wrong = true
+    }
+  else  {
+    //animation
+    Anim = true
+    bDirect.clickable = false
+    //create form: ip adress
+    bIP = instance_create(300,500,oForm)
+    uiFormSet(bIP, global.config[?'SavedIP'])
+    bIP.allowClipboard = true
+    bIP.parent = id
+    bIP.useParentSurface = true
+    bIP.sx = bIP.x + 50
+    bIP.sy = bIP.y + 180
+    bIP.StartDepth++
+    bIP.depth++
+    with bIP {uiRescale(500)}
+    ds_list_add(alist, bIP)
+    }
+  }
+else if bNew.clicked {
+  with parent {
+    Header = "GAME SETTINGS"
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oMultiRuler) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  uiSetClickable(alist,false)
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//init surfaces
+if !surface_exists(ds)
+  ds = surface_create(1500,900)
+surface_set_target(ds)
+draw_clear_alpha(0,0)
+//hints
+drawTextPreset(fImpact64, c_white, 1, fa_left, fa_top)
+if bNew.hover
+  draw_text_ext(600,30,'Create new Word Ladder game room with your custom settings.',80,800)
+else if bConnect.hover
+  draw_text_ext(600,30,'Find available Word Ladder game rooms and join them.',80,800)
+else if bDirect.hover
+  draw_text_ext(600,30,"Connect to Word Ladder game room by host's IP adress.",80,800)
+//wrong IP hint
+if wrong {
+  draw_set_font(fHint)
+  draw_text(60,572,'Incorrect format')
+  }
+surface_reset_target()
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>wrong = false
 </string>
           </argument>
         </arguments>

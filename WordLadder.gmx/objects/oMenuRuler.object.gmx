@@ -404,7 +404,8 @@ else if bExit.clicked
   {
   funcCfgWrite()
   funcProfileWrite()
-  action_end_game()
+  funcSendProfile()
+  game_end()
   }
 </string>
           </argument>

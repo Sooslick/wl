@@ -1,7 +1,7 @@
 //arg0 - tickno
 //arg1 - min pos
 //arg2 - max pos
-//arg3 - false in  true out
+//arg3 - false in (-)  true out (+)
 //return final offset
 var p = funcTickPercent(argument0);
 if argument3

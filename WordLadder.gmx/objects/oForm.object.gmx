@@ -36,6 +36,7 @@ hidden = false  //password
 HeldBackspaceTick = 0       //Backspace fix      
 cursor = true               //cursor animation
 cursortick = 0
+//maxlength todo
 </string>
           </argument>
         </arguments>

@@ -66,7 +66,30 @@ if global.config[?'ShowLogo']
       }
 //IF LOGO SKIPPED:     
 else
-      room_goto(rFirst)
+      instance_destroy(self, true)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>room_goto(rFirst)
 </string>
           </argument>
         </arguments>
@@ -90,16 +113,16 @@ else
           <argument>
             <kind>1</kind>
             <string>//tick animation, circles fx
-frame++
+frame+= 0.5
 if frame &lt; 30 {
-  if frame &lt; 16  {
+  if (frame &lt; 16) &amp;&amp; (ceil(frame)==frame)  {
     circles++
     cx[circles] = irandom_range(circles*100,circles*100-99)
     cy[circles] = irandom_range(400,800)
     cs[circles] = 20
     }
   for (var i=0; i&lt;=circles; i++)
-    cs[i]+= 20
+    cs[i]+= 10
   }
 //stepno changer
 switch (frame)
@@ -113,7 +136,7 @@ if stepno==3                        //2: white  //3: end
     surface_free(csf)
   if (surface_exists(bsf))
     surface_free(bsf)
-  room_goto(rFirst)
+  instance_destroy(self, true)
   }
 </string>
           </argument>
@@ -196,7 +219,7 @@ else if stepno==2
   {
   draw_set_alpha(0.5)
   draw_set_color(c_red)
-  switch (frame)
+  switch (floor(frame))
     {
     case 65: draw_text_transformed(800,800,drawstr,1.25,1.25,10); break;
     case 67: case 69: draw_text_transformed(800,600,drawstr,1.5,1.5,10); break;

@@ -25,33 +25,38 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//string array. TODO get from file!
-s[0] = ' SPECIAL '
-s[1] = ' THANKS: '
-s[2] = ' MORODER '
-s[3] = ' SOOSLICK'
-s[4] = '         '
-s[5] = ' 1234567 '
-//tech variables init
-scurr = 0
-smax = 5
-stick = 0
-spos = 1
-parent = -1
-OnclickEvent = 0
-//cube object to draw strings
-Cube = instance_create(1024,1024,oAuthorsCube)
-Cube.parent = id
-Cube.w1 = ' '
-//button init
+            <string>OnclickEvent = 0
+//refresh baton
+bRef = instance_create(300,100,oButton)
+bRef.content = 'REFRESH'
+bRef.dsc = 0.8
+with bRef uiRescale(500)
+//connect baton
+bConnect = instance_create(1200,800,oButton)
+bConnect.content = 'CONNECT'
+//back baton
 bBack = instance_create(300,800,oButton)
 bBack.content = 'BACK'
-bBack.parent = id
-bBack.useParentSurface = true
-bBack.sx = 350
-bBack.sy = 980
-//surface init
+//lines list
+Lines = 0
+LinesList[0] = -1
+Selected = -1
+//clickables list
+alist = ds_list_create()
+ds_list_add(alist, bRef,bConnect,bBack)
+for (var i=0; i&lt;ds_list_size(alist); i++) {
+  alist[|i].parent = id
+  alist[|i].useParentSurface = true
+  alist[|i].sx = alist[|i].x + 50
+  alist[|i].sy = alist[|i].y + 180
+  }
+//ds
 ds = surface_create(1500,900)
+http_get(global.domain+'wl/roomList.php')
+Loading = true
+LoadRot = 0
+
+//todo scroll pos!
 </string>
           </argument>
         </arguments>
@@ -74,9 +79,12 @@ ds = surface_create(1500,900)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//mem free
-instance_destroy(Cube, true)
+            <string>instance_destroy(bRef, true)
+instance_destroy(bConnect, true)
 instance_destroy(bBack, true)
+for (var i=0; i&lt;Lines; i++)
+  instance_destroy(LinesList[i], true)
+ds_list_destroy(alist)
 if surface_exists(ds)
   surface_free(ds)
 </string>
@@ -101,53 +109,13 @@ if surface_exists(ds)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//cube letter type effect. I dont remember how this code works
-stick++
-if stick&gt;=3
-  {
-  stick = 0
-  spos++
-  if spos &gt; 10
-    {
-    spos = 2
-    scurr++
-    if scurr &gt; smax
-      scurr = 0
-    }
-  if spos == 10
-    {
-    Cube.Rot = true
-    stick = -36
-    }
-  else
-    Cube.w1+= string_char_at(s[scurr],spos)
-  }
+            <string>LoadRot+= 5
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="7" enumb="10">
-      <action>
-        <libid>1</libid>
-        <id>605</id>
-        <kind>0</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>0</useapplyto>
-        <exetype>0</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>clicked "back"</string>
-          </argument>
-        </arguments>
-      </action>
+    <event eventtype="7" enumb="62">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -164,9 +132,101 @@ if stick&gt;=3
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//parent - oMenuRuler
-//parent.bAuthors - target button
-with parent.bAuthors {uiOnclick()}
+            <string>//not loaded
+if async_load[? "status"] != 0
+  exit
+  
+//response is loaded
+var html = json_decode(async_load[? "result"])
+if html != -1
+  {
+  Loading = false
+  //roomlist answered
+  if !is_undefined(html[?'COUNT'])
+    {
+    var ROOMS = html[?'ROOMS'];
+    for (var i=0; i&lt;html[?'COUNT']; i++)  {
+      var CURR_ROOM = ROOMS[|i];
+      var gm = 'UNKNOWN';
+      switch real(CURR_ROOM[?'GM']) {
+        case 0: gm = 'COOPERATIVE'; break;
+        case 1: gm = 'COMPEITIVE'; break;
+        }
+      LinesList[i] = instance_create(25, 275+i*75, oLine)
+      LinesList[i].font = fCube
+      LinesList[i].w = 1450
+      LinesList[i].sx = LinesList[i].x+50
+      LinesList[i].sy = LinesList[i].y+180
+      LinesList[i].parent = id
+      LinesList[i].useParentSurface = true
+      uiLineAddCol(LinesList[i], 0.4, string(CURR_ROOM[?'PNETID']))
+      uiLineAddCol(LinesList[i], 0.3, gm)
+      uiLineAddCol(LinesList[i], 0.1, string(CURR_ROOM[?'PLS']))
+      uiLineAddCol(LinesList[i], 0.1, string(CURR_ROOM[?'STATE']))
+      uiLineAddCol(LinesList[i], 0.1, string(CURR_ROOM[?'WORDS']))
+      Lines++
+      }
+    }
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//back
+if bBack.clicked {
+  with parent {
+    Header = 'MULTIPLAYER'
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oGameMulti) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  uiSetClickable(alist,false)
+  }
+//refresh
+else if bRef.clicked {
+  for (var i=0; i&lt;Lines; i++)
+    instance_destroy(LinesList[i], true)
+  Lines = 0
+  LinesList[0] = -1
+  Selected = -1
+  http_get(global.domain+'wl/roomList.php')
+  }
+else if bConnect.clicked {
+  //check selected
+  
+  //todo api: getUser: multiID
+  //todo API: log client ip 
+  }
+else
+  for (var i=0; i&lt;Lines; i++)
+    if LinesList[i].clicked {
+      Selected = i
+      exit
+      }
 </string>
           </argument>
         </arguments>
@@ -194,13 +254,16 @@ if !surface_exists(ds)
   ds = surface_create(1500,900)
 surface_set_target(ds)
 draw_clear_alpha(0,0)
-drawTextPreset(fHint, c_white, 1, fa_left, fa_top)
-//draw cube texture
-if surface_exists(Cube.ds)
-  draw_surface_ext(Cube.ds,300,-318,0.75,0.75,0,c_white,1)
-//draw main + BACK
-draw_sprite(sCreds,0,20,50)
-  
+//draw captions
+drawTextPreset(fCube,c_white,1,fa_left,fa_center)
+draw_text(100, 200, 'Game Host')
+draw_text(650, 200, 'Gamemode')
+draw_text(1050,200, 'Plrs')
+draw_text(1200,200, 'State')
+draw_text(1350,200, 'Words')
+//draw loading
+if Loading 
+  drawLoading(LoadRot,1400,80)
 surface_reset_target()
 </string>
           </argument>

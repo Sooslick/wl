@@ -173,8 +173,8 @@ if bg != -1
   if surface_exists(bg.ds)
     {
     //apply blur to texture from background, calc offsets and rotation
-    var xoff = sfx - bg.dsx - view_xview[0];  //smth is wrong. TODO!
-    var yoff = sfy - bg.dsy - view_yview[0];
+    var xoff = sfx - bg.dsx  - view_xview[0];
+    var yoff = sfy - bg.dsy  - view_yview[0];
     var rR   = sfr - bg.rot;
     var Sc   = 1200 / global.DPORTH
     //drawing

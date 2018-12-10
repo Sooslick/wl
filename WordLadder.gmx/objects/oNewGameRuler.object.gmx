@@ -137,8 +137,22 @@ if surface_exists(ds)
     }
   uiSetClickable(alist,false)
   }
-else if PClient.clicked
-  {
+else if PClient.clicked {
+  with parent {
+    Header = 'MULTIPLAYER'
+    lastClicked.sp = sButton
+    lastClicked = -1
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oGameMulti) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  uiSetClickable(alist,false)
   }
 else if PHtp.clicked {
   instance_destroy(self, true)
@@ -170,7 +184,7 @@ else if PBack.clicked
             <kind>1</kind>
             <string>//init surfaces
 if !surface_exists(ds)
-  ds = surface_create(1024,1024)
+  ds = surface_create(1500,900)
 surface_set_target(ds)
 draw_clear_alpha(0,0)
 //draw hints

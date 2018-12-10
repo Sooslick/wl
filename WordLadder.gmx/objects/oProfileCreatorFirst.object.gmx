@@ -128,7 +128,15 @@ ds_list_add(clist, nameForm, pwForm, spCb, alCb, bLog, bNoLog, bReg)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>funcLastloginWrite();
+            <string>instance_destroy(nameForm, true)
+instance_destroy(pwForm, true)
+instance_destroy(spCb, true)
+instance_destroy(alCb, true)
+instance_destroy(bLog, true)
+instance_destroy(bNoLog, true)
+instance_destroy(bReg, true)
+instance_destroy(bExit, true)
+funcLastloginWrite();
 funcProfileRead()
 ds_list_destroy(clist)
 global.config[?'FirstLaunch'] = false
@@ -155,7 +163,7 @@ room_goto(rMenu)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>loadrot+= 10
+            <string>loadrot+= 5
 </string>
           </argument>
         </arguments>
@@ -204,16 +212,14 @@ if ok
 //log 
 if ok
   {
-  //TODO GET FILE
   //update global fields
-  global.config[?'ProfileFile'] = nameForm.contentSaved
+  global.config[?'ProfileFile'] = global.userdata[?'LOGIN']
   global.profile[?'PNETID'] = html[?'PNETID']
   global.userdata[?'AT'] = html[?'ACCESS_TOKEN']
-    
   // write login and update userdata fields
   global.userdata[?'PNETID'] = global.profile[?'PNETID']
-  global.userdata[?'LOGIN'] = nameForm.contentSaved
-  global.userdata[?'PW'] = pwForm.contentSaved
+  global.userdata[?'LOGIN'] = global.userdata[?'LOGIN']
+  global.userdata[?'PW'] = pwForm.contentSaved            //todo check this field
   if spCb.checked
     global.userdata[?'SAVEPW'] = 1
   else
@@ -288,6 +294,7 @@ load = false
 else if bNoLog.clicked
   {
   global.config[?'ProfileFile'] = 'anonymous'
+  global.userdata[?'PNETID'] = 0
   //todo change login data
   instance_destroy(self,true)
   }

@@ -38,6 +38,8 @@ Header = ''
 gm = -1                 //Selected gamemode
 MarkedButton = -1
 OnclickEvent = 0
+ScrollPos = 0
+ScrollSf = -1
 
 //anim
 
@@ -146,6 +148,8 @@ instance_destroy(bAch, true)
 ds_list_destroy(alist)
 if surface_exists(ds)
   surface_free(ds)
+if surface_exists(ScrollSf)
+  surface_free(ScrollSf)
 </string>
           </argument>
         </arguments>
@@ -181,6 +185,59 @@ else {
     Left = false
     Right = false
     }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="61">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>ScrollPos-= 75
+if ScrollPos &lt; 0
+  ScrollPos = 0
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="60">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if Lines &lt;= 7
+  exit
+
+ScrollPos+= 75
+if ScrollPos &gt; (Lines-7)*80
+  ScrollPos = (Lines-7)*80
 </string>
           </argument>
         </arguments>
@@ -378,9 +435,11 @@ else
   DrawStr[2] = ''
   Lines = 1
   }
+ScrollPos = 0
 //rescale
-if Lines &gt; 7
-  Sc = 7 / Lines
+if Lines &lt;= 7
+  if surface_exists(ScrollSf)
+    surface_free(ScrollSf)
 </string>
           </argument>
         </arguments>
@@ -551,9 +610,17 @@ draw_set_font(fCube)
 draw_set_halign(fa_left)
 //formatted  columns draw (if scaled or not scaled)
 if Lines &gt; 7 {
-  draw_text_transformed(400, 150, DrawStr[0], Sc, Sc, 0)
-  draw_text_transformed(750, 150, DrawStr[1], Sc, Sc, 0)
-  draw_text_transformed(1100, 150, DrawStr[2], Sc, Sc, 0)
+  if !surface_exists(ScrollSf)
+    ScrollSf = surface_create(1024,512)
+  surface_set_target(ScrollSf)
+  draw_clear_alpha(0,0)
+  draw_text(0, 0+ScrollPos, DrawStr[0])   //150
+  draw_text(350, 0+ScrollPos, DrawStr[1])
+  draw_text(700, 0+ScrollPos, DrawStr[2])
+  draw_sprite_ext(sArrowScroll,0,990,50,1,1,270,c_white,1)
+  draw_sprite_ext(sArrowScroll,0,990,462,1,1,90,c_white,1)
+  surface_set_target(ds)
+  draw_surface(ScrollSf,400,150)
   }
 else {
   draw_text(400, 150, DrawStr[0])

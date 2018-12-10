@@ -1,3 +1,6 @@
+//anonymous
+if global.userdata[?'PNETID'] == 0
+  exit
 //check PROFILE_STRUCT README 4 ADDITIONAL INFO
 
     //PLAYER NET ID
@@ -5,7 +8,8 @@
     file_bin_write_byte(f,0)
     file_bin_write_byte(f,0)
     file_bin_write_byte(f,0)
-    file_bin_write_byte(f,5)        //4 bytes: version
+    file_bin_write_byte(f,6)        //4 bytes: version
+    funcWriteLong(f,current_time)
     funcWriteLong(f,global.profile[?'PNETID'])
       
     //PLAYER NAME
@@ -85,6 +89,12 @@
         }
       }
     
-      //TODO achvs
+      //achvs
+    var a = global.profile[?'ACHVS'];
+    var p = global.profile[?'ACHVPROG'];
+    for (var i=0; i<36; i++) {
+      file_bin_write_byte(f, a[|i])
+      funcWriteLong(f, p[|i])
+      }
       
     file_bin_close(f)

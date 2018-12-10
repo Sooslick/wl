@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>6</depth>
+  <depth>0</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,33 +25,13 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//string array. TODO get from file!
-s[0] = ' SPECIAL '
-s[1] = ' THANKS: '
-s[2] = ' MORODER '
-s[3] = ' SOOSLICK'
-s[4] = '         '
-s[5] = ' 1234567 '
-//tech variables init
-scurr = 0
-smax = 5
-stick = 0
-spos = 1
-parent = -1
-OnclickEvent = 0
-//cube object to draw strings
-Cube = instance_create(1024,1024,oAuthorsCube)
-Cube.parent = id
-Cube.w1 = ' '
-//button init
-bBack = instance_create(300,800,oButton)
-bBack.content = 'BACK'
-bBack.parent = id
-bBack.useParentSurface = true
-bBack.sx = 350
-bBack.sy = 980
-//surface init
-ds = surface_create(1500,900)
+            <string>//init fields
+uiCreate()
+w = 1600    //line width
+align = fa_left
+cols = 0
+cw[0] = 1   //column width
+cc[0] = ''  //column content
 </string>
           </argument>
         </arguments>
@@ -74,11 +54,7 @@ ds = surface_create(1500,900)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//mem free
-instance_destroy(Cube, true)
-instance_destroy(bBack, true)
-if surface_exists(ds)
-  surface_free(ds)
+            <string>uiDestroy()
 </string>
           </argument>
         </arguments>
@@ -101,53 +77,13 @@ if surface_exists(ds)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//cube letter type effect. I dont remember how this code works
-stick++
-if stick&gt;=3
-  {
-  stick = 0
-  spos++
-  if spos &gt; 10
-    {
-    spos = 2
-    scurr++
-    if scurr &gt; smax
-      scurr = 0
-    }
-  if spos == 10
-    {
-    Cube.Rot = true
-    stick = -36
-    }
-  else
-    Cube.w1+= string_char_at(s[scurr],spos)
-  }
+            <string>uiHoverCheck(sx,sy)
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="7" enumb="10">
-      <action>
-        <libid>1</libid>
-        <id>605</id>
-        <kind>0</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>0</useapplyto>
-        <exetype>0</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>clicked "back"</string>
-          </argument>
-        </arguments>
-      </action>
+    <event eventtype="6" enumb="53">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -164,9 +100,54 @@ if stick&gt;=3
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//parent - oMenuRuler
-//parent.bAuthors - target button
-with parent.bAuthors {uiOnclick()}
+            <string>if clickable
+  if hover
+    uiOnclick()
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if useParentSurface
+  exit
+  
+drawTextPreset(font, c_white, a, align, fa_center)
+var wp = 0;                     //width processed
+//draw cols
+for (var i=0; i&lt;cols; i++) {
+  if cw[i]&gt;0 {
+    var wc = cw[i]*w;               //width current in pixels
+    tsc = wc / string_width(cc[i])  //text scale calc
+    if tsc &gt;= 1
+      tsc = dsc
+    else
+      tsc*= dsc
+    if align == fa_left
+      draw_text_transformed(x+wp,y,cc[i],tsc,dsc,0)
+    else
+      draw_text_transformed(x-wp,y,cc[i],tsc,dsc,0)
+    wp+= wc
+    }
+  }
+
+uiDrawHint()
 </string>
           </argument>
         </arguments>
@@ -189,18 +170,34 @@ with parent.bAuthors {uiOnclick()}
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//init surfaces
-if !surface_exists(ds)
-  ds = surface_create(1500,900)
-surface_set_target(ds)
-draw_clear_alpha(0,0)
-drawTextPreset(fHint, c_white, 1, fa_left, fa_top)
-//draw cube texture
-if surface_exists(Cube.ds)
-  draw_surface_ext(Cube.ds,300,-318,0.75,0.75,0,c_white,1)
-//draw main + BACK
-draw_sprite(sCreds,0,20,50)
+            <string>if !useParentSurface
+  exit
+
+if parent &lt; 0
+  exit
   
+if !surface_exists(parent.ds)
+  exit
+  
+surface_set_target(parent.ds)  
+drawTextPreset(font, c_white, a, align, fa_center)
+var wp = 0;                     //width processed
+//draw cols
+for (var i=0; i&lt;cols; i++) {
+  var wc = cw[i]*w;               //width current in pixels
+  tsc = wc / string_width(cc[i])  //text scale calc
+  if tsc &gt;= 1
+    tsc = dsc
+  else
+    tsc*= dsc
+  if align == fa_left
+    draw_text_transformed(x+wp,y,cc[i],tsc,dsc,0)
+  else
+    draw_text_transformed(x-wp,y,cc[i],tsc,dsc,0)
+  wp+= wc
+  }
+
+uiDrawHint()
 surface_reset_target()
 </string>
           </argument>

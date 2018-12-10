@@ -45,4 +45,5 @@ else
   global.userdata[?'AUTOLOG'] = 0
 }
 
+global.userdata[?'SAVEPATH'] = ''
 //TODO check data valid

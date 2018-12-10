@@ -41,6 +41,8 @@ bStartLen.num = -1
 //fields
 bStartLen.dsc = 0.84
 bStartLen.hintMsg = 'Word length at the game start'
+bStartLen.depth = depth-3
+bStartLen.StartDepth = depth-3
 //////////////////
 //START TIMER LIST
 bStartTimer = instance_create(300,340,oList)
@@ -65,6 +67,8 @@ else {
 //fields
 bStartTimer.dsc = 0.84
 bStartTimer.hintMsg = 'The time you have from the start'
+bStartTimer.depth = depth-2
+bStartTimer.StartDepth = depth-2
 ////////////////////////
 //TIMER INCREMENT LIST//
 bSec = instance_create(300,460,oList)
@@ -77,8 +81,11 @@ if (global.config[?'CustomInc'] &lt; 0) || (global.config[?'CustomInc']&gt;2)  /
   global.config[?'CustomInc'] = 2
 bSec.val = 'Inc.: ' + string(global.config[?'CustomInc']+3) + 's'
 bSec.num = global.config[?'CustomInc']
+//fields
 bSec.dsc = 0.84
 bSec.hintMsg = 'Time bonus for every letter in the word'
+bSec.depth = depth-1
+bSec.StartDepth = depth-1
 ////////////////////////
 //BANNED LETTERS SPEED//
 bBan = instance_create(1200,220,oList)
@@ -94,6 +101,8 @@ bBan.val = bBan.arr[?bBan.num]
 //others
 bBan.dsc = 0.84
 bBan.hintMsg = 'The speed of banned letters amount increasing'
+bBan.depth = depth-3
+bBan.StartDepth = depth-3
 /////////////////////////
 //VOWELS BAN PERCENTAGE//
 bVowel = instance_create(1200,340,oSlider)
@@ -102,8 +111,11 @@ bVowel.font = fImpact64
 //cfg fix
 if (global.config[?'CustomVowels'] &lt; 0) || (global.config[?'CustomVowels']&gt;100)
   global.config[?'CustomVowels'] = 20
+//fields
 bVowel.currval = global.config[?'CustomVowels']
 bVowel.dsc = 0.84
+bVowel.depth = depth-2
+bVowel.StartDepth = depth-2
 with bVowel {event_user(0)}   //uirescale!
 //////////////////////
 //GREENS LETTERS QTY//
@@ -117,8 +129,11 @@ if (global.config[?'CustomGreens'] &lt; 0) || (global.config[?'CustomGreens']&gt
   global.config[?'CustomGreens'] = 0
 bGreen.num = global.config[?'CustomGreens']
 bGreen.val = bGreen.arr[?bGreen.num]
+//fields
 bGreen.dsc = 0.84
 bGreen.hintMsg = 'Frequency of green letters appearing'
+bGreen.depth = depth-2
+bGreen.StartDepth = depth-2
 ///////////////////////////////////
 //LENGTH DECREMENTATIORIUM2002002v2
 bDec = instance_create(750,220,oList)
@@ -131,34 +146,47 @@ if (global.config[?'CustomDec'] &lt; 0) || (global.config[?'CustomDec']&gt;2)   
   global.config[?'CustomDec'] = 0
 bDec.num = global.config[?'CustomDec']
 bDec.val = bDec.arr[?bDec.num]
+//fields
 bDec.dsc = 0.84
 bDec.hintMsg = 'Frequency of word length decrease'
+bDec.depth = depth-3
+bDec.StartDepth = depth-3
 /////////////
 //U N B A N//
 bUnban = instance_create(750,340,oCheckBox)
 bUnban.content = 'Unbans'
 bUnban.checked = global.config[?'CustomUnbans']
 bUnban.dsc = 0.84
+bUnban.depth = depth-2
+bUnban.StartDepth = depth-2
 with bUnban {uiRescale(375)}
 //S H I F T//
 bShift = instance_create(750,460,oCheckBox)
 bShift.content = 'Shifts'
 bShift.checked = global.config[?'CustomShifts']
 bShift.dsc = 0.84
+bShift.depth = depth-2
+bShift.StartDepth = depth-2
 with bShift {uiRescale(375)}
 //H I N T S//
 bHints = instance_create(750,580,oCheckBox)
 bHints.content = 'Hints'
 bHints.checked = global.config[?'CustomHints']
 bHints.dsc = 0.84
+bHints.depth = depth-2
+bHints.StartDepth = depth-2
 with bHints {uiRescale(375)}
 ///////////////
 //bBack &amp; bGo//
 bBack = instance_create(300,800,oButton)
 bBack.content = 'BACK'
+bBack.depth = depth-2
+bBack.StartDepth = depth-2
 //
 bGo = instance_create(1200,800,oButton)
 bGo.content = 'START'
+bGo.depth = depth-2
+bGo.StartDepth = depth-2
 //clickable l i s t
 alist = ds_list_create()
 ds_list_add(alist, bStartLen,bStartTimer,bSec,bBan,bVowel,bGreen,bDec,bUnban,bShift,bHints,bBack,bGo)
@@ -237,7 +265,7 @@ if surface_exists(ds)
     }
   else                            //list closed
     uiSetClickable(alist, true)
-  exit
+  
   }
   
 else if bBan.clicked {
@@ -247,7 +275,7 @@ else if bBan.clicked {
     }
   else                            //list closed
     uiSetClickable(alist, true)
-  exit
+  
   }
   
 else if bDec.clicked {
@@ -257,7 +285,7 @@ else if bDec.clicked {
     }
   else                            //list closed
     uiSetClickable(alist, true)
-  exit
+  
   }
   
 else if bStartTimer.clicked {
@@ -267,7 +295,7 @@ else if bStartTimer.clicked {
     }
   else                            //list closed
     uiSetClickable(alist, true)
-  exit
+  
   }
   
 else if bSec.clicked {
@@ -277,7 +305,7 @@ else if bSec.clicked {
     }
   else                            //list closed
     uiSetClickable(alist, true)
-  exit
+  
   }
   
 else if bGreen.clicked {
@@ -287,7 +315,7 @@ else if bGreen.clicked {
     }
   else                            //list closed
     uiSetClickable(alist, true)
-  exit
+  
   }
   
 else if bBack.clicked {

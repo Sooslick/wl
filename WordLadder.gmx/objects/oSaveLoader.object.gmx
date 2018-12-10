@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>6</depth>
+  <depth>0</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,60 +25,24 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//string array. TODO get from file!
-s[0] = ' SPECIAL '
-s[1] = ' THANKS: '
-s[2] = ' MORODER '
-s[3] = ' SOOSLICK'
-s[4] = '         '
-s[5] = ' 1234567 '
-//tech variables init
-scurr = 0
-smax = 5
-stick = 0
-spos = 1
-parent = -1
-OnclickEvent = 0
-//cube object to draw strings
-Cube = instance_create(1024,1024,oAuthorsCube)
-Cube.parent = id
-Cube.w1 = ' '
-//button init
-bBack = instance_create(300,800,oButton)
-bBack.content = 'BACK'
-bBack.parent = id
-bBack.useParentSurface = true
-bBack.sx = 350
-bBack.sy = 980
-//surface init
-ds = surface_create(1500,900)
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="1" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>//mem free
-instance_destroy(Cube, true)
-instance_destroy(bBack, true)
-if surface_exists(ds)
-  surface_free(ds)
+            <string>if global.userdata[?'PNETID'] &lt;= 0 {
+  instance_destroy(self, true)
+  exit
+  }
+
+var save = global.userdata[?'SAVEPATH'] //debug
+if global.userdata[?'SAVEPATH'] != '' {
+  http_get_file(global.domain+'wl/'+global.userdata[?'SAVEPATH'], 'profiles/temp.dat')
+  State = 1
+  }
+else {
+  http_get(global.domain+'wl/getSave.php?at=' + global.userdata[?'AT'])
+  State = 0
+  }
+  
+LoadRot = 0
+//state 0: get link
+//state 1: get file
 </string>
           </argument>
         </arguments>
@@ -101,53 +65,68 @@ if surface_exists(ds)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//cube letter type effect. I dont remember how this code works
-stick++
-if stick&gt;=3
-  {
-  stick = 0
-  spos++
-  if spos &gt; 10
-    {
-    spos = 2
-    scurr++
-    if scurr &gt; smax
-      scurr = 0
-    }
-  if spos == 10
-    {
-    Cube.Rot = true
-    stick = -36
+            <string>LoadRot+= 5
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="62">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//data not loaded completely
+if async_load[? "status"] &gt; 0
+  exit
+
+//error
+if async_load[? "status"] &lt; 0 {
+  instance_destroy(self, true)      //smth wrong
+  exit
+  }
+  
+//answer loaded: api request
+if State == 0 {
+  var html = json_decode(async_load[? "result"])
+  if html != -1 {
+    global.userdata[?'SAVEPATH'] = html[?'SAVELINK']
+    http_get_file(global.domain+'wl/'+global.userdata[?'SAVEPATH'], 'profiles/temp.dat')
+    State = 1
     }
   else
-    Cube.w1+= string_char_at(s[scurr],spos)
+    instance_destroy(self, true)      //smth wrong
+  }
+//answer loaded: save file
+else {
+  var ts = getProfileTimestamp('profiles/temp.dat')
+  if ts &gt; global.profile[?'SAVETS'] {
+    file_delete('profiles/' + global.config[?'ProfileFile'] + '.save')
+    file_rename('profiles/temp.dat', 'profiles/' + global.config[?'ProfileFile'] + '.save')
+    funcProfileRead()
+    }
+  else
+    file_delete('profiles/temp.dat')
+  instance_destroy(self, true)      //vse ok
   }
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="7" enumb="10">
-      <action>
-        <libid>1</libid>
-        <id>605</id>
-        <kind>0</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>0</useapplyto>
-        <exetype>0</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>clicked "back"</string>
-          </argument>
-        </arguments>
-      </action>
+    <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -164,44 +143,7 @@ if stick&gt;=3
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//parent - oMenuRuler
-//parent.bAuthors - target button
-with parent.bAuthors {uiOnclick()}
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="8" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>//init surfaces
-if !surface_exists(ds)
-  ds = surface_create(1500,900)
-surface_set_target(ds)
-draw_clear_alpha(0,0)
-drawTextPreset(fHint, c_white, 1, fa_left, fa_top)
-//draw cube texture
-if surface_exists(Cube.ds)
-  draw_surface_ext(Cube.ds,300,-318,0.75,0.75,0,c_white,1)
-//draw main + BACK
-draw_sprite(sCreds,0,20,50)
-  
-surface_reset_target()
+            <string>drawLoading(LoadRot)
 </string>
           </argument>
         </arguments>

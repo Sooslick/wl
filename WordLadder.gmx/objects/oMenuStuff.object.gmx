@@ -35,7 +35,7 @@ stat[3] = 'Profile: ' + global.config[?'ProfileFile']
 if global.profile[?'PNETID'] &lt; 1  
   stat[4] = 'What is your name?'      //profile status
 else
-  stat[4] = 'Hello, ' + global.profile[?'PNAME']
+  stat[4] = 'Hello, ' + global.profile[?'PNAME']    //todo set after change display name
 Tick = 0
 State = 0
 

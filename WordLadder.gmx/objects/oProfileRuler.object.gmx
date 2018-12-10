@@ -197,6 +197,7 @@ else if PBack.clicked
 else if bYes != -1 {
   if bYes.clicked {
     //reset userdata 
+    funcSendProfile()             //todo: send AFTER saving, not before!
     global.userdata[?'AT'] = ''
     global.userdata[?'PW'] = ''
     global.userdata[?'AUTOLOG'] = 0

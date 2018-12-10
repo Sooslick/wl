@@ -1,3 +1,17 @@
 //argument0: rotation
-draw_sprite_ext(sLoading,0,1500,80,2,2,argument0,c_white,1)
-draw_sprite_ext(sLoading,0,1500,80,1,1,-argument0*2,c_white,1)
+
+//argument1: drawx
+//argument2: drawy
+
+var dx, dy;
+if argument_count > 1 {
+  dx = argument[1]
+  dy = argument[2]
+  }
+else {
+  dx = 1500
+  dy = 80
+  }
+
+draw_sprite_ext(sLoading,0,dx,dy,2,2,argument[0],c_white,1)
+draw_sprite_ext(sLoading,0,dx,dy,1,1,-argument[0]*2,c_white,1)

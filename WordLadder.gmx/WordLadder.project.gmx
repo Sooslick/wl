@@ -110,8 +110,11 @@
       <script>scripts\funcLastloginWrite.gml</script>
       <script>scripts\funcProfileRead.gml</script>
       <script>scripts\funcProfileWrite.gml</script>
+      <script>scripts\funcProfileFree.gml</script>
       <script>scripts\funcReadLong.gml</script>
       <script>scripts\funcWriteLong.gml</script>
+      <script>scripts\funcReadString.gml</script>
+      <script>scripts\getProfileTimestamp.gml</script>
     </scripts>
     <scripts name="dataformat">
       <script>scripts\formatBool.gml</script>
@@ -133,12 +136,15 @@
       <script>scripts\uiSetClickable.gml</script>
       <script>scripts\uiDestroy.gml</script>
       <script>scripts\uiSetActive.gml</script>
+      <script>scripts\uiLineAddCol.gml</script>
     </scripts>
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>
     <script>scripts\funcBoolSwitch.gml</script>
     <script>scripts\funcTickPercent.gml</script>
     <script>scripts\funcResChanged.gml</script>
+    <script>scripts\funcSendProfile.gml</script>
+    <script>scripts\funcByteEncode.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shLinear.shader</shader>
@@ -198,6 +204,7 @@
         <object>objects\oGameMulti</object>
         <object>objects\oMultiRuler</object>
         <object>objects\oCustomRuler</object>
+        <object>objects\oMultiFind</object>
       </objects>
     </objects>
     <objects name="UI">
@@ -209,6 +216,7 @@
       <object>objects\oSlider</object>
       <object>objects\oList</object>
       <object>objects\oFirstLaunchArrow</object>
+      <object>objects\oLine</object>
     </objects>
     <objects name="Junk">
       <object>objects\oScreamer</object>
@@ -223,6 +231,7 @@
       <object>objects\oProfileStats</object>
       <object>objects\oProfileAchvs</object>
       <object>objects\oAutolog</object>
+      <object>objects\oSaveLoader</object>
     </objects>
   </objects>
   <rooms name="rooms">

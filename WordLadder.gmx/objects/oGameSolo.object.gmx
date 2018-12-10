@@ -176,7 +176,7 @@ else if PBack.clicked {
             <kind>1</kind>
             <string>//init surfaces
 if !surface_exists(ds)
-  ds = surface_create(1024,1024)
+  ds = surface_create(1500,900)
 surface_set_target(ds)
 draw_clear_alpha(0,0)
 //hints

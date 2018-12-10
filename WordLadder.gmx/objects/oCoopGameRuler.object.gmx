@@ -229,7 +229,7 @@ bVoteN = -1
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>loadRot+=10
+            <string>loadRot+=5
 if prepared
   {
   Stat.ticks++

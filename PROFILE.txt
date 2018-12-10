@@ -4,7 +4,7 @@ bytes	info
 
     GENERAL
 4	Header / Save Version (long: 5)
-//4	Last Save Timestamp
+4	Last Save Timestamp
 4	PNETID
 1	N = Name Length
 N	Name String
@@ -55,7 +55,11 @@ N	Name String
 ^ VARIABLE, CHECK LOCALE ISSUES
 TODO!
 
-todo: saed endless sessions
+ 36 x ACHIEVEMENTS
+1	Get
+4	Progress
+
+todo: saved endless sessions
 _______________________________________
 
 Sections:
@@ -63,20 +67,27 @@ Sections:
 
 10 = Overall Simple
 11 = Last Simple
+12 = Best Simple
 
-20 = Overall Hardened
-21 = Last Hardened
+20 = Overall Advanced
+21 = Last Advanced
+22 = Best Advanced
 
 30 = Overall Endless
 31 = Last Endless
+32 = Best Endless
 
 40 = Overall Custom
 41 = Last Custom
+42 = Best Custom
 
-100 = Overall Online
-101 = Last Online
+100 = Overall Co-op
+101 = Last Co-op
+102 = Best Co-op
 
-//vs?
+110 = Overall Competitive
+111 = Last Competitive
+112 = Best Competitive
 ___________________________
 
 Locales:

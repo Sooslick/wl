@@ -122,7 +122,7 @@ drawstr = 'Connecting...'
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>loadrot+= 10
+            <string>loadrot+= 5
 </string>
           </argument>
         </arguments>
@@ -163,12 +163,14 @@ if html != -1
     //pnetid error
     if html[?'PNETID'] != global.userdata[?'PNETID']
       instance_destroy(self, true)
-    //todoGET SAVEFILE BT PASSED LINK
+    global.userdata[?'SAVEPATH'] = html[?'SAVELINK']
     //TODO check api method
     //success
     funcLastloginWrite();
+    global.config[?'ProfileFile'] = global.userdata[?'LOGIN']
     funcProfileRead()
     global.config[?'FirstLaunch'] = false
+    instance_destroy(self, false)
     room_goto(rMenu)
     }
   else
