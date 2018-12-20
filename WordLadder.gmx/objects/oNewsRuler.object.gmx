@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>6</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,87 +25,52 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//todo fix ui
-//todo background
-//todo load profile
-//todo check profile file headers to validate
-//todo locole
-caption = 'AUTHORIZATION'
-loadrot = 0
-load = false            //true if waiting for http event
-encpw = false           //is password encrypted
+            <string>//todo sort desc headlines
+//tech variables
+ScrollPos = 0
+Headlines = 0
+//headlines read
+var dir = file_find_first('cache/*',fa_directory)
+MaxPos = 20
+while dir != "" {
+    //read content from cache
+    Content[Headlines] = ''
+    var f = file_text_open_read('cache/'+dir+'/content')
+    while (!file_text_eof(f)) {
+        Content[Headlines]+= file_text_read_string(f) + '#';
+        file_text_readln(f);
+        }
+    file_text_close(f);
+    Content[Headlines] = formatHtmlString(Content[Headlines])
+    //read img
+    if file_exists('cache/'+dir+'/img')
+        Img[Headlines] = sprite_add('cache/'+dir+'/img',0,false,false,0,0)
+    else
+        Img[Headlines] = -1
+    //set pos on screen
+    ContentPos[Headlines] = MaxPos
+    draw_set_font(fChat)
+    MaxPos+= string_height_ext(Content[Headlines],50,1450)
+    ImgPos[Headlines] = MaxPos
+    if Img[Headlines] != -1
+        MaxPos+= sprite_get_height(Img[Headlines]) 
+    LinePos[Headlines] = MaxPos + 12
+    MaxPos+= 24
+    //next
+    Headlines++
+    dir = file_find_next()
+    }
+//button init
+bBack = instance_create(300,800,oButton);
+bBack.content = 'BACK'
+bBack.parent = id
+bBack.depth = depth - 1
+bBack.useParentSurface = true
+bBack.sx = 350
+bBack.sy = 980
 OnclickEvent = 0
-
-//TODO: Tab event
-//nickname form
-nameForm = instance_create(800,300,oForm)
-uiFormSet(nameForm, global.userdata[?'LOGIN'])
-
-//password form
-pwForm = instance_create(800,440,oForm)
-uiFormSet(pwForm, global.userdata[?'PW'])
-pwForm.hidden = true
-
-//save passw checkbox
-spCb = instance_create(670,550,oCheckBox)
-if global.userdata[?'SAVEPW'] &gt; 0
-  {
-  spCb.checked = true
-  pwForm.contentDraw = '***************'
-  encpw = true
-  }
-spCb.content = 'Save Password'
-spCb.hint = 'Allow game to save your password for next launch'
-spCb.font = fCube
-spCb.dsc = 0.5
-spCb.tsc = 0.5
-with spCb {uiRescale(375)}
-
-//auto-login checkbox
-alCb = instance_create(930,550,oCheckBox)
-if global.userdata[?'AUTOLOG'] &gt; 0
-  alCb.checked = true                 //i dont know how it may be possible. Mb autolog error
-alCb.content = 'Auto Sign in'
-alCb.hint = 'Allow game to load your profile automatically'
-alCb.font = fCube
-alCb.dsc = 0.5
-alCb.tsc = 0.5
-with alCb {uiRescale(375)}
-
-//login button
-bLog = instance_create(800,700,oButton)
-bLog.content = 'SIGN IN'
-bLog.parent = id
-
-//offline button
-bNoLog = instance_create(800,900,oButton)
-bNoLog.content = 'Play offline'
-bNoLog.font = fCube
-bNoLog.dsc = 0.5
-bNoLog.tsc = 0.5
-with bNoLog {uiRescale(506)}
-bNoLog.parent = id
-
-//open browser to reg
-bReg = instance_create(800,1000,oButton)
-bReg.content = 'Create account'
-bReg.font = fCube
-bReg.dsc = 0.5
-bReg.tsc = 0.5
-with bReg {uiRescale(506)}
-bReg.parent = id
-
-bExit = instance_create(800,1100,oButton)
-bExit.content = 'EXIT'
-bExit.font = fCube
-bExit.dsc = 0.5
-bExit.tsc = 0.5
-with bExit {uiRescale(506)}
-bExit.parent = id
-
-//clickables list
-clist = ds_list_create()
-ds_list_add(clist, nameForm, pwForm, spCb, alCb, bLog, bNoLog, bReg)
+//surface init
+ds = surface_create(1500,900)
 </string>
           </argument>
         </arguments>
@@ -128,25 +93,16 @@ ds_list_add(clist, nameForm, pwForm, spCb, alCb, bLog, bNoLog, bReg)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>instance_destroy(nameForm, true)
-instance_destroy(pwForm, true)
-instance_destroy(spCb, true)
-instance_destroy(alCb, true)
-instance_destroy(bLog, true)
-instance_destroy(bNoLog, true)
-instance_destroy(bReg, true)
-instance_destroy(bExit, true)
-funcLastloginWrite();
-funcProfileRead()
-ds_list_destroy(clist)
-global.config[?'FirstLaunch'] = false
-room_goto(rMenu)
+            <string>instance_destroy(bBack,true)
+if surface_exists(ds)
+    surface_free(ds)
+//todo sprites destroy
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="3" enumb="0">
+    <event eventtype="6" enumb="61">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -163,13 +119,15 @@ room_goto(rMenu)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>loadrot+= 5
+            <string>ScrollPos+= 100
+if ScrollPos &gt; MaxPos - 750
+    ScrollPos = MaxPos - 750
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="7" enumb="62">
+    <event eventtype="6" enumb="60">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -186,59 +144,9 @@ room_goto(rMenu)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>var ok = true
-//check async load errors
-if async_load[? "status"] &gt; 0
-  exit
-if async_load[? "status"] &lt; 0 {
-  ok = false
-  caption = 'CONNECTION ERROR'
-  }
-//check answer errors
-if ok {
-  var html = json_decode(async_load[? "result"])
-  if html == -1 {
-    caption = 'SERVER ERROR'
-    ok = false
-    }
-  }
-//check answer fields
-if ok
-  if is_undefined(html[?'PNETID']) {
-    ok = false
-    caption = 'AUTH ERROR'
-    }
-    //todo: check another fields
-//log 
-if ok
-  {
-  //update global fields
-  global.config[?'ProfileFile'] = nameForm.contentSaved
-  global.profile[?'PNETID'] = real(html[?'PNETID'])
-  global.userdata[?'AT'] = html[?'ACCESS_TOKEN']
-  // write login and update userdata fields
-  global.userdata[?'PNETID'] = global.profile[?'PNETID']
-  global.userdata[?'LOGIN'] = nameForm.contentSaved
-  global.userdata[?'PW'] = pwForm.contentSaved            //todo check this field
-  if spCb.checked
-    global.userdata[?'SAVEPW'] = 1
-  else
-    global.userdata[?'SAVEPW'] = 0
-  if alCb.checked
-    global.userdata[?'AUTOLOG'] = 1
-  else
-    global.userdata[?'AUTOLOG'] = 0    
-  instance_destroy(self,true)
-  exit
-  }
-
-//error
-pwForm.content = ''
-pwForm.contentSaved = ''
-pwForm.contentDraw = ''
-encpw = false
-uiSetClickable(clist, true)
-load = false
+            <string>ScrollPos-= 100
+if ScrollPos &lt; 0
+    ScrollPos = 0
 </string>
           </argument>
         </arguments>
@@ -261,7 +169,7 @@ load = false
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>ui onclick</string>
+            <string>ui clicked</string>
           </argument>
         </arguments>
       </action>
@@ -281,27 +189,10 @@ load = false
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if bLog.clicked   //enc pw and http request
-  {
-  if !encpw {
-    encpw = true
-    pwForm.contentSaved = sha1_string_utf8(pwForm.contentSaved)
-    }
-  http_get(global.domain+'wl/authUser.php?login=' + nameForm.contentSaved + '&amp;passw=' + pwForm.contentSaved)
-  uiSetClickable(clist, false)
-  load = true
-  }  
-else if bNoLog.clicked
-  {
-  global.config[?'ProfileFile'] = 'anonymous'
-  global.userdata[?'PNETID'] = 0
-  //todo change login data
-  instance_destroy(self,true)
-  }
-else if bReg.clicked
-  url_open(global.domain+'reg.php')
-else if bExit.clicked
-  action_end_game()
+            <string>if bBack.clicked
+  //parent - oMenuRuler
+  //parent.bAuthors - target button
+  with parent.bNews {uiOnclick()}
 </string>
           </argument>
         </arguments>
@@ -324,11 +215,46 @@ else if bExit.clicked
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>drawTextPreset(fImpact96,c_white,1,fa_center,fa_center)
-draw_text(800,100,caption)
-
-if load
-  drawLoading(loadrot)
+            <string>//todo if scrolled optimiz
+if !surface_exists(ds)
+    ds = surface_create(1500,900)
+surface_set_target(ds)
+draw_clear_alpha(0,0)
+//draw content
+drawTextPreset(fChat,c_white,1,fa_left,fa_top)
+for (var i=0; i&lt;Headlines; i++) {
+    if ContentPos[i]-ScrollPos &lt; 900 &amp;&amp; ImgPos[i]-ScrollPos &gt; 0
+        draw_text_ext(25,ContentPos[i]-ScrollPos,Content[i],50,1450)
+    if Img[i] != -1
+        if ImgPos[i]-ScrollPos &lt; 900 &amp;&amp; LinePos[i]-ScrollPos &gt; 0
+            draw_sprite(Img[i],0,50,ImgPos[i]-ScrollPos)
+    if LinePos[i]-ScrollPos &gt; 0 &amp;&amp; LinePos[i]-ScrollPos &lt; 900
+        draw_line_width(25,LinePos[i]-ScrollPos,1475,LinePos[i]-ScrollPos,5)
+    }
+surface_reset_target()
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="27">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>with parent.bNews {uiOnclick()}
 </string>
           </argument>
         </arguments>

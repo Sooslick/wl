@@ -31,9 +31,13 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
     if ok
         {
         //PLAYER NAME
-        global.profile[?'PNAME'] = funcReadString(f)  
+        global.profile[?'PNAME'] = funcReadString(f) 
+        if global.profile[?'PNAME'] == ""
+            global.profile[?'PNAME'] = global.userdata[?'LOGIN'] 
         //LOCALE:                       //0 eng; 1 ru
         global.profile[?'PLOCALE'] = file_bin_read_byte(f)
+        //NEWS HEADLINE
+        global.profile[?'PHEADLINE'] = funcReadString(f,12)
         //STAT: TIMERS
         global.profile[?'PSINGAMETIME'] = funcReadLong(f)
         global.profile[?'PSPLAYTIME'] = funcReadLong(f)
@@ -113,6 +117,7 @@ global.profile[?'PNETID'] = global.userdata[?'PNETID']
 global.profile[?'PNAME'] = global.config[?'ProfileFile']
 global.profile[?'SAVETS'] = 0
 global.profile[?'PLOCALE'] = 0
+global.profile[?'PHEADLINE'] = 0
 global.profile[?'PSINGAMETIME'] = 0
 global.profile[?'PSPLAYTIME'] = 0
 global.profile[?'PSONLINETIME'] = 0

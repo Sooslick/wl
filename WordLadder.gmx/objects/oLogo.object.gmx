@@ -25,14 +25,14 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//Game Version 0.0.1.8          1*8 + 256*1 + *0 + *0   todo
-global.GameVersion = 264
-global.versionName = 'Demo 0.0.1.8: server upd'
+            <string>//Game Version 0.0.1.9         1*9 + 256*1 + *0 + *0   todo
+global.GameVersion = 265
+global.versionName = 'Demo 0.0.1.9: 60FPS update'
 global.domain = 'http://sooslick.flaminggaming.ru/'
 //init globals
 randomize()
 global.cfg = 'config.cfg'           //default config file
-global.SaveCorrupted = false        //if error ocured when profile file read
+global.SaveCorrupted = false        //if error occured when profile file read
 global.NewsLoader = true            //create loader on launch
 global.GameType = 0                 //gametypes: 1-4 solo; 11-12 mp
 global.DictLoaded = -1              //loaded locale, see docs
@@ -42,7 +42,7 @@ global.profile = ds_map_create()    //profile map
 global.userdata = ds_map_create()   //userdata map
 global.uiObjects = ds_map_create()  //ui objects pointers, Key: ptr, value: state
 //todo: fix cfgwrite
-funcConfigRead()                    //read cfg file. TODO: apply new parameters
+funcConfigRead()                    //read cfg file.
 funcLastloginRead()                 //read userdata to sign in
 funcResChanged()                    //set screen resolution and calc screen globals
 //LOGO ROOM scale

@@ -27,6 +27,8 @@
             <kind>1</kind>
             <string>ingame = false
 online = false
+
+last_time = current_time
 </string>
           </argument>
         </arguments>
@@ -49,11 +51,14 @@ online = false
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>global.profile[?'PSINGAMETIME']++
+            <string>var t = current_time - last_time
+last_time = current_time
+
+global.profile[?'PSINGAMETIME']+= t
 if ingame
-  global.profile[?'PSPLAYTIME']++
+  global.profile[?'PSPLAYTIME']+= t
 if online
-  global.profile[?'PSONLINETIME']++
+  global.profile[?'PSONLINETIME']+= t
 </string>
           </argument>
         </arguments>

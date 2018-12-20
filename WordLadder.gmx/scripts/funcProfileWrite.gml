@@ -21,6 +21,10 @@ if global.userdata[?'PNETID'] == 0
     //LOCALE:             
     file_bin_write_byte(f,global.profile[?'PLOCALE'])
     
+    //LAST NEWS HEADLINE
+    for (i=1;i<=12;i++)
+        file_bin_write_byte(f,ord(string_char_at(global.profile[?'PHEADLINE'],i)))
+    
     //STATS:                    //writing numbers from starshiy to mladshiy razryads
     funcWriteLong(f,global.profile[?'PSINGAMETIME'])
     funcWriteLong(f,global.profile[?'PSPLAYTIME'])

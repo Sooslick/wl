@@ -38,7 +38,7 @@ NewWord = true              //new word approach animation
 NewWordX = 0
 aps = 0.05                     //alpha per square
 //cube surface
-ds = surface_create(2048,2048)
+ds = surface_create(1024,1024)
 </string>
           </argument>
         </arguments>
@@ -154,13 +154,10 @@ if NewWord
             <kind>1</kind>
             <string>//init surface
 drawTextPreset(fCube, c_white, 1, fa_center, fa_center)
-if !surface_exists(ds) {
-  ds = surface_create(2048,2048)
-  draw_clear_alpha(0,0)
-  }
+if !surface_exists(ds)
+  ds = surface_create(1024,1024)
 surface_set_target(ds)
-//fader
-draw_sprite_ext(sFadedCircle,0,x,y,MinLen*2.5,MinLen*2.5,0,0,1)
+draw_clear_alpha(0,0)
 //w1
 var j = MinLen*32 - 32;
 var tmp = 9; // MinLen

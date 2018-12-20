@@ -40,7 +40,7 @@ spos = 1
 parent = -1
 OnclickEvent = 0
 //cube object to draw strings
-Cube = instance_create(1024,1024,oAuthorsCube)
+Cube = instance_create(512,512,oAuthorsCube)
 Cube.parent = id
 Cube.w1 = ' '
 //button init
@@ -101,9 +101,9 @@ if surface_exists(ds)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//cube letter type effect. I dont remember how this code works
+            <string>//cube letter type effect. 
 stick++
-if stick&gt;=3
+if stick&gt;=5
   {
   stick = 0
   spos++
@@ -117,7 +117,7 @@ if stick&gt;=3
   if spos == 10
     {
     Cube.Rot = true
-    stick = -36
+    stick = -42
     }
   else
     Cube.w1+= string_char_at(s[scurr],spos)
@@ -195,9 +195,11 @@ if !surface_exists(ds)
 surface_set_target(ds)
 draw_clear_alpha(0,0)
 drawTextPreset(fHint, c_white, 1, fa_left, fa_top)
+//fader
+draw_sprite_ext(sFadedCircle,0,1068,450,15,15,0,0,1)
 //draw cube texture
 if surface_exists(Cube.ds)
-  draw_surface_ext(Cube.ds,300,-318,0.75,0.75,0,c_white,1)
+  draw_surface_ext(Cube.ds,684,66,0.75,0.75,0,c_white,1)
 //draw main + BACK
 draw_sprite(sCreds,0,20,50)
   

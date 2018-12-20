@@ -37,7 +37,7 @@ if global.profile[?'PNETID'] &lt; 1
 else
   stat[4] = 'Hello, ' + global.profile[?'PNAME']    //todo set after change display name
 Tick = 0
-State = 0
+State = 3
 
 http_get(global.domain+'wl/getSplash.php')
 http_get(global.domain+'wl/getVersion.php')
@@ -65,7 +65,7 @@ http_get(global.domain+'wl/getVersion.php')
             <kind>1</kind>
             <string>//switch state string
 Tick++
-if Tick &gt;= 100
+if Tick &gt;= 200
   {
   Tick = 0
   State++
@@ -97,7 +97,7 @@ if Tick &gt;= 100
             <string>//not loaded
 if async_load[? "status"] != 0
   exit
-//response is laded
+//response is loaded
 var html = json_decode(async_load[? "result"])
 if html != -1
   {

@@ -78,9 +78,19 @@ bExit.icon_img = 4
 bExit.depth = 0
 bExit.StartDepth = 0
 bExit.parent = id
+
+bNews = instance_create(global.G_LEFT-128,80,oButtonIcon)
+bNews.icon_img = 5
+bNews.icon_xoff = 188
+bNews.icon_active = true
+bNews.depth = 0
+bNews.StartDepth = 0
+bNews.parent = id
+bNews.image_angle = 180
+
 //Buttons clickable + anim vars
 alist = ds_list_create()
-ds_list_add(alist, bNewGame, bProfile, bOptions, bAuthors)
+ds_list_add(alist, bNewGame, bProfile, bOptions, bAuthors, bNews)
 Anim = false
 AnimTick = 0     //used to funcTickOffset
 isInside = true
@@ -131,6 +141,7 @@ instance_destroy(bProfile,true)
 instance_destroy(bOptions,true)
 instance_destroy(bAuthors,true)
 instance_destroy(bExit,true)
+instance_destroy(bNews,true)
 ds_list_destroy(alist)
 </string>
           </argument>
@@ -205,7 +216,9 @@ ds_list_destroy(alist)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//check buttons pressed
+            <string>//todo refactor
+
+//check buttons pressed
 if bNewGame.clicked
   {
   if layerObj == -1
@@ -398,6 +411,50 @@ else if bAuthors.clicked
     }
   lastClicked = bAuthors
   }
+  
+//NEWS OPENED
+else if bNews.clicked
+  {
+  if layerObj == -1
+    {
+    Anim = true
+    uiSetClickable(alist, false)
+    stuff.active = false
+    with sec {uiSetClickable(alist,false)}
+    layerObj = instance_create(0,0,oNewsRuler)
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  else if layerObj.object_index == oNewsRuler
+    {
+    Anim = true                     //main menu: move back
+    uiSetClickable(alist, false)
+    stuff.active = true             //splash: visible
+    with sec {uiSetClickable(alist,true)}
+    layer.Anim = true               //layer: destroy
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = -1
+    }
+  else
+    {
+    Header = 'WORD LADDER'
+    lastClicked.sp = sButton
+    layer.Anim = true               //layer: destroy old
+    layer.AnimType = 1
+    layer.depth++
+    layerObj = instance_create(0,0,oNewsRuler) //layer: create new
+    layer = instance_create(0,0,oMenuLayer)
+    layer.bg = bg
+    layer.Child = layerObj
+    layer.depth = depth
+    layerObj.parent = id
+    }
+  lastClicked = bNews
+  } 
   
 //SAVE DATA &amp; QUIT  
 else if bExit.clicked

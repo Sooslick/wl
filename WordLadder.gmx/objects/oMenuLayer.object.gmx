@@ -30,7 +30,7 @@ Child = -1
 bg = -1         //bg obj: stole surface to draw blur fx
 Anim = true
 AnimTick = 0
-AnimTickMax = 20
+AnimTickMax = 30
 AnimType = 0    //0: in, 1: out, 2: hor in, 3: hor out
 //anim params (consts?)
 cx = global.G_RIGHT + 50
@@ -144,7 +144,7 @@ if Child != -1
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="8" enumb="72">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -166,8 +166,6 @@ if !surface_exists(sf)
   sf = surface_create(1500,900)  //2048, 1024
 surface_set_target(sf)
 draw_clear_alpha(0,1)
-//TODO global surface holder: creating oMenuLayer causes freezes
-
 //blur fx
 if bg != -1
   if surface_exists(bg.ds)
@@ -184,18 +182,38 @@ if bg != -1
     draw_surface_ext(bg.ds, -xoff, -yoff, Sc,Sc, -rR, c_white, 1)
     shader_reset()
     }
+surface_reset_target()
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>surface_set_target(sf)
+//TODO: all menus - use layer's surface
+//layer begin draw (clear, bg) -&gt; object's draw -&gt; layer post-draw to gui (border)
 //child surface draw
 if Child != -1
   if surface_exists(Child.ds)
     draw_surface(Child.ds,0,0)  
 //border draw
-draw_set_color(c_red)
-draw_set_alpha(1)
-for (var i=0; i&lt;12; i++)
-  draw_rectangle(0+i,0+i,1499-i,899-i,true)
-draw_set_color(c_maroon)
-for (var i=12; i&lt;18; i++)
-  draw_rectangle(0+i,0+i,1499-i,899-i,true)
+draw_sprite(sLayer,0,0,0)
 //post-operations    
 surface_reset_target()
 draw_surface_ext(sf,sfx,sfy,sfsc,sfsc,sfr,c_white,sfa)

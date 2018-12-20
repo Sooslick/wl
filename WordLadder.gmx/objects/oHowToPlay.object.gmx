@@ -33,14 +33,18 @@ prevWordList = ds_list_create()
 prevOffset = -1
 words = 0
 
+last_ts = current_time
+
 prevAnim = false
 prevAnimTick = 0
 
+OnclickEvent = 2
 BStart = instance_create(800,1000, oButton)
 BStart.content = 'BEGIN'
+BStart.parent = id
 
 //startgame params from global.custom
-Timer = 1800
+Timer = 60000
 TimerEnable = false
 
 MaxLen = 9
@@ -59,14 +63,6 @@ ShiftQty = 2
 TT = false                              //using of ability TabuType flag
 TTNum = -1
 TTQty = 2               
-
-//TabuFill
-for (i=1; i&lt;=TabuQty; i++)
-  {
-  tmp = irandom_range(1,string_length(prevWord)-1)
-  if tmp != string_char_at(prevWord,string_length(prevWord))
-    ds_list_add(TabuList,string_char_at(prevWord,i))
-  }
   
 //targetlist + fill
 TargetList = ds_list_create()
@@ -154,8 +150,10 @@ FadingOp = 0
             <kind>1</kind>
             <string>if prepared
   {
-  if TimerEnable
-    Timer--
+  if TimerEnable {
+    Timer-= current_time - last_ts
+    last_ts = current_time
+    }
     
   if prevAnim
     {
@@ -169,7 +167,7 @@ FadingOp = 0
     
   if TypeEnable
     {
-    TypeTimer--
+    TypeTimer-= 0.5
     if TypeTimer &lt;= 0
       {
       TypeTimer = TypeTimerReset
@@ -177,7 +175,7 @@ FadingOp = 0
       }
     }  
     
-  TextTimer--
+  TextTimer-= 0.5
   if TextTimer &lt;= 0
     {
     switch TextPt
@@ -399,7 +397,7 @@ FadingOp = 0
       case 29:
         TextPt = 30
         TextTimer = 240
-        TypeStr = 'ATAGAN#ETWORK#INGDOM#ILLION#OTHING#ENERAL#ICENCE#DUCATE#CLIPSE#LLIPSE#EEEEEEEEEEEEEEEEEE'
+        TypeStr = 'ARDMAN#ETWORK#INGDOM#ILLION#OTHING#ENERAL#ICENCE#DUCATE#CLIPSE#LLIPSE#EEEEEEEEEEEEEEEEEE'
         TypeChr = 1
         TypeTimer = 15
         TypeTimerReset = 6
@@ -412,20 +410,20 @@ FadingOp = 0
         break
       case 31:
         global.profile[?'PSGAMES'] ++
-        action_another_room(rMenu)
+        room_goto(rMenu)
         break
       default: TextTimer = 9000
       }
     }
   }
 if Fading
-  FadingOp+= 0.0035
+  FadingOp+= 0.0016
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="7" enumb="12">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -506,7 +504,7 @@ if Cube.Rot
 if string_length(currWord) &lt; MinLen
   {
   Cube.LengthErr = true
-  Timer-= 333
+  Timer-= 11111
   exit
   }
   
@@ -516,7 +514,7 @@ for (i=2; i&lt;=string_length(currWord); i++)
   j = ds_list_find_index(TabuList, string_char_at(currWord,i))
   if (j != -1) &amp;&amp; (j != TTNum)
     {
-    Timer-= 333
+    Timer-= 11111
     Cube.TabuErr = true
     Cube.TabuErrNum = j
     exit
@@ -526,7 +524,7 @@ for (i=2; i&lt;=string_length(currWord); i++)
 //check prevword
 if ds_list_find_index(prevWordList,currWord) != -1
   {
-  Timer-= 333
+  Timer-= 11111
   prevAnim = true
   exit
   }                                                      
@@ -534,7 +532,7 @@ if ds_list_find_index(prevWordList,currWord) != -1
 //check dict
         //stats count
         words++
-        PP+= words + (Timer div 1800) * MinLen + string_length(currWord)
+        PP+= words + (Timer div 60000) * MinLen + string_length(currWord)
         //words changing
         prevWord = currWord
         MinLen = string_length(currWord)
@@ -546,7 +544,7 @@ if ds_list_find_index(prevWordList,currWord) != -1
         Cube.Rot = true
         Cube.LengthErrTick = 0
         Cube.LengthErr = false
-        Timer+= (string_length(currWord)-1)*150 - Timer div 60
+        Timer+= (string_length(currWord)-1)*5000 - round(0.016*Timer)
         currWord = string_char_at(currWord, string_length(currWord))
         //shift prog
         if Shift

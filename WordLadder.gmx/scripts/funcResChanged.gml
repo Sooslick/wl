@@ -41,5 +41,5 @@ global.G_LEFT = -global.G_HOFF
 global.G_RIGHT = 1600+global.G_HOFF
 global.G_UP = -global.G_VOFF
 global.G_DOWN = 1200+global.G_VOFF
-display_set_gui_size(1600,1200)
+//display_set_gui_size(1600,1200)
 display_set_gui_maximise(global.DRAW_SCALE, global.DRAW_SCALE, global.DRAW_HOFF, global.DRAW_VOFF)

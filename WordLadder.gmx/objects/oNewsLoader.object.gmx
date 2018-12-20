@@ -26,6 +26,53 @@
           <argument>
             <kind>1</kind>
             <string>//request
+LoadRot = 0
+TimeOut = 300
+GameReady = false
+LoadReady = false
+mr = -1                 //menu ruler
+
+var get = "";
+if global.config[?'LastHeadline'] &gt; 0
+    get = "?DATE=" + string(global.config[?'LastHeadline'])
+http_get(global.domain+'wl/getNews.php' + get)
+
+//todo new headline no autoopen bug
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>LoadRot+= 5
+if !LoadReady {
+    TimeOut--
+    if TimeOut &lt;= 0
+        instance_destroy(self, true)
+    }
+else if GameReady {
+    if global.profile[?'PHEADLINE'] &lt; global.config[?'LastHeadline'] {
+        with mr.bNews {uiOnclick()}
+        global.profile[?'PHEADLINE'] = global.config[?'LastHeadline']
+        }
+    instance_destroy(self, true)
+    }
 </string>
           </argument>
         </arguments>
@@ -49,6 +96,52 @@
           <argument>
             <kind>1</kind>
             <string>//check header &amp; content or destroy
+//not loaded
+if async_load[? "status"] != 0
+  exit
+//response is loaded
+var html = json_decode(async_load[? "result"])
+if html != -1
+  {
+  if is_undefined(html[?'NEWS_DIR'])
+    exit
+  var news_dir = html[?'NEWS_DIR'] + '/';
+  //getNews answered
+  var news = html[?'NEWS'];
+  var headline = ds_map_find_first(news)
+  var headline_name = "";
+  var headline_cfg = 0;
+  while !is_undefined(headline) {
+    //get data from json
+    var data = news[?headline]
+    var content = data[?'CONTENT']
+    var link = data[?'ATTACHMENTS']
+    var timestamp = data[?'TIMESTAMP']
+    //fix timestamp to data format
+    headline_name = string_copy(timestamp,7,4) + string_copy(timestamp,4,2) + string_copy(timestamp,1,2) + string_copy(timestamp,12,2) + string_copy(timestamp,15,2)
+    var headline_real = real(headline_name)
+    if headline_real &gt; headline_cfg
+        headline_cfg = headline_real
+    //check directory
+    if !directory_exists('cache/' + headline_name)
+        directory_create('cache/' + headline_name)
+    //save img
+    if string_copy(link,string_length(link)-3,4) == ".png" ||
+       string_copy(link,string_length(link)-3,4) == ".jpg" ||
+       string_copy(link,string_length(link)-4,5) == ".jpeg"
+        http_get_file(global.domain + news_dir + link, 'cache/' + headline_name + '/img')
+    //save content
+    var f = file_text_open_write('cache/' + headline_name + '/content');
+    file_text_write_string(f, content)
+    file_text_close(f)
+    //next headline
+    headline = ds_map_find_next(news, headline)
+    }
+  //fix cfg
+  if headline_cfg &gt; global.config[?'LastHeadline']
+    global.config[?'LastHeadline'] = headline_cfg
+  LoadReady = true
+  }
 </string>
           </argument>
         </arguments>
@@ -71,7 +164,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//draw content
+            <string>if !LoadReady
+    drawLoading(LoadRot)
 </string>
           </argument>
         </arguments>

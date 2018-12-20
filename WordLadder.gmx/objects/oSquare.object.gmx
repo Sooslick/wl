@@ -34,6 +34,8 @@ opSq = 0            //Square opacity
 opCon = 0           //content opacity
 revState = 0        //180
 parent = 0          //SquareRuler
+
+draw = true
 </string>
           </argument>
         </arguments>
@@ -56,10 +58,13 @@ parent = 0          //SquareRuler
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>switch revState
+            <string>if revState==0
+  exit
+
+switch revState
   {
   case 1:
-    opCon+= 0.05                //content in
+    opCon+= 0.025                //content in
     if opCon &gt; 0.5
       {
       opCon = 0.5
@@ -67,7 +72,7 @@ parent = 0          //SquareRuler
       }
     break
   case 2:                       //content out
-    opCon-= 0.05
+    opCon-= 0.025
     if opCon &lt; 0
       {
       opCon = 0
@@ -75,7 +80,7 @@ parent = 0          //SquareRuler
       }
     break
   case 3:                       //square in
-    opSq+= 0.025
+    opSq+= 0.0125
     if opSq &gt; 0.5
       {
       opSq = 0.5
@@ -83,7 +88,7 @@ parent = 0          //SquareRuler
       }
     break
   case 6:                       //square fast &amp; full out
-    opSq-= 0.1
+    opSq-= 0.05
     if opSq &lt; 0
       {
       opSq = 0
@@ -91,7 +96,7 @@ parent = 0          //SquareRuler
       }
     break
   case 7:                       //square fast &amp; full in
-    opSq+= 0.1
+    opSq+= 0.05
     if opSq &gt; 1
       {
       opSq = 1
@@ -99,7 +104,7 @@ parent = 0          //SquareRuler
       }
     break
   case 8:                       //both SQ &amp; Content randomly disappearing
-    tmp = random_range(0,0.05)
+    tmp = random_range(0,0.025)
     opSq-= tmp
     opCon-= tmp
     if opSq &lt;= 0
@@ -132,16 +137,7 @@ parent = 0          //SquareRuler
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/*  moved to squareRuler: +optimization
-drawTextPreset(fCube,clr,opCon,fa_center,fa_center)
-surface_set_target(parent.ds)
-draw_sprite_ext(sSquare,spr,x,y,1,1,rot,c_white,opSq)
-if content != -1
-  if parent.isReverse
-    draw_text_transformed(x+32,y+32,content,1,1,180)
-  else
-    draw_text(x+32,y+32,content)
-surface_reset_target()*/
+            <string>//empty line to prevent self-drawing. Moved to SquareRuler
 </string>
           </argument>
         </arguments>

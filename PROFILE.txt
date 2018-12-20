@@ -1,14 +1,15 @@
-Current struct: v0.0.0.5
+Save version: v0.0.0.6
 
 bytes	info
 
     GENERAL
-4	Header / Save Version (long: 5)
+4	Header / Save Version
 4	Last Save Timestamp
 4	PNETID
 1	N = Name Length
 N	Name String
 1	Locale. Check locale list below
+12	Last news headline. Format: YYYYMMDDHHMM (number-string)
 
   OVERALL STAT
 4    	In-game time. Counted while entire game

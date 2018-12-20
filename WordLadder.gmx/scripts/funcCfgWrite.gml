@@ -60,7 +60,7 @@
     file_text_write_string(f,s)
     file_text_writeln(f)
     
-    //last loaded news
+    //last loaded headline
     s = 'LastHeadline=' + string(global.config[?'LastHeadline'])
     file_text_write_string(f,s)
     file_text_writeln(f)

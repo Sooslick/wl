@@ -115,13 +115,7 @@ else if B3.clicked
   fn = get_save_filename("PNG File|*.png","")
   if fn != ""
     {
-    draw_clear_alpha(c_black,0)
-    draw_set_color(c_white)
-    for (i=0; i&lt;256; i++)
-      {
-      draw_set_alpha(i/256)
-      draw_line(800+i,100,800+i,356)
-      }
+    do smth
     screen_save(fn)
     }*/
   clipboard_set_text(global.userdata[?'AT'])
