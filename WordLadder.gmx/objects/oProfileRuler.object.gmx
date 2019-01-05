@@ -201,7 +201,7 @@ else if bYes != -1 {
     global.userdata[?'AT'] = ''
     global.userdata[?'PW'] = ''
     global.userdata[?'AUTOLOG'] = 0
-    instance_destroy(self, true)
+    instance_destroy(parent, true)
     room_goto(rFirst)
     }
   if bNo.clicked {

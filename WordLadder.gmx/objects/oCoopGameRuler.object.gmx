@@ -263,7 +263,7 @@ if prepared
       if HintTimeUp &amp;&amp; HintTimer==0
         {
         HintObj = instance_create(0,0,oSquareHint)
-        HintObj.HINT_WORD = funcGetWord()
+        HintObj.HINT_WORD = funcGetHintWord()
         HintObj.HINT_LENGTH = MinLen*4
         with HintObj {event_user(0)}
         HintTimer += 666
@@ -273,7 +273,7 @@ if prepared
       else if HintTooLong &amp;&amp; HintTimer==0
         {
         HintObj = instance_create(0,0,oSquareHint)
-        HintObj.HINT_WORD = funcGetWord()
+        HintObj.HINT_WORD = funcGetHintWord()
         HintObj.HINT_LENGTH = MinLen*4
         with HintObj {event_user(0)}
         HintTimer += 690
@@ -283,7 +283,7 @@ if prepared
       else if HintWrong==1 &amp;&amp; HintTimer==0
         {
         HintObj = instance_create(0,0,oSquareHint)
-        HintObj.HINT_WORD = funcGetWord()
+        HintObj.HINT_WORD = funcGetHintWord()
         HintObj.HINT_LENGTH = MinLen*4
         with HintObj {event_user(0)}
         HintTimer += 720
@@ -497,7 +497,7 @@ bVoteN.content = 'NO'
         ds_list_clear(TabuList)
         for (i=1; i&lt;=TabuQty; i++)
           {
-          tmp = funcNewTabuLetter(Vowel + TabuQtyPB.Prog / 20)      //Vowel% chance of vowel tabu
+//          tmp = funcNewTabuLetter(Vowel + TabuQtyPB.Prog / 20)      //Vowel% chance of vowel tabu
           if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
               ds_list_add(TabuList,tmp)
           }
@@ -511,7 +511,7 @@ bVoteN.content = 'NO'
           arr[1] = 1.22
           arr[2] = 1.333
           arr[3] = 1.4444
-          var c = funcNewTargetLetter(arr);
+//          var c = funcNewTargetLetter(arr);
           if ds_list_find_index(TargetList, c) == -1
             if ds_list_find_index(TabuList,c) == -1
               ds_list_add(TargetList, c)

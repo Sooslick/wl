@@ -41,6 +41,7 @@ State = 3
 
 http_get(global.domain+'wl/getSplash.php')
 http_get(global.domain+'wl/getVersion.php')
+answers = 0
 </string>
           </argument>
         </arguments>
@@ -106,6 +107,7 @@ if html != -1
     {
     motd = html[?'CONTENT']
     motd_ready = true
+    answers++
     exit
     }
   //getVersion answered: get version and extradict version
@@ -120,16 +122,21 @@ if html != -1
     //TODO LOCALE CHECK
     //get extradict file from server
     var e = real(html[?'EXTRA']);
-    if e != global.config[?'ExtraDict']
+    if e &gt; global.config[?'ExtraDict']
       {
       //TODO: update ver after downloading;
-      //TODO: downloader obj + progbar
+      //TODO: downloader obj + progbar      //actual!
       //TODO: alert!
-      http_get_file("http://" + html[?'EXTRA_PATH'], "dict/EN_extra.dat")
-      global.config[?'ExtraDict'] = e
+      if !directory_exists('dict')
+        directory_create('dict')
+      http_get_file(html[?'EXTRA_PATH'], "dict/EN_extra.dat")
+      global.config[?'ExtraDict'] = e //todo replace after downloadong
       }
+    answers++
     exit
     }
+  //get file: check dict
+  //todo: change cfg field
   }
 </string>
           </argument>
@@ -165,6 +172,9 @@ if active &amp;&amp; motd_ready
   draw_set_valign(fa_top)
   draw_text_transformed(345,369,motd,0.66,0.66,22)
   }
+//http loading
+if answers &lt; 2
+  drawLoading(Tick*5)
 </string>
           </argument>
         </arguments>

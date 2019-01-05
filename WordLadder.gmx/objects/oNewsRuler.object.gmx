@@ -30,12 +30,20 @@
 ScrollPos = 0
 Headlines = 0
 //headlines read
-var dir = file_find_first('cache/*',fa_directory)
 MaxPos = 20
+var dir = file_find_first('cache/*',fa_directory)
+var dirs_total = 0
+var dirs_arr;
 while dir != "" {
+    dirs_arr[dirs_total] = 'cache/'+dir
+    dirs_total++
+    dir = file_find_next()
+    }
+dirs_total--
+while (dirs_total &gt;= 0) {
     //read content from cache
     Content[Headlines] = ''
-    var f = file_text_open_read('cache/'+dir+'/content')
+    var f = file_text_open_read(dirs_arr[dirs_total]+'/content')
     while (!file_text_eof(f)) {
         Content[Headlines]+= file_text_read_string(f) + '#';
         file_text_readln(f);
@@ -43,8 +51,8 @@ while dir != "" {
     file_text_close(f);
     Content[Headlines] = formatHtmlString(Content[Headlines])
     //read img
-    if file_exists('cache/'+dir+'/img')
-        Img[Headlines] = sprite_add('cache/'+dir+'/img',0,false,false,0,0)
+    if file_exists(dirs_arr[dirs_total]+'/img')
+        Img[Headlines] = sprite_add(dirs_arr[dirs_total]+'/img',0,false,false,0,0)
     else
         Img[Headlines] = -1
     //set pos on screen
@@ -58,7 +66,7 @@ while dir != "" {
     MaxPos+= 24
     //next
     Headlines++
-    dir = file_find_next()
+    dirs_total--
     }
 //button init
 bBack = instance_create(300,800,oButton);
@@ -96,7 +104,10 @@ ds = surface_create(1500,900)
             <string>instance_destroy(bBack,true)
 if surface_exists(ds)
     surface_free(ds)
-//todo sprites destroy
+//sprites destroy
+for (var i=0; i&lt;Headlines; i++)
+  if Img[i] != -1
+    sprite_delete(Img[i])
 </string>
           </argument>
         </arguments>

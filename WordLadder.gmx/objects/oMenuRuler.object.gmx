@@ -142,6 +142,11 @@ instance_destroy(bOptions,true)
 instance_destroy(bAuthors,true)
 instance_destroy(bExit,true)
 instance_destroy(bNews,true)
+instance_destroy(sec, true)
+instance_destroy(stuff, true)
+instance_destroy(bg, true)
+if layer != -1
+  instance_destroy(layer, true)
 ds_list_destroy(alist)
 </string>
           </argument>
@@ -531,8 +536,10 @@ draw_text(800,100,Header)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if keyboard_check(vk_control) &amp;&amp; keyboard_check(vk_shift)
+            <string>if keyboard_check(vk_control) &amp;&amp; keyboard_check(vk_shift) {
+  instance_destroy(self, true)
   room_goto(rDev)
+  }
 </string>
           </argument>
         </arguments>

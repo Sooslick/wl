@@ -43,7 +43,9 @@ tabus = 0                   //fails
 dicts = 0
 prevs = 0
 lens = 0
-avg = 0
+targets = 0                 //green letters
+targetsa = 0                //green accepted
+decrements = 0              //word length decs bonus
 
 sc = 1
 

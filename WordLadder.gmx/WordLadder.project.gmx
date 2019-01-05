@@ -100,9 +100,6 @@
     <script>scripts\funcChrCheck.gml</script>
     <script>scripts\funcSetWinResFromString.gml</script>
     <script>scripts\funcCheckGuiHover.gml</script>
-    <script>scripts\funcNewTabuLetter.gml</script>
-    <script>scripts\funcNewTargetLetter.gml</script>
-    <script>scripts\funcGetWord.gml</script>
     <script>scripts\checkWord.gml</script>
     <scripts name="datarw">
       <script>scripts\funcCfgWrite.gml</script>
@@ -140,6 +137,16 @@
       <script>scripts\uiSetActive.gml</script>
       <script>scripts\uiLineAddCol.gml</script>
     </scripts>
+    <scripts name="game">
+      <script>scripts\wordlistSetMask.gml</script>
+      <script>scripts\wordlistAddWord.gml</script>
+      <script>scripts\wordlistTyped.gml</script>
+      <script>scripts\lettersNext.gml</script>
+      <script>scripts\lettersNextBanPercent.gml</script>
+      <script>scripts\funcGetHintWord.gml</script>
+      <script>scripts\funcCreateHint.gml</script>
+      <script>scripts\abilChange.gml</script>
+    </scripts>
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>
     <script>scripts\funcBoolSwitch.gml</script>
@@ -170,6 +177,7 @@
     <object>objects\oFlashFx</object>
     <object>objects\oDevMenu</object>
     <object>objects\oDevDictRd</object>
+    <object>objects\oDevSlogan</object>
     <objects name="GameGeneralGroup">
       <object>objects\oDictLoader</object>
       <object>objects\oGameRuler</object>
@@ -184,9 +192,14 @@
       <object>objects\oGameStatCounter</object>
       <object>objects\oSquareHint</object>
       <object>objects\oProgBar</object>
+      <object>objects\oProgSquare</object>
       <object>objects\oGameClient</object>
       <object>objects\oGameServer</object>
       <object>objects\oGameChat</object>
+      <object>objects\oWordList</object>
+      <object>objects\oGameTimer</object>
+      <object>objects\oGameAbil</object>
+      <object>objects\oGameLetters</object>
     </objects>
     <objects name="MainMenuGroup">
       <object>objects\oMenuCreator</object>
@@ -209,6 +222,14 @@
         <object>objects\oCustomRuler</object>
         <object>objects\oMultiFind</object>
       </objects>
+      <objects name="Profile">
+        <object>objects\oProfileCreatorFirst</object>
+        <object>objects\oProfileRuler</object>
+        <object>objects\oProfileStats</object>
+        <object>objects\oProfileAchvs</object>
+        <object>objects\oAutolog</object>
+        <object>objects\oSaveLoader</object>
+      </objects>
     </objects>
     <objects name="UI">
       <object>objects\oButton</object>
@@ -227,14 +248,6 @@
       <object>objects\oCallhim</object>
       <object>objects\oPreved</object>
       <object>objects\oEasterEggRuler</object>
-    </objects>
-    <objects name="Profile">
-      <object>objects\oProfileCreatorFirst</object>
-      <object>objects\oProfileRuler</object>
-      <object>objects\oProfileStats</object>
-      <object>objects\oProfileAchvs</object>
-      <object>objects\oAutolog</object>
-      <object>objects\oSaveLoader</object>
     </objects>
   </objects>
   <rooms name="rooms">

@@ -168,6 +168,7 @@ else if bDirect.clicked
     if (string_length(bIP.contentSaved)&gt;6) {
       global.GameType = 0
       global.IP = bIP.contentSaved
+      instance_destroy(parent, true)
       room_goto(rGame)
       }
     else wrong = true

@@ -171,15 +171,16 @@ if bg != -1
   if surface_exists(bg.ds)
     {
     //apply blur to texture from background, calc offsets and rotation
-    var xoff = sfx - bg.dsx  - view_xview[0];
-    var yoff = sfy - bg.dsy  - view_yview[0];
-    var rR   = sfr - bg.rot;
+    var q = global.UPORTW/1600;
+    var xoff = - sfx - global.G_HOFF - view_xview[0]*q + bg.dsx*q
+    var yoff = - sfy - global.G_VOFF - view_yview[0]*q + bg.dsy*q
+    var rR   = bg.rot - sfr;
     var Sc   = 1200 / global.DPORTH
     //drawing
     shader_set(shGauss)
     var shader_params = shader_get_uniform(shGauss, "tense");
-    shader_set_uniform_f(shader_params, 0.75);
-    draw_surface_ext(bg.ds, -xoff, -yoff, Sc,Sc, -rR, c_white, 1)
+    shader_set_uniform_f(shader_params, 0.84);
+    draw_surface_ext(bg.ds, xoff, yoff, Sc,Sc, rR, c_white, 1)
     shader_reset()
     }
 surface_reset_target()
@@ -209,6 +210,7 @@ surface_reset_target()
 //TODO: all menus - use layer's surface
 //layer begin draw (clear, bg) -&gt; object's draw -&gt; layer post-draw to gui (border)
 //child surface draw
+draw_set_alpha(1)
 if Child != -1
   if surface_exists(Child.ds)
     draw_surface(Child.ds,0,0)  

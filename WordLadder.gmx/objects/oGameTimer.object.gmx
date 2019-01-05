@@ -25,45 +25,10 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>HINT_WORD = ''
-Tick = 0
-CurrSq = 0
-LifeTime = 180
-HalfTime = 120
-for (i=0; i&lt;40; i++) {
-  sqArr[i] = instance_create(i*64 + global.G_LEFT, 100 + global.G_UP, oSquare)
-  sqArr[i].content = chr(irandom_range(65,90))
-  sqArr[i].opSq = 0
-  sqArr[i].opCon = 0
-  sqArr[i].revState = 0
-  sqArr[i].parent = id
-  sqArr[i].image_xscale = 2
-  sqArr[i].image_yscale = 2
-  }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="1" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>for (i=0; i&lt;40; i++)
-  instance_destroy(sqArr[i],true)
+            <string>Timer = 0
+Str = '00:00:00.000'
+LastTime = current_time
+active = false
 </string>
           </argument>
         </arguments>
@@ -86,58 +51,16 @@ for (i=0; i&lt;40; i++) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>Tick++
-if Tick == HalfTime
-  CurrSq = 0
-else if Tick == LifeTime {
-  instance_destroy(self, true)
+            <string>if !active
   exit
-  }
-//appear / disappear
-if CurrSq &lt; 32
-  if Tick &lt; HalfTime {
-    sqArr[CurrSq].revState = 3
-    CurrSq++
-    }
-  else {
-    sqArr[CurrSq].revState = 8
-    CurrSq++
-    }
-//shift
-for (var i=0; i&lt;40; i++)
-  sqArr[i].x--
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="7" enumb="10">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>//hint word param passed
-if HINT_WORD == ''
-  exit
-  
-var Pos = irandom_range(3,23)
-for (var i=1; i&lt;string_length(HINT_WORD); i++) {
-  sqArr[Pos].content = string_char_at(HINT_WORD,i)
-  Pos++
-  if Pos &gt;= 40
-    break
+
+Timer-= current_time - LastTime
+LastTime = current_time
+if Timer &gt; 0
+  Str = formatTimeString(Timer)
+else {
+  Str = '00:00:00.000'
+  //todo action endgame
   }
 </string>
           </argument>
@@ -161,12 +84,11 @@ for (var i=1; i&lt;string_length(HINT_WORD); i++) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>for (i=0; i&lt;40; i++) {
-  draw_sprite_ext(sSquare,0,sqArr[i].x,sqArr[i].y,2,2,0,c_white,sqArr[i].opSq)
-  if sqArr[i].content != -1 {
-    drawTextPreset(fCube,sqArr[i].clr,sqArr[i].opCon,fa_center,fa_center)
-    draw_text(sqArr[i].x+32,sqArr[i].y+32,sqArr[i].content)
-    }
+            <string>drawTextPreset(fTimer, c_white, 1, fa_center, fa_bottom)
+var tmp = 596;
+for (var i=1; i&lt;= string_length(Str); i++) {
+  draw_text(tmp, global.G_DOWN, string_char_at(Str,i))
+  tmp+=34
   }
 </string>
           </argument>

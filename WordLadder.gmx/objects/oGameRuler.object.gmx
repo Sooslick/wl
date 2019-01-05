@@ -119,7 +119,7 @@ else
           <argument>
             <kind>1</kind>
             <string>if global.GameType != 0
-  RuleTick++
+  RuleTick+= 0.5
 FlashX+=233
 if FlashX &gt; 20000
   FlashX-= 44000
@@ -401,7 +401,7 @@ switch (global.GameType)                    //GR: GameRuler
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
         <id>603</id>

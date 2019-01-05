@@ -27,16 +27,11 @@
             <kind>1</kind>
             <string>prestart = false
 prepared = false
-prevWord = ''
+prevWord = 'WORD'
 currWord = ''
-prevWordList = ds_list_create()
-prevOffset = -1
 words = 0
-
-last_ts = current_time
-
-prevAnim = false
-prevAnimTick = 0
+wl = instance_create(0,0,oWordList)
+wl.parent = id
 
 OnclickEvent = 2
 BStart = instance_create(800,1000, oButton)
@@ -44,40 +39,31 @@ BStart.content = 'BEGIN'
 BStart.parent = id
 
 //startgame params from global.custom
-Timer = 60000
-TimerEnable = false
+Timer = instance_create(0,0,oGameTimer)
+Timer.Timer = 60000
 
-MaxLen = 9
+Letters = instance_create(0,0,oGameLetters)
+Letters.parent = id
+
 MinLen = 4
-prevWord = 'WORD'
-
-TabuList = ds_list_create()
-TabuQty = 0               
-
-PP = 0
-DrawScore = false
+MaxLen = 9              
 
 Shift = false                           //using of ability flag
-ShiftQty = 2
-
 TT = false                              //using of ability TabuType flag
-TTNum = -1
-TTQty = 2               
-  
-//targetlist + fill
-TargetList = ds_list_create()
-TLQty = 0
+TTNum = -1                              //letter number  
+ 
+PP = instance_create(0,0,oGameAbil)
+PP.active = false  
+PP.Value[1] = 2
+PP.Value[2] = 2
+PP.parent = id        
 
 Cube = instance_create(800,720,oGameCube)
 Cube.parent = id
 Cube.MinLen = MinLen
 Cube.NewLen = MinLen
 Cube.w1 = prevWord
-Cube.w2 = '    '
-Cube.w3 = '    '
-Cube.w4 = '    '
-Cube.TabuList = TabuList
-Cube.TargetList = TargetList
+Cube.Letters = Letters
 
 TextPt = 0
 TextArr[0] = 'HOW TO PLAY'
@@ -150,21 +136,6 @@ FadingOp = 0
             <kind>1</kind>
             <string>if prepared
   {
-  if TimerEnable {
-    Timer-= current_time - last_ts
-    last_ts = current_time
-    }
-    
-  if prevAnim
-    {
-    prevAnimTick++
-    if prevAnimTick &gt;= 32
-      {
-      prevAnimTick = 0
-      prevAnim = false
-      }
-    }
-    
   if TypeEnable
     {
     TypeTimer-= 0.5
@@ -258,8 +229,9 @@ FadingOp = 0
       case 10:
         TextPt = 11
         TextTimer = 210
-        TimerEnable = true
-        Timer = 1799
+        Timer.active = true
+        Timer.Timer = 60000
+        Timer.LastTime = current_time
         break
       case 11:
         TextPt = 12
@@ -291,7 +263,8 @@ FadingOp = 0
       case 14:
         TextPt = 15
         TextTimer = 210
-        TypeBan = 'ABUSERANDOMZRDERQW'
+        Letters.TabuQty = 1
+        Letters.TabuString = 'ABUSERANDOMZRDERQW'
         TypeStr = 'OINT#'
         TypeChr = 1
         TypeTimer = 4
@@ -319,7 +292,10 @@ FadingOp = 0
       case 17: case 18: case 19:
         TextPt++
         TextTimer = 240
-        DrawScore = true
+        PP.active = true
+        PP.Anim = true
+        PP.AnimLine = 0
+        PP.AnimCl = c_green
         break
       case 20:
         TextPt = 21
@@ -360,7 +336,7 @@ FadingOp = 0
       case 24:
         TextPt = 25
         TextTimer = 240
-        TypeStr = 'EPORT#ICKET#HOUGH#EALTH#UNGER#EDUCE#XPECT#ENNIS#'
+        TypeStr = 'EPORT#ICKET#HOUGH#EALTH#UNGER#EDUCE#'
         TypeChr = 1
         TypeTimer = 15
         TypeTimerReset = 8
@@ -369,12 +345,21 @@ FadingOp = 0
       case 25:
         TextPt = 26
         TextTimer = 240
-        ShiftQty+= 1
+        PP.Value[1]++
+        PP.Anim = true
+        PP.AnimLine = 1
+        PP.AnimCl = c_green
         break
       case 26:
         TextPt = 27
         TextTimer = 240
-        TypeGreen = 'TGHZK'
+        TypeStr = 'XPECT#pENNIS#'
+        TypeChr = 1
+        TypeTimer = 15
+        TypeTimerReset = 8
+        TypeEnable = true
+        Letters.TargetQty = 1
+        Letters.TargetString = 'TGHZK'
         break
       case 27:
         TextPt = 28
@@ -397,15 +382,16 @@ FadingOp = 0
       case 29:
         TextPt = 30
         TextTimer = 240
-        TypeStr = 'ARDMAN#ETWORK#INGDOM#ILLION#OTHING#ENERAL#ICENCE#DUCATE#CLIPSE#LLIPSE#EEEEEEEEEEEEEEEEEE'
+        TypeStr = 'ARDMAN#ETWORK#INGDOM#ILLION#OTHING#ENERAL#ICENCE#DUCATE#CLIPSE#LLIPSE#FFECTIVE#EEEEEEEEEEEEEEEEE'
         TypeChr = 1
         TypeTimer = 15
-        TypeTimerReset = 6
+        TypeTimerReset = 5
         TypeEnable = true
+        Letters.TabuQty = 0
         break
       case 30:
         TextPt = 31
-        TextTimer = 300
+        TextTimer = 282
         Fading = true
         break
       case 31:
@@ -417,7 +403,7 @@ FadingOp = 0
     }
   }
 if Fading
-  FadingOp+= 0.0016
+  FadingOp+= 0.0018
 </string>
           </argument>
         </arguments>
@@ -504,17 +490,17 @@ if Cube.Rot
 if string_length(currWord) &lt; MinLen
   {
   Cube.LengthErr = true
-  Timer-= 11111
+  Timer.Timer-= 11111
   exit
   }
   
 //check tabu
 for (i=2; i&lt;=string_length(currWord); i++)
   {
-  j = ds_list_find_index(TabuList, string_char_at(currWord,i))
+  j = ds_list_find_index(Letters.TabuList, string_char_at(currWord,i))
   if (j != -1) &amp;&amp; (j != TTNum)
     {
-    Timer-= 11111
+    Timer.Timer-= 11111
     Cube.TabuErr = true
     Cube.TabuErrNum = j
     exit
@@ -522,17 +508,15 @@ for (i=2; i&lt;=string_length(currWord); i++)
   }
 
 //check prevword
-if ds_list_find_index(prevWordList,currWord) != -1
-  {
-  Timer-= 11111
-  prevAnim = true
+if wordlistTyped(wl,currWord, true) {
+  Timer.Timer-= 11111
   exit
   }                                                      
     
 //check dict
         //stats count
         words++
-        PP+= words + (Timer div 60000) * MinLen + string_length(currWord)
+        PP.Value[0]+= words + (Timer.Timer div 60000) * MinLen + string_length(currWord)
         //words changing
         prevWord = currWord
         MinLen = string_length(currWord)
@@ -540,16 +524,19 @@ if ds_list_find_index(prevWordList,currWord) != -1
           MaxLen = MinLen
         if MinLen &gt; 15
           MinLen = 15
-        ds_list_add(prevWordList,currWord)
+        wordlistAddWord(wl, currWord)
         Cube.Rot = true
         Cube.LengthErrTick = 0
         Cube.LengthErr = false
-        Timer+= (string_length(currWord)-1)*5000 - round(0.016*Timer)
+        Timer.Timer+= (string_length(currWord)-1)*5000 - round(0.016*Timer.Timer)
         currWord = string_char_at(currWord, string_length(currWord))
         //shift prog
         if Shift
           {
-          ShiftQty--
+          PP.Value[1]--
+          PP.Anim = true
+          PP.AnimLine = 1
+          PP.AnimCl = c_red
           Shift = false
           }
         //TT prog
@@ -557,29 +544,20 @@ if ds_list_find_index(prevWordList,currWord) != -1
           {
           TT = false
           TTNum = -1
-          TTQty--
+          PP.Value[2]--
+          PP.Anim = true
+          PP.AnimLine = 2
+          PP.AnimCl = c_red
           }
         //target Letters List count
-        for (i=0; i&lt; ds_list_size(TargetList); i++)
+        for (i=0; i&lt; ds_list_size(Letters.TargetList); i++)
           {
-          var cnt = string_count(TargetList[| i],prevWord) ;
+          var cnt = string_count(Letters.TargetList[| i],prevWord) ;
           if cnt &gt; 0
-            PP+= ceil(cnt*words / 10)
+            PP.Value[0]+= ceil(cnt*words / 10)
           }
-        //Tabu refresh
-        ds_list_clear(TabuList)
-        if TypeBanChr &lt;= string_length(TypeBan)
-          {
-          ds_list_add(TabuList,string_char_at(TypeBan,TypeBanChr))
-          TypeBanChr++
-          }
-        //target letters refresh
-        ds_list_clear(TargetList)
-        if TypeGreenChr &lt;= string_length(TypeGreen)
-          {
-          ds_list_add(TargetList,string_char_at(TypeGreen,TypeGreenChr))
-          TypeGreenChr++
-          }
+        //Tabu &amp; targets refresh
+        with Letters lettersNext()
         //Cube Post Operations 
         Cube.NewLen = MinLen
         Cube.TabuErr = false
@@ -632,7 +610,7 @@ else if c == 'b'   //backspace
   }
   
   //switch Unban ability
-else if c == 't' &amp;&amp; TTQty &gt; 0
+else if c == 't' &amp;&amp; PP.Value[2] &gt; 0
   {
   if TT
     {
@@ -665,7 +643,7 @@ else if c == 'u'
     
 else if c == 'd'
   {
-  if ShiftQty &gt; 0
+  if PP.Value[1] &gt; 0
     {
     if !Shift
       {
@@ -685,24 +663,13 @@ else
 Cube.w1 = currWord  
 Cube.NewWord = true
   
-  //find similar in prevs
-  prevOffset = -1
-  for (i=words-1; i&gt;=0; i--)
-    {
-    if string_length(prevWordList[| i]) &lt; MinLen
-      continue
-    if currWord == string_copy(prevWordList[| i], 1,string_length(currWord))
-      {
-      prevOffset = i
-      break
-      }
-    }
+wordlistSetMask(wl, currWord)
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -720,74 +687,7 @@ Cube.NewWord = true
           <argument>
             <kind>1</kind>
             <string>//pre-sets
-draw_set_halign(fa_center)
-draw_set_valign(fa_top)
-draw_set_alpha(1)
-//timer
-draw_set_color(c_white)
-draw_set_font(fTimer)
-if TimerEnable
-    {
-    s = formatTimeString(Timer)
-    tmp = 800 - string_length(s)*17
-    for (i=1; i&lt;=string_length(s); i++)
-        {
-        draw_text(tmp,1100,string_char_at(s,i))
-        tmp+=34
-        }
-    }
-///abilities     
-if DrawScore
-    {    
-    draw_set_halign(fa_right)
-    draw_set_font(fImpact64)
-    draw_sprite_ext(sSquareFaded,0,1344,588,1,0.3,0,c_white,0.66)
-    draw_text(1595,575,'Score: ' +string(PP))
-    draw_text(1595,645,'Shifts: '+string(ShiftQty))
-    draw_text(1595,715,'Unbans: '+string(TTQty))
-    }
-
-//full list
-draw_set_halign(fa_left)
-draw_set_font(fImpact64)
-j = 0
-var xsc
-if MaxLen &gt;= 10
-  xsc = 9 / MaxLen - (MaxLen%10)/100
-else
-  xsc = 1
-
-if prevAnim
-  cl = make_color_rgb(255,prevAnimTick*8,prevAnimTick*8)
-else
-  cl = c_white
-
-draw_sprite_ext(sSquareFaded,0,256,600+64,1,0.3,180,cl,0.66)
-
-if prevOffset == -1
-  for (i=words-1; i&gt;=0; i--)
-    {
-    draw_text_transformed(5,600+45+j*70,prevWordList[| i],xsc,1,0)
-    j++
-    draw_set_alpha(draw_get_alpha()-0.08)
-    }
-else
-  {
-  for (i=prevOffset; i&gt;=0; i--)
-    {
-    draw_text_transformed(5,600-25+j*70,prevWordList[| i],xsc,1,0)
-    j++
-    draw_set_alpha(draw_get_alpha()-0.08)
-    }
-  draw_set_alpha(0.92)
-  j = -1
-  for (i=prevOffset+1; i&lt;words; i++)
-    {
-    draw_text_transformed(5,600-25+j*70,prevWordList[| i],xsc,1,0)
-    j--
-    draw_set_alpha(draw_get_alpha()-0.08)
-    }
-  }
+drawTextPreset(fImpact64, c_white, 1, fa_right, fa_top)
 //TabuHilight
 if TT
   {
@@ -807,9 +707,6 @@ draw_text_ext(800,420,TextArr[TextPt],76,1234)
 //fading
 if Fading
   draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,FadingOp)
-
-//debug
-//draw_text(1400,1200,string(TextTimer))
 </string>
           </argument>
         </arguments>
@@ -832,7 +729,7 @@ if Fading
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>action_another_room(rMenu)
+            <string>room_goto(rMenu)
 </string>
           </argument>
         </arguments>

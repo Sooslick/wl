@@ -56,7 +56,7 @@
     file_text_writeln(f)
     
     //version of downloaded extra.dict
-    s = 'ExtraDictVer=' + string(global.config[?'ExtraDict'])
+    s = 'ExtraDict=' + string(global.config[?'ExtraDict'])
     file_text_write_string(f,s)
     file_text_writeln(f)
     

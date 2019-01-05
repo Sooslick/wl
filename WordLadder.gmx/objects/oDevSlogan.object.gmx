@@ -25,46 +25,18 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//tech
-OnclickEvent = 0
-//game buttons
-P1 = instance_create(300,100,oButton)
-P1.content = 'SIMPLE'
-//advanced mb not clickable by default. In this case should not add it to alist
-P2 = instance_create(300,260,oButton)
-P2.content = 'ADVANCED'
-if global.profile[?"GM1"] == 0
-  P2.clickable = false
-with(P2) {uiRescale(500)}
-P2.parent = id
-P2.useParentSurface = true
-P2.sx = P2.x + 50
-P2.sy = P2.y + 180
-
-P3 = instance_create(300,420,oButton)
-P3.content = 'ENDLESS'
-
-PCustom = instance_create(300,580,oButton)
-PCustom.content = 'CUSTOM GAME'
-with PCustom {uiRescale(500)}
-
-PBack = instance_create(300,800,oButton)
-PBack.content = 'BACK'
-//clickables list
-alist = ds_list_create()
-ds_list_add(alist, P1,P3,PCustom,PBack)
-//buttons ds fields
-for (var i=0; i&lt;ds_list_size(alist); i++) {
-  alist[|i].parent = id
-  alist[|i].useParentSurface = true
-  alist[|i].sx = alist[|i].x + 50
-  alist[|i].sy = alist[|i].y + 180
-  }
-//if advanced is missed
-if P2.clickable
-  ds_list_add(alist, P2)
-//surface
-ds = surface_create(1500,900)
+            <string>Text[0] = 'THE BEST WORD GAME'
+Text2[0] = 'with the support of coop mode'
+Text[1] = 'TEST YOUR VOCABULARY'
+Text2[1] = 'and beat singleplayer mode'
+Text[2] = 'TAKE PART IN COOP GAMES'
+Text2[2] = 'and in our special Marathon event'
+Text[3] = 'EARN THE MOST POINTS'
+Text2[3] = 'and get rewards#unlock all achievements#find all easter eggs#finish the endless mode#make more useless stuff'
+state = -1
+stateMax = 3
+layer = -1
+ds = -1
 </string>
           </argument>
         </arguments>
@@ -87,74 +59,19 @@ ds = surface_create(1500,900)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//mem free
-instance_destroy(P1,true)
-instance_destroy(P2,true)
-instance_destroy(P3,true)
-instance_destroy(PCustom,true)
-instance_destroy(PBack,true)
-ds_list_destroy(alist)
-if surface_exists(ds)
+            <string>if surface_exists(ds)
   surface_free(ds)
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="7" enumb="10">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>if P1.clicked {
-  global.GameType = 1
-  instance_destroy(parent, true)
-  //todo settings preset
-  room_goto(rGame)
-  }
-else if P2.clicked {
-  global.GameType = 2
-  instance_destroy(parent, true)
-  //todo settings preset
-  room_goto(rGame)
-  }
-else if P3.clicked {
-  global.GameType = 3
-  instance_destroy(parent, true)
-  //todo settings preset
-  room_goto(rGame)
-  }
-else if PCustom.clicked {
-  with parent {
-    Header = "CUSTOM GAME SETTINGS"
-    layer.Anim = true               //layer: destroy old
-    layer.AnimType = 1
-    layer.depth++
-    layerObj = instance_create(0,0,oCustomRuler) //layer: create new
-    layer = instance_create(0,0,oMenuLayer)
-    layer.bg = bg
-    layer.Child = layerObj
-    layer.depth = depth
-    layerObj.parent = id
-    }
-  uiSetClickable(alist,false)
-  }
-else if PBack.clicked {
-  with parent.bNewGame {uiOnclick()}
-  uiSetClickable(alist,false)
-  }
+  
+layerObj = instance_create(0,0,oDevSlogan) //layer: create new
+if state == stateMax
+  layerObj.state = 0
+else
+  layerObj.state = state+1
+  
+layerObj.layer = instance_create(0,0,oMenuLayer)
+layerObj.layer.bg = oSquareRuler
+layerObj.layer.Child = layerObj
+layerObj.layer.depth = depth
 </string>
           </argument>
         </arguments>
@@ -177,23 +94,46 @@ else if PBack.clicked {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//init surfaces
-if !surface_exists(ds)
-  ds = surface_create(1500,900)
-surface_set_target(ds)
-draw_clear_alpha(0,0)
-//hints
-drawTextPreset(fImpact64, c_white, 1, fa_left, fa_top)
-if P1.hover &gt; 0
-  draw_text_ext(600,30,'Type the words in squares and complete a simple task!',80,800)
-else if P2.hover &gt; 0
-  draw_text_ext(600,30,'Check the capacity of your vocabulary and complete the same task again!',80,800)
-else if P3.hover &gt; 0
-  draw_text_ext(600,30,'How long will your vocabulary last? Try to score the most points!',80,800)
-else if PCustom.hover &gt; 0
-  draw_text_ext(600,30,'Play a customized game!',80,800)
-  
-surface_reset_target()
+            <string>if state &gt;= 0
+  if !surface_exists(ds) {
+    ds = surface_create(1500,900)
+    surface_set_target(ds)
+    draw_clear_alpha(0,0)
+    drawTextPreset(fImpact96,c_white,1,fa_center,fa_top)
+    draw_text(750,150,Text[state])
+    draw_set_font(fImpact64)
+    draw_text(750,320,Text2[state])
+    surface_reset_target()
+    }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="32">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if layer != -1 {
+  layer.Anim = true               //layer: destroy old
+  layer.AnimType = 1
+  layer.depth++
+}
+else
+  instance_destroy(self, true)
 </string>
           </argument>
         </arguments>

@@ -155,7 +155,7 @@ else if PClient.clicked {
   uiSetClickable(alist,false)
   }
 else if PHtp.clicked {
-  instance_destroy(self, true)
+  instance_destroy(parent, true)
   room_goto(rHTP)
   }
 else if PBack.clicked

@@ -386,6 +386,7 @@ else if bGo.clicked
   global.custom[?'Sec'] = bSec.num + 3
   global.custom[?'Green'] = bGreen.num
   global.GameType = 10 + bType.num
+  instance_destroy(parent, true)
   room_goto(rGame)
   }
 </string>

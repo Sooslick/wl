@@ -207,9 +207,12 @@ else {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>ScrollPos-= 75
-if ScrollPos &lt; 0
-  ScrollPos = 0
+            <string>if Lines &lt;= 7
+  exit
+
+ScrollPos+= 75
+if ScrollPos &gt; (Lines-7)*80
+  ScrollPos = (Lines-7)*80
 </string>
           </argument>
         </arguments>
@@ -232,12 +235,9 @@ if ScrollPos &lt; 0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if Lines &lt;= 7
-  exit
-
-ScrollPos+= 75
-if ScrollPos &gt; (Lines-7)*80
-  ScrollPos = (Lines-7)*80
+            <string>ScrollPos-= 75
+if ScrollPos &lt; 0
+  ScrollPos = 0
 </string>
           </argument>
         </arguments>
@@ -614,12 +614,12 @@ if Lines &gt; 7 {
     ScrollSf = surface_create(1024,512)
   surface_set_target(ScrollSf)
   draw_clear_alpha(0,0)
-  draw_text(0, 0+ScrollPos, DrawStr[0])   //150
-  draw_text(350, 0+ScrollPos, DrawStr[1])
-  draw_text(700, 0+ScrollPos, DrawStr[2])
-  draw_sprite_ext(sArrowScroll,0,990,50,1,1,270,c_white,1)
-  draw_sprite_ext(sArrowScroll,0,990,462,1,1,90,c_white,1)
-  surface_set_target(ds)
+  draw_text(0, 0-ScrollPos, DrawStr[0])   //150
+  draw_text(350, 0-ScrollPos, DrawStr[1])
+  draw_text(700, 0-ScrollPos, DrawStr[2])
+  draw_sprite_ext(sArrowScroll,0,990,50,1,1,90,c_white,1)
+  draw_sprite_ext(sArrowScroll,0,990,462,1,1,270,c_white,1)
+  surface_reset_target()
   draw_surface(ScrollSf,400,150)
   }
 else {

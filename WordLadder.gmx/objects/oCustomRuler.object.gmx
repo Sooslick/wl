@@ -180,8 +180,8 @@ with bHints {uiRescale(375)}
 //bBack &amp; bGo//
 bBack = instance_create(300,800,oButton)
 bBack.content = 'BACK'
-bBack.depth = depth-2
-bBack.StartDepth = depth-2
+bBack.depth = depth-1
+bBack.StartDepth = depth-1
 //
 bGo = instance_create(1200,800,oButton)
 bGo.content = 'START'
@@ -336,6 +336,10 @@ else if bBack.clicked {
   
 else if bGo.clicked
   {
+  //fix defaults
+  if bStartLen.num == -1
+    bStartLen.num = 0
+  //write config
   global.config[?'CustomStart'] = bStartLen.num
   global.config[?'CustomTimer'] = bStartTimer.num
   global.config[?'CustomInc'] = bSec.num
@@ -359,6 +363,7 @@ else if bGo.clicked
   global.custom[?'Sec'] = bSec.num + 3
   global.custom[?'Green'] = bGreen.num
   global.GameType = 4
+  instance_destroy(parent, true)
   room_goto(rGame)
   }
 </string>

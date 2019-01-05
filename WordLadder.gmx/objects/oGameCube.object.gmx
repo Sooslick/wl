@@ -27,12 +27,11 @@
             <kind>1</kind>
             <string>MinLen = 0
 NewLen = 0
-w1 = ''
-w2 = ''
-w3 = ''
-w4 = ''
-TabuList = -1
-TargetList = -1
+w1 = '    '
+w2 = '    '
+w3 = '    '
+w4 = '    '
+Letters = -1
 
 Approach = true             //Approach Animation
 ApproachScale = 2.0
@@ -79,8 +78,7 @@ ApplyBw = false
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if Approach
-  {
+            <string>if Approach {
   ApproachScale-=0.03
   if ApproachScale&lt;=1
     {
@@ -88,11 +86,9 @@ ApplyBw = false
     ApproachScale = 1
     }
   }
-if Rot
-  {
+if Rot {
   RotDeg+=3
-  if RotDeg&gt;=90
-    {
+  if RotDeg&gt;=90 {
     RotDeg = 0
     w4 = w3
     if Shifted
@@ -119,33 +115,27 @@ if Rot
   else
     aps = 0.1
   }
-if Shift
-  {
-  if ShiftY &gt; 0
-    {
+if Shift {
+  if ShiftY &gt; 0 {
     y+= 4
     ShiftY-= 4
     }
-  else if ShiftY &lt; 0
-    {
+  else if ShiftY &lt; 0 {
     y-= 4
     ShiftY+= 4
     }
-  else if ShiftX &gt; 0
-    {
+  else if ShiftX &gt; 0 {
     x-= 2
     ShiftX-= 2
     }
-  else if ShiftX &lt; 0
-    {
+  else if ShiftX &lt; 0 {
     x+= 2
     ShiftX+= 2
     }
   else
     Shift = false
   }
-if NewWord
-  {
+if NewWord {
   if string_length(w1) &gt; MinLen
     tmp = string_length(w1)
   else
@@ -157,30 +147,24 @@ if NewWord
   else
     NewWord = false
   }
-if (Tabu) &amp;&amp; (TabuList != -1)
-  {
+if (Tabu) &amp;&amp; (Letters != -1) {
   TabuProg++
-  if TabuProg &gt;= ds_list_size(TabuList)*10
-    {
+  if TabuProg &gt;= ds_list_size(Letters.TabuList)*10 {
     TabuProg = 0
     Tabu = false
     Target = true
     }
   }
-if (Target) &amp;&amp; (TargetList != -1)
-  {
+if (Target) &amp;&amp; (Letters != -1) {
   TargetProg++
-  if TargetProg &gt;= ds_list_size(TargetList)*10
-    {
+  if TargetProg &gt;= ds_list_size(Letters.TargetList)*10 {
     TargetProg = 0
     Target = false
     }
   }
-if LengthErr
-  {
+if LengthErr {
   LengthErrTick++
-  if LengthErrTick &gt;= 32
-    {
+  if LengthErrTick &gt;= 32 {
     LengthErrTick = 0
     LengthErr = false
     }
@@ -190,7 +174,7 @@ if LengthErr
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -207,12 +191,7 @@ if LengthErr
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_font(fCube)
-draw_set_color(c_white)
-draw_set_halign(fa_center)
-draw_set_valign(fa_center)
-draw_set_alpha(1)
-
+            <string>drawTextPreset(fCube, c_white, 1, fa_center, fa_center)
 //pre-set surface
 if !surface_exists(ds)
   ds = surface_create(1600,1600)    //a
@@ -225,208 +204,149 @@ draw_clear_alpha(0,0)
 if Shifted
   shoff = 1
 else
-  shoff = 0
- 
-//fader circle
-//draw_sprite_ext(sFadedCircle,0,x,y,MinLen*2.28,MinLen*2.28,0,0,1)  
-//player never see hints with this circle  
+  shoff = 0 
 
-//w1
-j = MinLen*32 - 32
-if string_length(w1) &gt; MinLen
-  tmp = string_length(w1)
-else
-  tmp = MinLen
-for (i=0; i&lt;tmp; i++)
-  {
-  xd = sx-j+64*i
-  yd = sy-j
-  if Rot
-    {
-    dist=point_distance(sx,sy,xd,yd)
-    currrot=degtorad(point_direction(sx,sy,xd,yd)+RotDeg)  
-    xd=sx+dist*cos(currrot)
-    yd=sy-dist*sin(currrot)
-    }
-  draw_sprite_ext(sSquareCenter,0, xd, yd, ApproachScale,ApproachScale,RotDeg,c_white,1)       
-  draw_text_transformed(xd,yd,string_char_at(w1,i+1), 1,1,RotDeg)
-  }
-//faded sq
+var sqx = 160 + (string_length(w1)-1) * 64;
+var sqy = 96;
+
+//w1 minlen
+for (var i=1; i&lt;=MinLen; i++)
+  draw_sprite_ext(sSquareCenter,0, 64*i+32, sqy, ApproachScale,ApproachScale,0,c_white,1)
+//w1 faded sq
 if (string_length(w1) &gt;= MinLen) &amp;&amp; !Rot
-  draw_sprite_ext(sSquareCenter,2, xd+64, yd, 1,1,RotDeg,c_white,1)  
+  draw_sprite_ext(sSquareCenter,2, sqx, sqy, 1,1,0,c_white,1) 
+//w1
+for (var i=string_length(w1); i&gt;0; i--) {
+  sqx-= 64
+  draw_sprite_ext(sSquareCenter,0, sqx, sqy, ApproachScale,ApproachScale,0,c_white,1)       
+  draw_text_transformed(sqx,sqy,string_char_at(w1,i), 1,1,0)
+  }
 //error 
-if LengthErr
-  {
-  a = (0.52 - (LengthErrTick*0.015))
-  draw_sprite_ext(sPixel,0,sx-j-32,yd-32,tmp*64,64,0,c_red,a)
+if LengthErr {
+  var a = (0.52 - (LengthErrTick*0.015));
+  draw_set_blend_mode(bm_add)
+  draw_sprite_ext(sPixel,0,sqx-32,sqy-32,parent.MinLen*64,64,0,c_red,a)
+  draw_set_blend_mode(bm_normal)
   }
 //newword fading
-if !Rot &amp;&amp; !Approach &amp;&amp; NewWord
-  {
-  draw_sprite_ext(sSquareFaded,0,sx-j+NewWordX-32,sy-j-32,0.25,0.25,RotDeg,c_black,1) 
-  draw_sprite_ext(sPixel,0,sx-j+NewWordX+32,sy-j-32,tmp*64-NewWordX,64,0,c_black,1)
+if !Rot &amp;&amp; !Approach &amp;&amp; NewWord {
+  draw_sprite_ext(sSquareFaded,0,sqx+NewWordX-32,sqy-32,0.25,0.25,0,c_black,1) 
+  var fsc = parent.MinLen*64-NewWordX;
+  if fsc &gt; 0
+    draw_sprite_ext(sPixel,0,sqx+NewWordX+32,sqy-32,fsc,64,0,c_black,1)
   }
-  
-if w2 != ''
-  {
-  if Shifted
-    {
-    xd = sx-j
-    yd = sy-j-64
-    if Rot
-      {
-      dist=point_distance(sx,sy,xd,yd)
-      currrot=degtorad(point_direction(sx,sy,xd,yd)+RotDeg)  
-      xd=sx+dist*cos(currrot)
-      yd=sy-dist*sin(currrot)
-      }
-    draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,1)       
-    draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)), 1,1,RotDeg+90)
-    //TODO fade out while ROT
+//w2
+if w2 != '' {
+  draw_set_alpha(1)
+  if Shifted {
+    draw_sprite_ext(sSquareCenter,0, sqx, sqy-64, ApproachScale,ApproachScale,0,c_white,1)       
+    draw_text_transformed(sqx,sqy-64,string_char_at(w2,string_length(w2)), 1,1,90)
     }
-  for (i=1; i&lt;string_length(w2)-shoff; i++)
-    {
-    xd = sx-j
-    yd = sy-j+64*i
-    if Rot
-      {
-      dist=point_distance(sx,sy,xd,yd)
-      currrot=degtorad(point_direction(sx,sy,xd,yd)+RotDeg)  
-      xd=sx+dist*cos(currrot)
-      yd=sy-dist*sin(currrot)
-      }
+  for (var i = string_length(w2)-1-shoff; i&gt;0; i--) {
+    sqy+= 64
     draw_set_alpha(draw_get_alpha()-aps)
-    draw_sprite_ext(sSquareCenter,0,xd,yd,1,1,RotDeg,c_white,draw_get_alpha()) 
-    draw_text_transformed(xd,yd,string_char_at(w2,string_length(w2)-i-shoff), 1,1,RotDeg+90)
+    draw_sprite_ext(sSquareCenter,0, sqx, sqy, ApproachScale,ApproachScale,0,c_white,draw_get_alpha())       
+    draw_text_transformed(sqx,sqy,string_char_at(w2,i), 1,1,90)
     }
   }
-  
 //w3
-if w3 != ''
-  {
-  for (i=1; i&lt;string_length(w3); i++)
-    {
-    xd = sx-j+64*i
-    yd = sy-j+(string_length(w2)-1-shoff)*64
-    if Rot
-      {
-      dist=point_distance(sx,sy,xd,yd)
-      currrot=degtorad(point_direction(sx,sy,xd,yd)+RotDeg)  
-      xd=sx+dist*cos(currrot)
-      yd=sy-dist*sin(currrot)
-      }
+if w3 != '' {
+  for (var i = string_length(w3)-1; i&gt;0; i--) {
+    sqx+= 64
     draw_set_alpha(draw_get_alpha()-aps)
-    draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,draw_get_alpha()) 
-    draw_text_transformed(xd, yd,string_char_at(w3,string_length(w3)-i), 1,1,RotDeg+180)
+    draw_sprite_ext(sSquareCenter,0, sqx, sqy, ApproachScale,ApproachScale,0,c_white,draw_get_alpha())       
+    draw_text_transformed(sqx,sqy,string_char_at(w3,i), 1,1,180)
     }
   }
-
-//w4    
-if (w4 != '')
-  {
-  i=1
-  while (draw_get_alpha() &gt; 0)
-    {
-    xd = sx-j+(string_length(w3)-1)*64
-    yd = sy-j+(string_length(w2)-1-shoff)*64-i*64
-    if Rot
-      {
-      dist=point_distance(sx,sy,xd,yd)
-      currrot=degtorad(point_direction(sx,sy,xd,yd)+RotDeg)  
-      xd=sx+dist*cos(currrot)
-      yd=sy-dist*sin(currrot)
-      }
+//w4
+if w4 != '' {
+  for (var i = string_length(w4)-1; i&gt;0; i--) {
+    sqy-= 64
     draw_set_alpha(draw_get_alpha()-aps)
-    draw_sprite_ext(sSquareCenter,0, xd, yd, 1,1,RotDeg,c_white,draw_get_alpha()) 
-    draw_text_transformed(xd, yd, string_char_at(w4,string_length(w4)-i), 1,1,RotDeg+270)
-    i++
-    } 
-  }  
+    if draw_get_alpha() &lt;= 0
+      break
+    draw_sprite_ext(sSquareCenter,0, sqx, sqy, ApproachScale,ApproachScale,0,c_white,draw_get_alpha())       
+    draw_text_transformed(sqx,sqy,string_char_at(w4,i), 1,1,270)
+    }
+  }
 surface_reset_target()
+
+var j = MinLen*32 -32;
+var sfx = j + 96;
+var dist = point_distance(0,0,sfx,sfx);
+var sx = x+dist*dcos(135+RotDeg)
+var sy = y-dist*dsin(135+RotDeg)
 
 if ApplyBw
   shader_set(shBw)
   
-var xt = x + shoff * 72
+var xt = x + shoff * 72 - j
 //TabuList
-if TabuList != -1
-{
-draw_set_alpha(1)
-if !Rot
-  {
-  if Tabu
-    {
-    tmp = TabuProg
-    i = 0
-    while tmp &gt; 0
-      {
-      if tmp &gt;= 10
-        {
-        draw_set_alpha(1)
-        draw_text(xt-j+i*72, y-j-100, TabuList[| i])
-        draw_sprite(sSquareTabu,0,xt-j+i*72, y-j-100)
+if Letters != -1 {
+  if !Rot {
+    if Tabu {
+      var tmp = TabuProg;
+      var i = 0;
+      while tmp &gt; 0 {
+        if tmp &gt;= 10 {
+          draw_set_alpha(1)
+          draw_text(xt+i*72, y-j-100, Letters.TabuList[| i])
+          draw_sprite(sSquareTabu,0,xt+i*72, y-j-100)
+          }
+        else {
+          draw_set_alpha(1/(10-tmp))
+          draw_text_transformed(xt+i*72, y-j-100, Letters.TabuList[| i],(5-tmp/2)+0.5,(5-tmp/2)+0.5,0)
+          draw_sprite_ext(sSquareTabu,0,xt+i*72, y-j-100, (5-tmp/2)+0.5, (5-tmp/2)+0.5, 0,c_white,draw_get_alpha())
+          }
+        tmp-= 10
+        i++
         }
-      else
-        {
-        draw_set_alpha(1/(10-tmp))
-        draw_text_transformed(xt-j+i*72, y-j-100, TabuList[| i],(5-tmp/2)+0.5,(5-tmp/2)+0.5,0)
-        draw_sprite_ext(sSquareTabu,0,xt-j+i*72, y-j-100, (5-tmp/2)+0.5, (5-tmp/2)+0.5, 0,c_white,draw_get_alpha())
+      }
+    else {
+      draw_set_alpha(1)
+      for (var i=0; i&lt;ds_list_size(Letters.TabuList); i++) {
+        draw_text(xt+i*72, y-j-100, Letters.TabuList[| i])
+        if (TabuErrNum == i) &amp;&amp; (TabuErr)
+          draw_sprite(sSquareTabu,1,xt+i*72, y-j-100)
+        else
+          draw_sprite(sSquareTabu,0,xt+i*72, y-j-100)
         }
-      tmp-= 10
-      i++
       }
     }
-  else
-    for (i=0; i&lt;ds_list_size(TabuList); i++)
-      {
-      draw_text(xt-j+i*72, y-j-100, TabuList[| i])
-      if (TabuErrNum == i) &amp;&amp; (TabuErr)
-        draw_sprite(sSquareTabu,1,xt-j+i*72, y-j-100)
-      else
-        draw_sprite(sSquareTabu,0,xt-j+i*72, y-j-100)
-      }
   }
-}
-if TargetList != -1
-{
-//target list
-draw_set_alpha(1)
-draw_set_color(c_green)
-xt+= 10
-if !Rot &amp;&amp; !Tabu
+if Letters != -1
   {
-  var k = 0
-  if Target
-    {
-    tmp = TargetProg
-    while tmp &gt; 0
-      {
-      if tmp &gt;= 10
-        {
-        draw_set_alpha(1)
-        draw_text(xt-j+i*72, y-j-100, TargetList[| k])
+  //target list
+  draw_set_color(c_green)
+  xt+= 10
+  if !Rot &amp;&amp; !Tabu {
+    var k = 0
+    if Target {
+      var tmp = TargetProg;
+      while tmp &gt; 0 {
+        if tmp &gt;= 10 {
+          draw_set_alpha(1)
+          draw_text(xt+i*72, y-j-100, Letters.TargetList[| k])
+          }
+        else {
+          draw_set_alpha(1/(10-tmp))
+          draw_text_transformed(xt+i*72, y-j-100, Letters.TargetList[| k],(5-tmp/2)+0.5,(5-tmp/2)+0.5,0)
+          }
+        tmp-= 10
+        i++
+        k++
         }
-      else
-        {
-        draw_set_alpha(1/(10-tmp))
-        draw_text_transformed(xt-j+i*72, y-j-100, TargetList[| k],(5-tmp/2)+0.5,(5-tmp/2)+0.5,0)
-        }
-      tmp-= 10
-      i++
-      k++
       }
+    else
+      for (k=0; k&lt;ds_list_size(Letters.TargetList); k++) {
+        draw_text(xt+i*72, y-j-100, Letters.TargetList[| k])
+        i++
+        }
     }
-  else
-    for (k=0; k&lt;ds_list_size(TargetList); k++)
-      {
-      draw_text(xt-j+i*72, y-j-100, TargetList[| k])
-      i++
-      }
   }
-}
 
 shader_reset()
-
+//todo wtf?
 var dlen = string_length(w1) - (MinLen div 2);
 if dlen &gt; 16
   dlen = 16
@@ -438,20 +358,17 @@ if dlen &gt; 7.49
   sdy = (string_length(w2) / 2) * 64
   sdy = (sdy - sdy*ssc)
   }
-  
+  /*
 shader_set(shLinear)
 var shader_params = shader_get_uniform(shLinear, "tense");
 shader_set_uniform_f(shader_params, 0.9);
 draw_surface_ext(ds,x-sx*2,y-sy*1.8,2,2,0,c_white,0.08)
 shader_reset()  
-  
+  */
 if ApplyBw
   shader_set(shBw)
-draw_set_alpha(1)
-draw_surface_ext(ds,x-sx*ssc,y-sy*ssc-sdy,ssc,ssc,0,c_white,1)
+draw_surface_ext(ds, sx,sy, 1,1,RotDeg,c_white, 1)
 shader_reset()
-//draw_surface(ds,x-sx,y-sy)
-//TODO: scale anim + adekvate scale calculation
 
 //debug
 //draw_set_color(c_white)

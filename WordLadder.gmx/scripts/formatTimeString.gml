@@ -20,6 +20,7 @@ if m<10 str+= '0'
 str+= string(m) + ':'
 if s<10 str+= '0'
 str+= string(s) + '.'
+if ms<100 str+= '0'
 if ms<10 str+= '0'
 str+= string(ms)
 

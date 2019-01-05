@@ -25,21 +25,35 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>loaded = false
-init = false
-readMain = true
-onlyMain = true
-lastPos = 0
+            <string>//general switches
+loaded = false      //ditionary loaded
+init = false        //connection initialised. If false, dict will not load
+readMain = true     //read from main flag (true main, false extra)
+onlyMain = true     //if extra dict exists
 
+//files
+f = -1              //opened dict file
+fe = -1             //opened extra dict file
+lfn_main  = ""      //dict file path
+lfn_extra = ""      //extra dict file path
+lastPos = 0         //file position
+finalSize = 1       //progress bar size
+currSize = 0        //progress
+
+//dictionary data
 locale = global.profile[?'PLOCALE']
+LoadedHash = 'AA'   //path to second level list
+tmpm = -1           //first level map
+tmpl = -1           //second level list
 
-//TODO: clear hashmap IF loaded
-
-tickTimeConst = 1000 / room_speed + 1   //time limiter
+//loading
+timeEndTick = 0                         //timestamp limiter
+tickTimeConst = 1000 / room_speed + 1   //time per tick limiter
 loadRot = 0
 loadStr = 'Initialization'
 
-GR = -1         //GameRuler Object
+//links
+parent = -1         //GameRuler Object
 </string>
           </argument>
         </arguments>
@@ -63,82 +77,89 @@ GR = -1         //GameRuler Object
           <argument>
             <kind>1</kind>
             <string>loadRot+= 5
-if init
+//skip event if !init
+if !init
+  exit
+
+if !loaded
   {
-  if !loaded
+  //loading time calc
+  timeEndTick = current_time + tickTimeConst  //load time limiter
+  //loading progbar calc
+  var fbp = file_bin_position(f);
+  if fbp &gt; lastPos
+    currSize+= fbp - lastPos
+  lastPos = fbp
+  //loader cycle
+  while (current_time &lt; timeEndTick)          //while time limit not reached
     {
-    timeEndTick = current_time + tickTimeConst  //load time limiter
-    var fbp = file_bin_position(f);
-    if fbp &gt; lastPos
-      currSize+= fbp - lastPos
-    lastPos = fbp
-    
-    while (current_time &lt; timeEndTick)          //while time limit not reached
+    //check eof
+    if file_bin_position(f) &gt;= file_bin_size(f) //old finalSize
       {
-      if file_bin_position(f) &gt;= file_bin_size(f) //old finalSize
+      file_bin_close(f)
+      //check read progress: switch to next file or set loaded=true
+      if readMain
         {
-        file_bin_close(f)
-        if readMain
-          {
-          if onlyMain
-            loaded = true
-          else
-            {
-            readMain = false
-            f = fe
-            loadStr = 'Loading new data'
-            }
-          }
-        else
+        if onlyMain
           loaded = true
-        break
+        else
+          {
+          readMain = false
+          f = fe
+          loadStr = 'Loading new data'
+          }
         }
-      q = file_bin_read_byte(f)
-      s = ''
-      //todo locale check!
-      //word too shoft
-      if q&lt;2
-        {
-        for (i=1; i&lt;=q; i++)
-          file_bin_read_byte(f)
+      else
+        loaded = true
+      break
+      }
+    var q = file_bin_read_byte(f)   //next word length
+    var s = ''                      //next word
+    //todo locale check!
+    //word too shoft
+    if q&lt;2
+      {
+      for (var i=0; i&lt;q; i++)       //skip; todo: use seek function
+        file_bin_read_byte(f)
+      continue
+      }
+    else
+      for (var i=0; i&lt;q; i++)
+        s+= chr(funcChrDecode(file_bin_read_byte(f)))   //read word
+    
+        //if loaded hash correct
+    if (string_char_at(s,1) == string_char_at(LoadedHash,1)) &amp;&amp;  
+       (string_char_at(s,2) == string_char_at(LoadedHash,2))
+            ds_list_add(tmpl,s) 
+    else
+      {
+      //get first lv map  
+      tmpm = global.DictDS
+      var c = string_char_at(s,1);
+      if ds_map_exists(tmpm,c)
+        tmpm = tmpm[? c]
+      else
         continue
-        }
+    
+      //get sec lv map 
+      var v = string_char_at(s,2) 
+      if ds_map_exists(tmpm,v)
+        tmpl = tmpm[? v]
       else
-        for (i=1; i&lt;=q; i++)
-          s+= chr(funcChrDecode(file_bin_read_byte(f)))
+        continue   
       
-      if (string_char_at(s,1) == string_char_at(LoadedHash,1)) &amp;&amp;  
-         (string_char_at(s,2) == string_char_at(LoadedHash,2))
-              ds_list_add(tmpl,s) 
-      else
-        {
-        //get first lv map  
-        tmpm = global.DictDS
-        c = string_char_at(s,1)
-        if ds_map_exists(tmpm,c)
-          tmpm = tmpm[? c]
-        else
-          continue
-      
-        //get sec lv map 
-        c = string_char_at(s,2) 
-        if ds_map_exists(tmpm,c)
-          tmpl = tmpm[? c]
-        else
-          continue   
-        
-        //put word
-        ds_list_add(tmpl,s) 
-        LoadedHash = string_char_at(s,1) + string_char_at(s,2)
-        }
+      //put word
+      ds_list_add(tmpl,s) 
+      LoadedHash = c + v
       }
     }
-  else
-    {
-    global.DictLoaded = locale
-    with (parent) {event_user(0)}
-    instance_destroy(self,true)
-    }
+  }
+else
+  {
+  //exec post-load event
+  global.DictLoaded = locale
+  with (parent) {event_user(0)}
+  instance_destroy(self,true)
   }
 </string>
           </argument>
@@ -183,7 +204,7 @@ if init
           <argument>
             <kind>1</kind>
             <string>//locale setup
-if global.DictLoaded &lt;&gt; locale
+if global.DictLoaded != locale    //if !loaded or loaded smth else
   {
   //pre-define filename
   switch locale
@@ -192,29 +213,40 @@ if global.DictLoaded &lt;&gt; locale
       lfn_main  = "dict/EN.dat"; 
       lfn_extra = "dict/EN_extra.dat"
       break
-    //case 1:
+    //case 1: too
     }
-    
-  //pre-define hashmaps
-  //TODO destroy prev
-  global.DictDS = ds_map_create()
-  //TODO: check locale!
-  
-  //first level hashmaps
-  for (i=65; i&lt;=90; i++)  
-    {
-    tmpm = ds_map_create()
-    //second level hashmap
-    for (j=65; j&lt;=90; j++) 
+  //destroy prev hashmaps. TODO: check locale!
+  if global.DictDS != -1 {
+    for (var i=65; i&lt;=90; i++)  
       {
-      tmpl = ds_list_create()
+      tmpm = global.DictDS[?i]
+      //second level hashmap
+      for (var j=65; j&lt;=90; j++) 
+        {
+        tmpl = tmpm[?j]
+        ds_list_destroy(tmpl)
+        }
+      ds_map_destroy(tmpm)
+      } 
+    ds_map_destroy(global.DictDS)
+    }
+  //pre-define hashmaps
+  global.DictDS = ds_map_create()
+  //first level hashmaps
+  for (var i=65; i&lt;=90; i++)  
+    {
+    tmpm = ds_map_create();
+    //second level hashmap
+    for (var j=65; j&lt;=90; j++) 
+      {
+      tmpl = ds_list_create();
       ds_map_add_list(tmpm, chr(j), tmpl)
       }
     ds_map_add_map(global.DictDS, chr(i), tmpm)
-    }
-    
+    } 
   LoadedHash = 'ZZ'
-  //reading dict file    
+  
+  //prepare dict file to read   
   f = file_bin_open(lfn_main,0)
   var fe_size = 0;
   if file_exists(lfn_extra) 
@@ -231,7 +263,6 @@ if global.DictLoaded &lt;&gt; locale
 else
   {
   loaded = true
-  global.DictLoaded = locale
   finalSize = 1
   currSize = 1
   }
@@ -241,7 +272,7 @@ init = true
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -259,33 +290,22 @@ init = true
           <argument>
             <kind>1</kind>
             <string>//loading progbar
-draw_set_color(c_red)
-draw_set_alpha(1)
+drawTextPreset(fHint, c_red, 1, fa_right, fa_center)
 draw_line_width(0,10,1600,10,16)
 
+draw_set_color(c_white)
 if init
     {
     //loading progbar current
-    draw_set_color(c_white)
     draw_line_width(0,10,currSize/finalSize*1600,10,10)
     //loading rotator
     if !loaded
-      {
-      draw_sprite_ext(sLoading,0,1500,80,2,2,loadRot,c_white,1)
-      draw_sprite_ext(sLoading,0,1500,80,1,1,-loadRot*2,c_white,1)
-      }
+      drawLoading(loadRot)
     }
 else
-    {
-    //connecting rotator
-    draw_sprite_ext(sLoading,0,1500,80,2,2,loadRot,c_white,1)
-    draw_sprite_ext(sLoading,0,1500,80,1,1,-loadRot*2,c_white,1)
-    }
+    drawLoading(loadRot)
     
-draw_set_color(c_white)
-draw_set_font(fHint)
-draw_set_halign(fa_right)
-draw_set_valign(fa_center)
+//loading comment
 draw_set_alpha(0.7)
 draw_text(1440,80,loadStr)
 </string>

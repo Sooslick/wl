@@ -61,6 +61,8 @@ for (i=0; i&lt;ARRMAX; i++)
     sqArr[i,j].opCon = 0
     sqArr[i,j].revState = 0
     sqArr[i,j].parent = id
+    sqArr[i,j].image_xscale = 2
+    sqArr[i,j].image_yscale = 2
     }
 //cheat states
 chStop = false
