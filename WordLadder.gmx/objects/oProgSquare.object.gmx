@@ -97,6 +97,7 @@ if Prog &lt; Req {
         }
       }
     }
+  draw_primitive_end()
   }
 else
   draw_rectangle(0,0,128,128,false)
@@ -107,7 +108,7 @@ draw_rectangle(0,0,127,127,true)
 draw_rectangle(1,1,126,126,true)
 
 surface_reset_target()
-draw_surface_ext(ds,x,y,1,1,45,c_white,1)
+draw_surface_ext(ds,x,y,1,1,-45,c_white,1)
 draw_text_transformed(x,y-5,content,tsc,tsc,0)
 </string>
           </argument>

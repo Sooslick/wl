@@ -36,6 +36,8 @@ Lines = 1               //used to rescale stat layer
 Sc = 1                  //stat layer scaling
 Header = ''
 gm = -1                 //Selected gamemode
+gmbase = 0              //base gamemode. 10 simple, 20 hard...
+gmmod = 0               //modifier. 0: overall, 1: last, 2: best
 MarkedButton = -1
 OnclickEvent = 0
 ScrollPos = 0
@@ -45,12 +47,12 @@ ScrollSf = -1
 
 //buttons
 //checkbpx only last game
-bCb = instance_create(224,80,oCheckBox)
-bCb.content = 'Last game only'
+bCb = instance_create(224,80,oButton)
+bCb.content = 'All games'
 bCb.font = fImpact64
 bCb.dsc = 0.75
 bCb.tsc = 0.7
-with bCb {uiRescale(375)}
+with bCb {uiRescale(500)}
 //overall game stat
 b0 = instance_create(140,180,oButton)
 b0.content = 'OVERALL'
@@ -211,8 +213,8 @@ else {
   exit
 
 ScrollPos+= 75
-if ScrollPos &gt; (Lines-7)*80
-  ScrollPos = (Lines-7)*80
+if ScrollPos &gt; (Lines-6)*80
+  ScrollPos = (Lines-6)*80
 </string>
           </argument>
         </arguments>
@@ -319,19 +321,28 @@ else if Right
             <kind>1</kind>
             <string>//select data map from profile
 var SECTMAP = global.profile[?'PSSECTIONS'];
+if gmbase == 0
+  gm = 0
+else
+  gm = gmbase + gmmod
 switch gm
   {
   case 0:   Header = 'OVERALL';       break
   case 10:  Header = 'SIMPLE';        break
   case 11:  Header = 'LAST SIMPLE';   break
+  case 12:  Header = 'BEST SIMPLE';   break
   case 20:  Header = 'ADVANCED';      break
   case 21:  Header = 'LAST ADVANCED'; break
+  case 22:  Header = 'BEST ADVANCED'; break
   case 30:  Header = 'ENDLESS';       break
   case 31:  Header = 'LAST ENDLESS';  break
+  case 32:  Header = 'BEST ENDLESS';  break
   case 40:  Header = 'CUSTOM';        break
   case 41:  Header = 'LAST CUSTOM';   break
+  case 42:  Header = 'BEST CUSTOM';   break
   case 100: Header = 'CO-OP';         break
   case 101: Header = 'LAST CO-OP';    break
+  case 102: Header = 'BEST CO-OP';    break
   }
 if !is_undefined(SECTMAP[?gm])
   {
@@ -354,11 +365,13 @@ if !is_undefined(SECTMAP[?gm])
       '#too shorts: '+string(SECTMAP[?'PSSHORTTYPED']) +
       '#wrong words: '+string(SECTMAP[?'PSWRONGTYPED']) +
       '#repeated words: '+string(SECTMAP[?'PSREPTYPED']) +
-      '#best score: '+string(SECTMAP[?'PSBESTSCORE']) +
-      '#last score: '+string(SECTMAP[?'PSLASTSCORE'])
+      '#length decrements: '+string(SECTMAP[?'PSDECREMENTS']) +
+      '#greens generated: '+string(SECTMAP[?'PSGREENS']) +
+      '#greens typed: '+string(SECTMAP[?'PSGREENSTYPED']) +
+      '#score: '+string(SECTMAP[?'PSLASTSCORE'])
       DrawStr[1] = ''
       DrawStr[2] = ''
-      Lines = 17
+      Lines = 19
       break
     case 1:
       //check words in lens map
@@ -484,19 +497,22 @@ if Lines &lt;= 7
             <kind>1</kind>
             <string>//recalc lastgame / overall
 if bCb.clicked {
-  if (MarkedButton != -1) &amp;&amp; (MarkedButton != b0)
-    if bCb.checked
-      gm++
-    else
-      gm--
-    event_user(1)
+  gmmod++
+  if gmmod &gt; 2
+    gmmod = 0
+  event_user(1)
+  switch gmmod {
+    case 0: bCb.content = 'All games'; break
+    case 1: bCb.content = 'Last game'; break
+    case 2: bCb.content = 'Best game'; break
+    }
   }
 //recalc overall + button mark
 else if b0.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b0
   b0.sp = sButtonMark
-  gm = 0
+  gmbase = 0
   event_user(1)
   }
 //recalc simple
@@ -504,10 +520,7 @@ else if b1.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b1
   b1.sp = sButtonMark
-  if bCb.checked
-    gm = 11
-  else
-    gm = 10
+  gmbase = 10
   event_user(1)
   }
 //recalc adv
@@ -515,10 +528,7 @@ else if b2.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b2
   b2.sp = sButtonMark
-  if bCb.checked
-    gm = 21
-  else
-    gm = 20
+  gmbase = 20
   event_user(1)
   }
 //recalc endless
@@ -526,10 +536,7 @@ else if b3.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b3
   b3.sp = sButtonMark
-  if bCb.checked
-    gm = 31
-  else
-    gm = 30
+  gmbase = 30
   event_user(1)
   }
 //rec cstom
@@ -537,10 +544,7 @@ else if b4.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b4
   b4.sp = sButtonMark
-  if bCb.checked
-    gm = 41
-  else
-    gm = 40
+  gmbase = 40
   event_user(1)
   }
 //rec mpl
@@ -548,10 +552,7 @@ else if b10.clicked {
   MarkedButton.sp = sButton
   MarkedButton = b10
   b10.sp = sButtonMark
-  if bCb.checked
-    gm = 101
-  else
-    gm = 100
+  gmbase = 100
   event_user(1)
   }
 //return to ProfileRuler

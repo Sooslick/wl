@@ -146,6 +146,12 @@
       <script>scripts\funcGetHintWord.gml</script>
       <script>scripts\funcCreateHint.gml</script>
       <script>scripts\abilChange.gml</script>
+      <script>scripts\gameReadSettings.gml</script>
+      <script>scripts\gameGeneralObjCreate.gml</script>
+      <script>scripts\gameSetGeneralVars.gml</script>
+      <script>scripts\gameSetFirstWord.gml</script>
+      <script>scripts\gameAnykeySolo.gml</script>
+      <script>scripts\gameWordAcceptedSolo.gml</script>
     </scripts>
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>

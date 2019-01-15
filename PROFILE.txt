@@ -1,4 +1,4 @@
-Save version: v0.0.0.6
+Save version: v0.0.0.7
 
 bytes	info
 
@@ -46,10 +46,10 @@ N	Name String
 4	short words
 4	wrong words
 4	repeated words
+4	greens typed
+4	greens generated
+4	length decrements
 4	total score
-4	best score
-#4	targets typed
-#4	targets generated -> replace best
 1	K = Length Maps
 
  K x LENGTH MAPS

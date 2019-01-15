@@ -17,7 +17,7 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
     v[1] = file_bin_read_byte(f)
     v[2] = file_bin_read_byte(f)
     v[3] = file_bin_read_byte(f)
-    if !(v[0] == 0 && v[1] == 0 && v[2] == 0 && v[3] == 6)
+    if !(v[0] == 0 && v[1] == 0 && v[2] == 0 && v[3] == 7)
         ok = false
     if ok
         {
@@ -76,8 +76,10 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
           SECTMAP[?'PSBANTYPED'] = funcReadLong(f)
           SECTMAP[?'PSSHORTTYPED'] = funcReadLong(f)
           SECTMAP[?'PSWRONGTYPED'] = funcReadLong(f)
-          SECTMAP[?'PSREPTYPED'] = funcReadLong(f) 
-          SECTMAP[?'PSBESTSCORE'] = funcReadLong(f) 
+          SECTMAP[?'PSREPTYPED'] = funcReadLong(f)
+          SECTMAP[?'PSGREENS'] = funcReadLong(f) 
+          SECTMAP[?'PSGREENSTYPED'] = funcReadLong(f) 
+          SECTMAP[?'PSDECREMENTS'] = funcReadLong(f) 
           SECTMAP[?'PSLASTSCORE'] = funcReadLong(f)          
           //Length fields
           var LENGTH_MAP = ds_map_create();

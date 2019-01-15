@@ -29,7 +29,7 @@
 prepared = false
 prevWord = 'WORD'
 currWord = ''
-words = 0
+
 wl = instance_create(0,0,oWordList)
 wl.parent = id
 
@@ -42,8 +42,8 @@ BStart.parent = id
 Timer = instance_create(0,0,oGameTimer)
 Timer.Timer = 60000
 
-Letters = instance_create(0,0,oGameLetters)
-Letters.parent = id
+l = instance_create(0,0,oGameLetters)
+l.parent = id
 
 MinLen = 4
 MaxLen = 9              
@@ -63,7 +63,7 @@ Cube.parent = id
 Cube.MinLen = MinLen
 Cube.NewLen = MinLen
 Cube.w1 = prevWord
-Cube.Letters = Letters
+Cube.Letters = l
 
 TextPt = 0
 TextArr[0] = 'HOW TO PLAY'
@@ -263,8 +263,8 @@ FadingOp = 0
       case 14:
         TextPt = 15
         TextTimer = 210
-        Letters.TabuQty = 1
-        Letters.TabuString = 'ABUSERANDOMZRDERQW'
+        l.TabuQty = 1
+        l.TabuString = 'ABUSERANDOMZRDERQW'
         TypeStr = 'OINT#'
         TypeChr = 1
         TypeTimer = 4
@@ -358,8 +358,8 @@ FadingOp = 0
         TypeTimer = 15
         TypeTimerReset = 8
         TypeEnable = true
-        Letters.TargetQty = 1
-        Letters.TargetString = 'TGHZK'
+        l.TargetQty = 1
+        l.TargetString = 'TGHZK'
         break
       case 27:
         TextPt = 28
@@ -387,7 +387,7 @@ FadingOp = 0
         TypeTimer = 15
         TypeTimerReset = 5
         TypeEnable = true
-        Letters.TabuQty = 0
+        l.TabuQty = 0
         break
       case 30:
         TextPt = 31
@@ -497,7 +497,7 @@ if string_length(currWord) &lt; MinLen
 //check tabu
 for (i=2; i&lt;=string_length(currWord); i++)
   {
-  j = ds_list_find_index(Letters.TabuList, string_char_at(currWord,i))
+  j = ds_list_find_index(l.TabuList, string_char_at(currWord,i))
   if (j != -1) &amp;&amp; (j != TTNum)
     {
     Timer.Timer-= 11111
@@ -513,55 +513,45 @@ if wordlistTyped(wl,currWord, true) {
   exit
   }                                                      
     
-//check dict
-        //stats count
-        words++
-        PP.Value[0]+= words + (Timer.Timer div 60000) * MinLen + string_length(currWord)
-        //words changing
-        prevWord = currWord
-        MinLen = string_length(currWord)
-        if MinLen &gt; MaxLen
-          MaxLen = MinLen
-        if MinLen &gt; 15
-          MinLen = 15
-        wordlistAddWord(wl, currWord)
-        Cube.Rot = true
-        Cube.LengthErrTick = 0
-        Cube.LengthErr = false
-        Timer.Timer+= (string_length(currWord)-1)*5000 - round(0.016*Timer.Timer)
-        currWord = string_char_at(currWord, string_length(currWord))
-        //shift prog
-        if Shift
-          {
-          PP.Value[1]--
-          PP.Anim = true
-          PP.AnimLine = 1
-          PP.AnimCl = c_red
-          Shift = false
-          }
-        //TT prog
-        if TT
-          {
-          TT = false
-          TTNum = -1
-          PP.Value[2]--
-          PP.Anim = true
-          PP.AnimLine = 2
-          PP.AnimCl = c_red
-          }
-        //target Letters List count
-        for (i=0; i&lt; ds_list_size(Letters.TargetList); i++)
-          {
-          var cnt = string_count(Letters.TargetList[| i],prevWord) ;
-          if cnt &gt; 0
-            PP.Value[0]+= ceil(cnt*words / 10)
-          }
-        //Tabu &amp; targets refresh
-        with Letters lettersNext()
-        //Cube Post Operations 
-        Cube.NewLen = MinLen
-        Cube.TabuErr = false
-        Cube.TabuErrNum = -1
+//count fields
+var ws = 0;                              //words total
+var ls = string_length(currWord);       //letters in current word
+var ms = Timer.Timer div 60000;         //minutes on timer
+var bs = ds_list_size(l.TabuList);      //banned
+var ts = 0;                             //target letters
+for (i=0; i&lt; ds_list_size(l.TargetList); i++)       //count ts
+  ts+= string_count(l.TargetList[| i],prevWord)
+//write word and proceed
+wordlistAddWord(wl,currWord)
+prevWord = currWord
+MinLen = string_length(currWord)
+if MinLen &gt; MaxLen                //MaxLength to adjust scale in wlist
+  MaxLen = MinLen
+if MinLen &gt; 15                    //Const Max Length: 15. todo?
+  MinLen = 15
+currWord = string_char_at(currWord, string_length(currWord))
+//Timer bonus
+Timer.Timer+= (ls-1)*5000 - Timer div 60                  //every minute on timer
+//shift usage                                            //causes loss f one second
+if Shift {
+  abilChange(PP, 1, -1)
+  Shift = false
+  }
+//ban usage
+if TT {
+  TT = false
+  TTNum = -1
+  abilChange(PP, 2, -1)
+  }
+//letters refresh
+with l {lettersNext()}
+//Cube Operations: Rotate &amp; Refresh word 
+Cube.Rot = true
+Cube.LengthErrTick = 0
+Cube.LengthErr = false
+Cube.NewLen = MinLen
+Cube.TabuErr = false
+Cube.TabuErrNum = -1
 </string>
           </argument>
         </arguments>

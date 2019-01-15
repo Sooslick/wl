@@ -25,12 +25,13 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>HINT_WORD = ''
+            <string>SQUARES = 42
+HINT_WORD = ''
 Tick = 0
 CurrSq = 0
 LifeTime = 180
 HalfTime = 120
-for (i=0; i&lt;40; i++) {
+for (i=0; i&lt;SQUARES; i++) {
   sqArr[i] = instance_create(i*64 + global.G_LEFT, 100 + global.G_UP, oSquare)
   sqArr[i].content = chr(irandom_range(65,90))
   sqArr[i].opSq = 0
@@ -62,7 +63,7 @@ for (i=0; i&lt;40; i++) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>for (i=0; i&lt;40; i++)
+            <string>for (i=0; i&lt;SQUARES; i++)
   instance_destroy(sqArr[i],true)
 </string>
           </argument>
@@ -94,7 +95,7 @@ else if Tick == LifeTime {
   exit
   }
 //appear / disappear
-if CurrSq &lt; 32
+if CurrSq &lt; SQUARES
   if Tick &lt; HalfTime {
     sqArr[CurrSq].revState = 3
     CurrSq++
@@ -104,7 +105,7 @@ if CurrSq &lt; 32
     CurrSq++
     }
 //shift
-for (var i=0; i&lt;40; i++)
+for (var i=0; i&lt;SQUARES; i++)
   sqArr[i].x--
 </string>
           </argument>
@@ -136,7 +137,7 @@ var Pos = irandom_range(3,23)
 for (var i=1; i&lt;string_length(HINT_WORD); i++) {
   sqArr[Pos].content = string_char_at(HINT_WORD,i)
   Pos++
-  if Pos &gt;= 40
+  if Pos &gt;= SQUARES
     break
   }
 </string>
@@ -161,7 +162,7 @@ for (var i=1; i&lt;string_length(HINT_WORD); i++) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>for (i=0; i&lt;40; i++) {
+            <string>for (i=0; i&lt;SQUARES; i++) {
   draw_sprite_ext(sSquare,0,sqArr[i].x,sqArr[i].y,2,2,0,c_white,sqArr[i].opSq)
   if sqArr[i].content != -1 {
     drawTextPreset(fCube,sqArr[i].clr,sqArr[i].opCon,fa_center,fa_center)

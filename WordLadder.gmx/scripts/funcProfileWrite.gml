@@ -8,7 +8,7 @@ if global.userdata[?'PNETID'] == 0
     file_bin_write_byte(f,0)
     file_bin_write_byte(f,0)
     file_bin_write_byte(f,0)
-    file_bin_write_byte(f,6)        //4 bytes: version
+    file_bin_write_byte(f,7)        //4 bytes: version
     funcWriteLong(f,current_time)
     funcWriteLong(f,global.profile[?'PNETID'])
       
@@ -68,7 +68,9 @@ if global.userdata[?'PNETID'] == 0
         funcWriteLong(f,CURRMAP[?'PSSHORTTYPED'])
         funcWriteLong(f,CURRMAP[?'PSWRONGTYPED'])
         funcWriteLong(f,CURRMAP[?'PSREPTYPED'])
-        funcWriteLong(f,CURRMAP[?'PSBESTSCORE'])
+        funcWriteLong(f,CURRMAP[?'PSGREENS']) 
+        funcWriteLong(f,CURRMAP[?'PSGREENSTYPED']) 
+        funcWriteLong(f,CURRMAP[?'PSDECREMENTS']) 
         funcWriteLong(f,CURRMAP[?'PSLASTSCORE'])
         //LENS COUNT
         file_bin_write_byte(f,ds_map_size(CURRMAP[?'PSLENGTHMAP']))

@@ -25,7 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//game's counters
+            <string>OnclickEvent = 3
+//game's counters
 pp = 0                      //score
 words = 0
 letters = 0                 //total
@@ -46,25 +47,24 @@ lens = 0
 targets = 0                 //green letters
 targetsa = 0                //green accepted
 decrements = 0              //word length decs bonus
-
+//text scale
 sc = 1
-
+//targets completed?
 success = false
-
 //tech active swithes
-active = false
-B1 = -1
-s = ''
+active = false              //true = gameover
+B1 = -1                     //"back" button
+s = ''                      //content
 sCaption = ''
 ShowPage = 0                //0: general;  1: letters;  2: abilities;  3: fails
 ShowPageTick = 0
-
+ShowPageSpeed = 1
 //TODO more stats
+//wordmap stored
 LenMap = ds_map_create()
 ds_map_clear(LenMap)
 LenWord = ''
-
-//special
+//special page #5
 sSpec[0] = ''
 sSpec[1] = ''
 sSpec[2] = ''
@@ -90,11 +90,9 @@ sSpec[2] = ''
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if active
-  {
-  ShowPageTick++
-  if ShowPageTick == 180
-    {
+            <string>if active {
+  ShowPageTick+= ShowPageSpeed
+  if ShowPageTick == 420 {
     ShowPage++
     event_user(1)
     ShowPageTick = 0
@@ -105,8 +103,60 @@ sSpec[2] = ''
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>Switch showpage</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="6" enumb="53">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if B1 &gt; 0 
+  if mouse_y &lt; 1035 {   // @back button on bottom?
+    if mouse_x &gt; 800
+      ShowPage++
+    else
+      ShowPage--
+    ShowPageTick = 0
+    ShowPageSpeed = 0.25
+    event_user(1)
+    }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="13">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -124,22 +174,32 @@ sSpec[2] = ''
           <argument>
             <kind>1</kind>
             <string>if B1 &gt; 0
-  if B1.clicked
-    {
+  if B1.clicked {
     funcProfileWrite()
     funcSendProfile()
     room_goto(rMenu)
     }
-  else
-    {
-    if mouse_x &gt; 800
-      ShowPage++
-    else
-      ShowPage--
-    ShowPageTick = 0
-    event_user(1)
-    }
 </string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>buttn pressed</string>
           </argument>
         </arguments>
       </action>
@@ -249,8 +309,9 @@ switch ShowPage
     s = 'TYPED TOTAL: '     + string(letters)
     s+= '#ACCEPTED: '       + string(lettersa)
     s+= '#BACKSPACED: '     + string(lettersb)
-    s+= '#BANNED: '         + string(banned)
+    s+= '#GREENS: '         + string(targetsa)
     s+= '#INPUT ATTEMPTS: ' + string(attempts)
+    s+= '#LETTERS BANNED: ' + string(banned)
     sc = 1
     break
   case 2:
@@ -260,6 +321,7 @@ switch ShowPage
     s+= '#SHIFTS USED: '     + string(shiftsu)
     s+= '#UNBANS ACQUIRED: ' + string(unbansa)
     s+= '#UNBANS USED: '     + string(unbansu)
+    s+= '#LENGTH DECREMENTS: ' + string(decrements)
     sc = 1
     break
   case 3:
@@ -328,6 +390,7 @@ switch ShowPage
     s+= '#SCORE: '               + string(pp)
     sc = 1
   }
+ShowPageSpeed = 1
 </string>
           </argument>
         </arguments>
@@ -371,26 +434,26 @@ switch ShowPage
           <argument>
             <kind>1</kind>
             <string>//gameover event
+instance_create(0,0,oFlashFx)
 B1 = instance_create(800,1100,oButton)  //TODO checlk gamemode
 B1.content = 'BACK'
+B1.parent = id
 active = true
-
+//default page
 sCaption = 'OVERALL RATE'
 s =  'PLAYTIME: '            + formatTimeString(ticks)
 s+= '#ACCEPTED WORDS: '      + string(words)
 s+= '#TOTAL LETTERS TYPED: ' + string(letters)
 s+= '#SCORE: '               + string(pp)
-
+//global stat fields
 global.profile[?'PSENDS']++
 global.profile[?'PSXP']+= pp
-
 //Profile Stat Write
 //Current gamemode last game
 SECTMAP = global.profile[?'PSSECTIONS']
 CURRMAP = SECTMAP[?GameTypeID+1]
-if is_undefined(CURRMAP)
-  {
-  CURRMAP = ds_map_create()
+if is_undefined(CURRMAP) {
+  CURRMAP = ds_map_create()               //create if gamemode datamap !exists
   ds_map_clear(CURRMAP)
   SECTMAP[?GameTypeID+1] = CURRMAP
   }
@@ -411,25 +474,21 @@ CURRMAP[?'PSBANTYPED'] = tabus
 CURRMAP[?'PSSHORTTYPED'] = lens
 CURRMAP[?'PSWRONGTYPED'] = dicts
 CURRMAP[?'PSREPTYPED'] = prevs
+CURRMAP[?'PSGREENS'] = targets
+CURRMAP[?'PSGREENSTYPED'] = targetsa
+CURRMAP[?'PSDECREMENTS'] = decrements
 CURRMAP[?'PSLASTSCORE'] = pp
-if is_undefined(CURRMAP[?'PSBESTSCORE'])
-  CURRMAP[?'PSBESTSCORE'] = pp
-else
-  if CURRMAP[?'PSBESTSCORE'] &lt; CURRMAP[?'PSLASTSCORE']
-    CURRMAP[?'PSBESTSCORE'] = pp
 CURRMAP[?'PSLENGTHMAP'] = ds_map_create()
 ds_map_copy(CURRMAP[?'PSLENGTHMAP'], LenMap)
 
 //OVERALL GAMEMODE
 OVERMAP = SECTMAP[?GameTypeID]
-if is_undefined(OVERMAP)
-  {
+if is_undefined(OVERMAP) {
   OVERMAP = ds_map_create()
   ds_map_copy(OVERMAP,SECTMAP[?GameTypeID+1])
   SECTMAP[?GameTypeID] = OVERMAP
   }
-else
-  {
+else {
   OVERMAP[?'PSPLAYTIME']+= CURRMAP[?'PSPLAYTIME']
   OVERMAP[?'PSGAMES']+= CURRMAP[?'PSGAMES']
   OVERMAP[?'PSWORDS']+= CURRMAP[?'PSWORDS']
@@ -447,12 +506,7 @@ else
   OVERMAP[?'PSSHORTTYPED']+= CURRMAP[?'PSSHORTTYPED']
   OVERMAP[?'PSWRONGTYPED']+= CURRMAP[?'PSWRONGTYPED']
   OVERMAP[?'PSREPTYPED']+= CURRMAP[?'PSREPTYPED']
-  OVERMAP[?'PSLASTSCORE'] = pp
-  if is_undefined(OVERMAP[?'PSBESTSCORE'])
-    OVERMAP[?'PSBESTSCORE'] = pp
-  else
-    if OVERMAP[?'PSBESTSCORE'] &lt; OVERMAP[?'PSLASTSCORE']
-      OVERMAP[?'PSBESTSCORE'] = pp
+  OVERMAP[?'PSLASTSCORE']+= CURRMAP[?'PSLASTSCORE']
   //TODO DEBUG LETTERS
   OVERMAP = OVERMAP[?'PSLENGTHMAP']
   var src = ds_map_find_first(LenMap);      //src = key
@@ -478,14 +532,12 @@ else
   
 //OVERALL GAME
 OVERMAP = SECTMAP[?0]
-if is_undefined(OVERMAP)
-  {
+if is_undefined(OVERMAP) {
   OVERMAP = ds_map_create()
   ds_map_copy(OVERMAP,SECTMAP[?GameTypeID+1])
   SECTMAP[?0] = OVERMAP
   }
-else
-  {
+else {
   OVERMAP[?'PSPLAYTIME']+= CURRMAP[?'PSPLAYTIME']
   OVERMAP[?'PSGAMES']+= CURRMAP[?'PSGAMES']
   OVERMAP[?'PSWORDS']+= CURRMAP[?'PSWORDS']
@@ -503,12 +555,7 @@ else
   OVERMAP[?'PSSHORTTYPED']+= CURRMAP[?'PSSHORTTYPED']
   OVERMAP[?'PSWRONGTYPED']+= CURRMAP[?'PSWRONGTYPED']
   OVERMAP[?'PSREPTYPED']+= CURRMAP[?'PSREPTYPED']
-  OVERMAP[?'PSLASTSCORE'] = pp
-  if is_undefined(OVERMAP[?'PSBESTSCORE'])
-    OVERMAP[?'PSBESTSCORE'] = pp
-  else
-    if OVERMAP[?'PSBESTSCORE'] &lt; OVERMAP[?'PSLASTSCORE']
-      OVERMAP[?'PSBESTSCORE'] = pp
+  OVERMAP[?'PSLASTSCORE']+= CURRMAP[?'PSLASTSCORE']
   OVERMAP = OVERMAP[?'PSLENGTHMAP']
   var src = ds_map_find_first(LenMap);      //src = key
   var dest;                                 //dest = map
@@ -530,12 +577,28 @@ else
     src = ds_map_find_next(LenMap,src)
     }
   }
+  
+//best game section
+OVERMAP = SECTMAP[?GameTypeID+2]
+if is_undefined(OVERMAP) {
+  OVERMAP = ds_map_create()
+  ds_map_copy(OVERMAP,SECTMAP[?GameTypeID+1])
+  SECTMAP[?GameTypeID+2] = OVERMAP
+  }
+else 
+  if OVERMAP[?'PSLASTSCORE'] &lt; CURRMAP[?'PSLASTSCORE'] {
+    ds_map_copy(OVERMAP,SECTMAP[?GameTypeID+1])
+    SECTMAP[?GameTypeID+2] = OVERMAP
+    }
+    
+//MEGA TODO: mem free!
+//mem free entire gameroom!!
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -552,47 +615,43 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if active
-  {
-  draw_set_font(fImpact64)
-  draw_set_alpha(1)
-  draw_set_color(c_white)
-  draw_set_halign(fa_left)
-  draw_set_valign(fa_center)
-  
+            <string>if active {
+  drawTextPreset(fImpact64, c_white, 1, fa_left, fa_center)
+  //draw stats
   if ShowPage == 5
     {
-    draw_text_transformed(70,600,sSpec[0],sc,sc,0)
-    draw_text_transformed(250,600,sSpec[1],sc,sc,0)
-    draw_text_transformed(430,600,sSpec[2],sc,sc,0)
+    draw_text_transformed(70,620,sSpec[0],sc,sc,0)
+    draw_text_transformed(250,620,sSpec[1],sc,sc,0)
+    draw_text_transformed(430,620,sSpec[2],sc,sc,0)
     }
   else
-    draw_text_transformed(100,600,s,sc,sc,0)
-    
+    draw_text_transformed(100,620,s,sc,sc,0)
+  //draw caption 
   draw_set_font(fImpact96)
-  draw_text(150,280,sCaption)
-  
-  if success
-    {
+  draw_text(150,260,sCaption)
+  //draw success caption
+  if success {
     draw_set_font(fImpact96)
     draw_set_halign(fa_center)
-    draw_text(800,100,'SUCCESS')
+    draw_text(800,80,'SUCCESS')
     }
-  for (var i=0; i&lt;=5; i++)
-      {
-      if i == ShowPage
-        draw_set_alpha(1)
-      else
-        draw_set_alpha(0.5)
-      draw_circle(680+i*40,990,15,false)
-      }
-    var op = 0;
-    if mouse_x &lt; 800
-      op = 1
+  //draw pages list
+  for (var i=0; i&lt;=5; i++) {
+    if i == ShowPage
+      draw_set_alpha(1)
     else
-      op = 0.5
-    draw_sprite_ext(sArrowScroll,0,640,990,1,1,180,c_white,op)
-    draw_sprite_ext(sArrowScroll,0,920,990,1,1,0,c_white,1.5-op)
+      draw_set_alpha(0.5)
+    draw_circle(680+i*40,990,15,false)
+    }
+  //get op for pages list arrows
+  var op = 0;
+  if mouse_x &lt; 800
+    op = 1
+  else
+    op = 0.5
+  //draw arrows
+  draw_sprite_ext(sArrowScroll,0,640,990,1,1,180,c_white,op)
+  draw_sprite_ext(sArrowScroll,0,920,990,1,1,0,c_white,1.5-op)
   }
 </string>
           </argument>
