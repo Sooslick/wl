@@ -32,6 +32,7 @@ PSolo.content = 'SINGLEPLAYER'
 //multi
 PClient = instance_create(300,260,oButton)
 PClient.content = 'MULTIPLAYER'
+PClient.clickable = false
 //how to play button
 PHtp = instance_create(300,500,oButton)
 PHtp.content = 'HOW TO PLAY'
@@ -40,7 +41,7 @@ PBack = instance_create(300, 800, oButton)
 PBack.content = 'BACK'
 //clickables
 alist = ds_list_create()
-ds_list_add(alist, PSolo,PClient,PHtp,PBack)
+ds_list_add(alist, PSolo, PClient, PHtp, PBack)
 //button's fileds
 for (var i=0; i&lt;ds_list_size(alist); i++) {
   alist[|i].parent = id

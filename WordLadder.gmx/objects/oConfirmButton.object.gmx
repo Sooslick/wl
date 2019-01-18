@@ -31,11 +31,11 @@ content = ''    //draw string; set after create call
 parent = -1
 
 bYes = instance_create(500,700,oButton)
-bYes.content = 'SURE'
+bYes.content = 'YES'
 bYes.depth = -10                        //drawing button on upper layer, not behind menu
 bYes.StartDepth = -10
 bNo = instance_create(1100,700,oButton)
-bNo.content = 'CANCEL'
+bNo.content = 'NO'
 bNo.depth = -10
 bNo.StartDepth = -10
 

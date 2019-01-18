@@ -17,7 +17,7 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
     v[1] = file_bin_read_byte(f)
     v[2] = file_bin_read_byte(f)
     v[3] = file_bin_read_byte(f)
-    if !(v[0] == 0 && v[1] == 0 && v[2] == 0 && v[3] == 7)
+    if !(v[0] == 0 && v[1] == 0 && v[2] == 0 && v[3] == 9)
         ok = false
     if ok
         {
@@ -109,6 +109,44 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
         ds_map_add_list(global.profile, 'ACHVS', a)
         ds_map_add_list(global.profile, 'ACHVPROG', p)
 
+        //STAT: SAVED ENDLESS SECTION
+        global.profile[?'ENDSAVED'] = file_bin_read_byte(f)     //is saved flag
+        global.profile[?'ENDMINLEN'] = file_bin_read_byte(f)    //current minlen
+        global.profile[?'ENDSCORE'] = funcReadLong(f)
+        global.profile[?'ENDL'] = funcReadLong(f)               //letters typed
+        global.profile[?'ENDLA'] = funcReadLong(f)              //letters accepted
+        global.profile[?'ENDLB'] = funcReadLong(f)              //letters backspaced
+        global.profile[?'ENDAT'] = funcReadLong(f)              //input attempts
+        global.profile[?'ENDTIME'] = funcReadLong(f)            //playtime
+        global.profile[?'ENDSHA'] = file_bin_read_byte(f)       //shifts acq
+        global.profile[?'ENDSHU'] = file_bin_read_byte(f)       //shifts used
+        global.profile[?'ENDTTA'] = file_bin_read_byte(f)       //unbanc acq
+        global.profile[?'ENDTTU'] = file_bin_read_byte(f)       //unbans used
+        global.profile[?'ENDBANNED'] = funcReadLong(f)          //total banned ltters
+        global.profile[?'ENDFAILBAN'] = funcReadLong(f)         //at failed by ban
+        global.profile[?'ENDFAILTYP'] = funcReadLong(f)         //        by typo
+        global.profile[?'ENDFAILREP'] = funcReadLong(f)         //        by repeat
+        global.profile[?'ENDFAILLEN'] = funcReadLong(f)         //        by short length
+        global.profile[?'ENDBANQTY'] = file_bin_read_byte(f)    //ban progbar state
+        global.profile[?'ENDBANPROG'] = funcReadLong(f)
+        global.profile[?'ENDBANREQ'] = funcReadLong(f)
+        global.profile[?'ENDSHIFTPROG'] = funcReadLong(f)       //shift pb state
+        global.profile[?'ENDSHIFTREQ'] = funcReadLong(f)
+        global.profile[?'ENDTTPROG'] = funcReadLong(f)          //unban pb state
+        global.profile[?'ENDTTREQ'] = funcReadLong(f)
+        global.profile[?'ENDDEC'] = file_bin_read_byte(f)       //dec pb state
+        global.profile[?'ENDDECPROG'] = funcReadLong(f)
+        global.profile[?'ENDDECREQ'] = funcReadLong(f)
+        global.profile[?'ENDBB'] = file_bin_read_byte(f)        //banned letters at the moment
+        global.profile[?'ENDBBSTR'] = funcReadString(f, global.profile[?'ENDBB'])
+        global.profile[?'ENDWORDS'] = funcReadLong(f)
+        
+        //SAVED ENDLESS WORDS
+        var wl = ds_list_create()
+        for (var i=0; i<global.profile[?'ENDWORDS']; i++)
+          wl[|i] = funcReadString(f)
+        ds_map_add_list(global.profile, 'ENDWORDLIST', wl)
+        
         file_bin_close(f)
         exit
         }        
@@ -143,5 +181,37 @@ for (var i=0; i<36; i++) {
   }
 ds_map_add_list(global.profile, 'ACHVS', a)
 ds_map_add_list(global.profile, 'ACHVPROG', p)
+//empty save
+global.profile[?'ENDSAVED'] = 0
+global.profile[?'ENDMINLEN'] = 0
+global.profile[?'ENDSCORE'] = 0
+global.profile[?'ENDL'] = 0
+global.profile[?'ENDLA'] = 0
+global.profile[?'ENDLB'] = 0
+global.profile[?'ENDAT'] = 0
+global.profile[?'ENDTIME'] = 0
+global.profile[?'ENDSHA'] = 0
+global.profile[?'ENDSHU'] = 0
+global.profile[?'ENDTTA'] = 0
+global.profile[?'ENDTTU'] = 0
+global.profile[?'ENDBANNED'] = 0
+global.profile[?'ENDFAILBAN'] = 0
+global.profile[?'ENDFAILTYP'] = 0
+global.profile[?'ENDFAILREP'] = 0
+global.profile[?'ENDFAILLEN'] = 0
+global.profile[?'ENDBANQTY'] = 0
+global.profile[?'ENDBANPROG'] = 0
+global.profile[?'ENDBANREQ'] = 0
+global.profile[?'ENDSHIFTPROG'] = 0
+global.profile[?'ENDSHIFTREQ'] = 0
+global.profile[?'ENDTTPROG'] = 0
+global.profile[?'ENDTTREQ'] = 0
+global.profile[?'ENDDEC'] = 0
+global.profile[?'ENDDECPROG'] = 0
+global.profile[?'ENDDECREQ'] = 0
+global.profile[?'ENDBB'] = 0
+global.profile[?'ENDBBSTR'] = ''
+global.profile[?'ENDWORDS'] = 0
+ds_map_add_list(global.profile, 'ENDWORDLIST', ds_list_create())
 
 global.SaveCorrupted = true

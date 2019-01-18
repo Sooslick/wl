@@ -25,80 +25,114 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>prepared = false
-prestart = false
-prevWord = ''
-currWord = ''
-prevWordList = ds_list_create()
-prevOffset = -1
-words = 0
+            <string>OnclickEvent = 1
+//cfg + general game vars
+gameReadSettings()
+gameSetGeneralVars()
+//game objects and obj's vars (eg from cfg)
+gameGeneralObjCreate(30)
+gameSetFirstWord()
 
-prevAnim = false
-prevAnimTick = 0
-
-BStart = instance_create(800,1000, oButton)
-BStart.content = 'BEGIN'
-
-MaxLen = 9
-MinLen = 4  
-for (i=1; i&lt;=MinLen; i++)
-  {
-  tmp = irandom_range(0,25) //todo CHECK LOCALE BLYA
-  prevWord+= chr(funcChrDecode(tmp))
-  }  
-  
-Timer = 300 * MinLen
-Think = 0                   //one word clockwatch
-
-TabuList = ds_list_create()
-TabuQty = 0
-TabuQtyPB = instance_create(0,10,oProgBar)
-TabuQtyPB.Req = 3                        //lv-ups: 3; 10; 42; 42; 98; 98; 228; 666 -&gt; max. 9000
-
-DecPB = instance_create(0,30,oProgBar)
-DecQty = 1                              //prog: tabuqty + wordlen  - 10
-DecPB.Req = 10                          //lv-ups: 10; 42; 42; 100; 100; 666 -&gt; max
-
-Shift = false                           //using of ability flag
-ShiftQty = 0
-ShiftPB = instance_create(0,50,oProgBar)//prog: tabuqty + wordlen
-ShiftPB.Req = 100                       //linear increase
-
-TT = false                              //using of ability TabuType flag
-TTNum = -1
-TTQty = 0                               //prog: tabuqty + wordlen
-TTPB = instance_create(0,70,oProgBar)
-TTPB.Req = 228                             //linear increase
-
-HintTimeUp = false
-HintTooLong = false
-HintWrong = 0           //0 = waiting;  1 = ready;  2 = passed
-HintTimer = 0           //while &gt;0 a new oSquareHint cannot be created
-
-//in-game animations
-ShiftA = false
-ShiftATick = 0
-ShiftU = false
-ShiftUTick = 0
-TTA = false
-TTATick = 0
-TTU = false
-TTUTick = 0
-
-Cube = instance_create(800,720,oGameCube)   //600 ???
-Cube.parent = id
-Cube.MinLen = MinLen
-Cube.NewLen = MinLen
-Cube.w1 = prevWord
-Cube.w2 = '    '
-Cube.w3 = '    '
-Cube.w4 = '    '
-Cube.TabuList = TabuList
-
-Stat = instance_create(0,0,oGameStatCounter)
-Stat.parent = id
-Stat.Cube = Cube
-Stat.GameTypeID = 30  //ENDLESS
+if global.profile[?'ENDSAVED'] &gt; 0 {
+  //restore game variables
+  var wlist = global.profile[?'ENDWORDLIST']
+  if global.profile[?'ENDWORDS'] &gt; 0
+    prevWord = wlist[| global.profile[?'ENDWORDS'] - 1 ]
+  MinLen = global.profile[?'ENDMINLEN']
+  DecQty = global.profile[?'ENDDEC']
+  //restore wordlist
+  for (var i=0; i&lt;global.profile[?'ENDWORDS']; i++)
+    wordlistAddWord(wl, wlist[|i])
+  //restore cube
+  var www = global.profile[?'ENDWORDS'] - 1
+  if www &gt;= 0 {
+    Cube.w1 = wlist[| www]
+    www--
+    if www &gt;= 0 {
+      Cube.w2 = wlist[| www]
+      www--
+      if www &gt;= 0 {
+        Cube.w3 = wlist[| www]
+        www--
+        if www &gt;= 0
+          Cube.w4 = wlist[| www]
+        }
+      }
+    }
+  Cube.MinLen = MinLen
+  Cube.NewLen = MinLen
+  //restore letters
+  l.TabuQty = global.profile[?'ENDBANQTY']
+  l.TabuString = global.profile[?'ENDBBSTR']
+  l.TabuPB.Prog = global.profile[?'ENDBANPROG']
+  l.TabuPB.Req = global.profile[?'ENDBANREQ']
+  with l lettersUpdate()
+  //restore abil counters
+  Abil.Value[0] = global.profile[?'ENDSCORE']
+  Abil.Value[1] = global.profile[?'ENDSHA'] - global.profile[?'ENDSHU']
+  Abil.Value[2] = global.profile[?'ENDTTA'] - global.profile[?'ENDTTU']
+  //restore progbars
+  DecPB.Req = global.profile[?'ENDDECREQ']
+  DecPB.Prog = global.profile[?'ENDDECPROG']
+  ShiftPB.Req = global.profile[?'ENDSHIFTREQ']
+  ShiftPB.Prog = global.profile[?'ENDSHIFTPROG']
+  TTPB.Req = global.profile[?'ENDTTREQ']
+  TTPB.Prog = global.profile[?'ENDTTPROG']
+  //restore stat fields from save
+  Stat.pp = global.profile[?'ENDSCORE']
+  Stat.words = global.profile[?'ENDWORDS']
+  Stat.letters = global.profile[?'ENDL']
+  Stat.lettersa = global.profile[?'ENDLA']
+  Stat.lettersb = global.profile[?'ENDLB']
+  Stat.attempts = global.profile[?'ENDAT']
+  Stat.ticks = global.profile[?'ENDTIME']
+  Stat.shiftsa = global.profile[?'ENDSHA']
+  Stat.shiftsu = global.profile[?'ENDSHU']
+  Stat.unbansa = global.profile[?'ENDTTA']
+  Stat.unbansu = global.profile[?'ENDTTU']
+  Stat.banned = global.profile[?'ENDBANNED']
+  Stat.tabus = global.profile[?'ENDFAILBAN']
+  Stat.dicts = global.profile[?'ENDFAILTYP']
+  Stat.prevs = global.profile[?'ENDFAILREP']
+  Stat.lens = global.profile[?'ENDFAILLEN']
+  Stat.decrements = global.profile[?'ENDDEC']
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if BStart != -1
+  instance_destroy(BStart, true)
+if bBack != -1 {
+  instance_destroy(bBack, true)
+  instance_destroy(bEnd, true)
+  }
+instance_destroy(wl, true)
+instance_destroy(l, true)
+instance_destroy(Abil, true)
+instance_destroy(Timer, true)
+instance_destroy(DecPB, true)
+instance_destroy(ShiftPB, true)
+instance_destroy(TTPB, true)
+instance_destroy(Cube, true)
 </string>
           </argument>
         </arguments>
@@ -121,109 +155,15 @@ Stat.GameTypeID = 30  //ENDLESS
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if prepared
-  {
-  Stat.ticks++
-  Timer--
-  Think++
-  if HintTimer &gt; 0
-    HintTimer--
-  if Think==3333
-    HintTooLong = true
-  if Timer==666
-    HintTimeUp = true
-  if Timer&lt;=0
-    {
-    tmp = instance_create(0,0,oSquareTransition)
-    tmp.parent = id
-    TransitionEvent = 0
-    prepared = false
-    }
-    
-  if prevAnim
-    {
-    prevAnimTick++
-    if prevAnimTick &gt;= 32
-      {
-      prevAnimTick = 0
-      prevAnim = false
-      }
-    }
-  
-  if HintTimeUp &amp;&amp; HintTimer==0
-    {
-    HintObj = instance_create(0,0,oSquareHint)
-    HintObj.HINT_WORD = funcGetHintWord()
-    HintObj.HINT_LENGTH = MinLen*4
-    with HintObj {event_user(0)}
-    HintTimer += 666
-    HintTimeUp = false
-    Stat.hints++
-    }
-  else if HintTooLong &amp;&amp; HintTimer==0
-    {
-    HintObj = instance_create(0,0,oSquareHint)
-    HintObj.HINT_WORD = funcGetHintWord()
-    HintObj.HINT_LENGTH = MinLen*4
-    with HintObj {event_user(0)}
-    HintTimer += 690
-    HintTiiLong = false
-    Stat.hints++
-    }
-  else if HintWrong==1 &amp;&amp; HintTimer==0
-    {
-    HintObj = instance_create(0,0,oSquareHint)
-    HintObj.HINT_WORD = funcGetHintWord()
-    HintObj.HINT_LENGTH = MinLen*4
-    with HintObj {event_user(0)}
-    HintTimer += 720
-    HintWrong = 2
-    Stat.hints++
-    }
-  //spec abil timers anim
-  if ShiftA
-    {
-    ShiftATick += 16
-    if ShiftATick &gt;= 256
-      {
-      ShiftATick = 0
-      ShiftA = false
-      }
-    }
-  if ShiftU
-    {
-    ShiftUTick += 16
-    if ShiftUTick &gt;= 256
-      {
-      ShiftUTick = 0
-      ShiftU = false
-      }
-    }
-  if TTA
-    {
-    TTATick += 16
-    if TTATick &gt;= 256
-      {
-      TTATick = 0
-      TTA = false
-      }
-    }
-  if TTU
-    {
-    TTUTick += 16
-    if TTUTick &gt;= 256
-      {
-      TTUTick = 0
-      TTU = false
-      }
-    }
+            <string>if prepared {
+  Stat.ticks+= Timer.Interval
   }
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="56">
+    <event eventtype="7" enumb="11">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -240,19 +180,87 @@ Stat.GameTypeID = 30  //ENDLESS
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if BStart&gt;0
-  {
-  if BStart.clicked
-    {
+            <string>if BStart&gt;0 {
+  if BStart.clicked {
     instance_destroy(BStart,true)
     BStart = -1
     prepared = true
     currWord = string_char_at(prevWord,string_length(prevWord))
     Cube.Rot = true
-    global.profile[?'PSGAMES']++
+    if global.profile[?'ENDSAVED'] == 0
+      global.profile[?'PSGAMES']++
+    exit
+    }
+  }
+if bBack != -1 {
+  if bBack.clicked {
+    global.profile[?'ENDTIME'] = Stat.ticks
+    funcProfileWrite()
+    funcSendProfile()
+    instance_destroy(Stat, true)
+    instance_destroy(self, true)
+    room_goto(rMenu)
+    }
+  else if bEnd.clicked {
+    with Stat {event_user(0)}
+    instance_destroy(self, true)
+    //save reset
+    global.profile[?'ENDSAVED'] = 0
+    global.profile[?'ENDMINLEN'] = 0
+    global.profile[?'ENDSCORE'] = 0
+    global.profile[?'ENDL'] = 0
+    global.profile[?'ENDLA'] = 0
+    global.profile[?'ENDLB'] = 0
+    global.profile[?'ENDAT'] = 0
+    global.profile[?'ENDTIME'] = 0
+    global.profile[?'ENDSHA'] = 0
+    global.profile[?'ENDSHU'] = 0
+    global.profile[?'ENDTTA'] = 0
+    global.profile[?'ENDTTU'] = 0
+    global.profile[?'ENDBANNED'] = 0
+    global.profile[?'ENDFAILBAN'] = 0
+    global.profile[?'ENDFAILTYP'] = 0
+    global.profile[?'ENDFAILREP'] = 0
+    global.profile[?'ENDFAILLEN'] = 0
+    global.profile[?'ENDBANQTY'] = 0
+    global.profile[?'ENDBANPROG'] = 0
+    global.profile[?'ENDBANREQ'] = 0
+    global.profile[?'ENDSHIFTPROG'] = 0
+    global.profile[?'ENDSHIFTREQ'] = 0
+    global.profile[?'ENDTTPROG'] = 0
+    global.profile[?'ENDTTREQ'] = 0
+    global.profile[?'ENDDEC'] = 0
+    global.profile[?'ENDDECPROG'] = 0
+    global.profile[?'ENDDECREQ'] = 0
+    global.profile[?'ENDBB'] = 0
+    global.profile[?'ENDBBSTR'] = ''
+    global.profile[?'ENDWORDS'] = 0
+    if ds_exists(global.profile[?'ENDWORDLIST'], ds_type_list)
+      ds_list_destroy(global.profile[?'ENDWORDLIST'])
+    ds_map_add_list(global.profile, 'ENDWORDLIST', ds_list_create())
     }
   }
 </string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>mouse begin button</string>
           </argument>
         </arguments>
       </action>
@@ -274,11 +282,152 @@ Stat.GameTypeID = 30  //ENDLESS
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//gameover Event
-with Stat {event_user(0)}
-instance_destroy(parent,true)
-instance_destroy(Cube,true)
-instance_destroy(self,true)
+            <string>Stat.attempts++
+
+//check len
+if string_length(currWord) &lt; MinLen {
+  Cube.LengthErr = true
+  Stat.lens++
+  exit
+  }
+  
+//check tabu
+for (i=2; i&lt;=string_length(currWord); i++) {
+  j = ds_list_find_index(l.TabuList, string_char_at(currWord,i))
+  if (j != -1) &amp;&amp; (j != TTNum) {
+    Cube.TabuErr = true
+    Cube.TabuErrNum = j
+    Stat.tabus++
+    exit
+    } 
+  }
+
+//check prevword
+if wordlistTyped(wl,currWord, true) {
+  Stat.prevs++
+  exit
+  }                                                      
+    
+//check dict
+var tmpm, tmpl, tmp;
+  //first lv find
+  tmpm = ds_map_find_value(global.DictDS,string_char_at(currWord,1))
+  if tmpm != -1
+    {
+    tmpl = ds_map_find_value(tmpm,string_char_at(currWord,2))
+    if tmpl != -1
+      {
+      tmp = ds_list_find_index(tmpl,currWord)
+      if tmp != -1 {
+        gameWordAcceptedSolo()
+        //save game state
+        global.profile[?'ENDSAVED'] = 1
+        global.profile[?'ENDMINLEN'] = MinLen
+        global.profile[?'ENDSCORE'] = Stat.pp
+        global.profile[?'ENDL'] = Stat.letters
+        global.profile[?'ENDLA'] = Stat.lettersa
+        global.profile[?'ENDLB'] = Stat.lettersb
+        global.profile[?'ENDAT'] = Stat.attempts
+        global.profile[?'ENDTIME'] = Stat.ticks
+        global.profile[?'ENDSHA'] = Stat.shiftsa
+        global.profile[?'ENDSHU'] = Stat.shiftsu
+        global.profile[?'ENDTTA'] = Stat.unbansa
+        global.profile[?'ENDTTU'] = Stat.unbansu
+        global.profile[?'ENDBANNED'] = Stat.banned
+        global.profile[?'ENDFAILBAN'] = Stat.tabus
+        global.profile[?'ENDFAILTYP'] = Stat.dicts
+        global.profile[?'ENDFAILREP'] = Stat.prevs
+        global.profile[?'ENDFAILLEN'] = Stat.lens
+        global.profile[?'ENDBANQTY'] = l.TabuQty
+        global.profile[?'ENDBANPROG'] = l.TabuPB.Prog
+        global.profile[?'ENDBANREQ'] = l.TabuPB.Req
+        global.profile[?'ENDSHIFTPROG'] = ShiftPB.Prog
+        global.profile[?'ENDSHIFTREQ'] = ShiftPB.Req
+        global.profile[?'ENDTTPROG'] = TTPB.Prog
+        global.profile[?'ENDTTREQ'] = TTPB.Req
+        global.profile[?'ENDDEC'] = DecQty
+        global.profile[?'ENDDECPROG'] = DecPB.Prog
+        global.profile[?'ENDDECREQ'] = DecPB.Req
+        global.profile[?'ENDBB'] = ds_list_size(l.TabuList)
+        global.profile[?'ENDBBSTR'] = ''
+        for (var i=0; i&lt;ds_list_size(l.TabuList); i++)
+          global.profile[?'ENDBBSTR']+= l.TabuList[|i]
+        global.profile[?'ENDWORDS'] = Stat.words
+        ds_list_add(global.profile[?'ENDWORDLIST'], prevWord)
+        }
+      else {
+        Cube.LengthErr = true
+        Stat.dicts++
+        }
+      }
+    else {
+      Cube.LengthErr = true
+      Stat.dicts++
+      }
+    }
+  else {
+    Cube.LengthErr = true
+    Stat.dicts++
+    }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>enter pressed event</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if paused {
+  drawTextPreset(fImpact96, c_white, 1, fa_left, fa_top)
+  //background + border
+  draw_sprite_ext(sPixel,0,50,50,1100,1100,0,c_white,0.2)
+  for (var i=0; i&lt;4; i++)
+    draw_rectangle(50+i,50+i, 1150-i, 1150-i, true)
+  //caption
+  draw_text(100,60, 'ENDLESS GAME')
+  //hint
+  draw_set_font(fCube)
+  draw_text(65, 180, 'Press Esc to continue game')
+  //stat
+  draw_text(65, 260, 'GAME STAT#Playtime: ' + formatTimeString(Stat.ticks) + 
+    '#Words: ' + string(Stat.words) + 
+    '#Letters accepted: ' + string(Stat.lettersa) + 
+    '#Letters typed: ' + string(Stat.letters))
+  }
 </string>
           </argument>
         </arguments>
@@ -302,412 +451,16 @@ instance_destroy(self,true)
           <argument>
             <kind>1</kind>
             <string>//alpha background
-draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,0.5)   //check hint? TODO
-//pre-sets
-draw_set_halign(fa_center)
-draw_set_valign(fa_top)
-draw_set_alpha(1)
-/* //HintTimer ProgBar
-draw_set_color(64)
-draw_line_width(0,90,1600,90,16)
-draw_set_color(128)
-draw_line_width(0,90,HintTimer,90,10) */
-//timer
-draw_set_color(c_white)
-draw_set_font(fTimer)
-s = formatTimeString(Timer)
-tmp = 800 - string_length(s)*17
-for (i=1; i&lt;=string_length(s); i++)
-  {
-  draw_text(tmp,1100,string_char_at(s,i))
-  tmp+=34
-  }
-
-//full list
-draw_set_halign(fa_left)
-draw_set_font(fImpact64)
-j = 0
-var xsc
-if MaxLen &gt;= 10
-  xsc = 9 / MaxLen - (MaxLen%10)/100
-else
-  xsc = 1
-
-if prevAnim
-  cl = make_color_rgb(255,prevAnimTick*8,prevAnimTick*8)
-else
-  cl = c_white
-
-draw_sprite_ext(sSquareFaded,0,256,600+64,1,0.3,180,cl,0.66)
-
-if prevOffset == -1
-  for (i=words-1; i&gt;=0; i--)
-    {
-    if string_length(prevWordList[| i]) &gt;= MinLen
-      {
-      draw_text_transformed(5,600+45+j*70,prevWordList[| i],xsc,1,0)
-      j++
-      }
-    draw_set_alpha(draw_get_alpha()-0.08)
-    }
-else
-  {
-  for (i=prevOffset; i&gt;=0; i--)
-    {
-    if string_length(prevWordList[| i]) &gt;= MinLen
-      {
-      draw_text_transformed(5,600-25+j*70,prevWordList[| i],xsc,1,0)
-      j++
-      }
-    draw_set_alpha(draw_get_alpha()-0.08)
-    }
-  draw_set_alpha(0.92)
-  j = -1
-  for (i=prevOffset+1; i&lt;words; i++)
-    {
-    if string_length(prevWordList[| i]) &gt;= MinLen
-      {
-      draw_text_transformed(5,600-25+j*70,prevWordList[| i],xsc,1,0)
-      j--
-      }
-    draw_set_alpha(draw_get_alpha()-0.08)
-    }
-  }
+draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,0.5)
 //TabuHilight
-if TT
-  {
+if TT {
   var xt = Cube.x;
   if Shift xt+= 72
-  draw_set_alpha(0.66)
+  draw_set_alpha(0.33)
+  draw_set_color(c_white)
   j = MinLen*32
   draw_rectangle(xt-j+TTNum*72,Cube.y-j-100,xt-j+TTNum*72+66,Cube.y-j-34,false)
   }
-  
-//Abilities counter
-  {
-  draw_set_font(fImpact64)
-  draw_set_alpha(1)
-  draw_set_color(c_white)
-  draw_set_valign(fa_top)
-  draw_set_halign(fa_right)
-  draw_sprite_ext(sSquareFaded,0,1344,588,1,0.3,0,c_white,0.66)
-  draw_text(1595,575,'Score: ' +string(Stat.pp))
-  if ShiftA
-    draw_set_color(make_color_rgb(ShiftATick,255,ShiftATick))
-  else if ShiftU
-    draw_set_color(make_color_rgb(255,ShiftUTick,ShiftUTick))
-  draw_text(1595,645,'Shifts: '+string(ShiftQty))
-  if TTA
-    draw_set_color(make_color_rgb(TTATick,255,TTATick))
-  else if TTU
-    draw_set_color(make_color_rgb(255,TTUTick,TTUTick))
-  else draw_set_color(c_white)
-  draw_text(1595,715,'Unbans: '+string(TTQty))
-  }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="40">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>if !prepared
-  exit
-  
-if Cube.Rot
-  exit
-
-if ShiftQty &gt; 0
-  if !Shift
-    {
-    Shift = true
-    currWord = string_char_at(prevWord, string_length(prevWord)-1)
-    Cube.w1 = currWord
-    Cube.NewWord = true
-    Cube.Shifted = true
-    }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="38">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>if !prepared
-  exit
-  
-if Cube.Rot
-  exit
-
-if Shift
-    {
-    Shift = false
-    currWord = string_char_at(prevWord, string_length(prevWord))
-    Cube.w1 = currWord
-    Cube.NewWord = true
-    Cube.Shifted = false
-    }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="9" enumb="13">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>if !prepared
-  exit
-  
-if Cube.Rot
-  exit
-  
-Stat.attempts++
-
-//check len
-if string_length(currWord) &lt; MinLen
-  {
-  Cube.LengthErr = true
-  Stat.lens++
-  exit
-  }
-  
-//check tabu
-for (i=2; i&lt;=string_length(currWord); i++)
-  {
-  j = ds_list_find_index(TabuList, string_char_at(currWord,i))
-  if (j != -1) &amp;&amp; (j != TTNum)
-    {
-    Timer-= 150
-    Cube.TabuErr = true
-    Cube.TabuErrNum = j
-    Stat.tabus++
-    exit
-    } 
-  }
-
-//check prevword
-if ds_list_find_index(prevWordList,currWord) != -1
-{
-if HintWrong == 0                            
-   {
-  HintWrong = 1
-  HintTimer+= 228
-  }
-Timer-= 150
-prevAnim = true
-Stat.prevs++
-exit
-}                                                      
-    
-//check dict
-  //first lv find
-  tmpm = ds_map_find_value(global.DictDS,string_char_at(currWord,1))
-  if tmpm != -1
-    {
-    tmpl = ds_map_find_value(tmpm,string_char_at(currWord,2))
-    if tmpl != -1
-      {
-      tmp = ds_list_find_index(tmpl,currWord)
-      if tmp != -1
-        {
-        //stats count
-        words++
-        Stat.words++
-        Stat.lettersa += string_length(currWord)
-        Stat.pp+= words + (Timer div 1800) * MinLen + string_length(currWord)
-        Stat.LenWord = currWord
-        with Stat {event_user(2)}
-        //words changing
-        prevWord = currWord
-        MinLen = string_length(currWord)
-        if MinLen &gt; MaxLen
-          MaxLen = MinLen
-        if MinLen &gt; 15
-          MinLen = 15
-        ds_list_add(prevWordList,currWord)
-        Cube.Rot = true
-        Cube.LengthErrTick = 0
-        Cube.LengthErr = false
-        Timer+= (string_length(currWord)-1)*150 - Timer div 60
-        currWord = string_char_at(currWord, string_length(currWord))
-        //shift prog
-        if Shift
-          {
-          ShiftQty--
-          ShiftU = true
-          Stat.shiftsu++
-          Shift = false
-          }
-        ShiftPB.Prog+= string_length(prevWord) + ds_list_size(TabuList)
-        if ShiftPB.Prog &gt;= ShiftPB.Req
-          {
-          ShiftPB.Prog-= ShiftPB.Req
-          ShiftPB.Req+= MinLen
-          ShiftQty++
-          ShiftA = true
-          Stat.shiftsa++
-          }
-        ShiftPB.Anim = true
-        ShiftPB.AnimXTarget = ShiftPB.Prog / ShiftPB.Req * 1600
-        //TT prog
-        if TT
-          {
-          TT = false
-          TTNum = -1
-          TTQty--
-          TTU = true
-          Stat.unbansu++
-          }
-        TTPB.Prog+= string_length(prevWord) + ds_list_size(TabuList) + (Timer div 1800)
-        if TTPB.Prog &gt;= TTPB.Req
-          {
-          TTPB.Prog-= TTPB.Req
-          TTPB.Req+= TTPB.Req div 42
-          TTQty++
-          TTA = true
-          Stat.unbansa++
-          }
-        TTPB.Anim = true
-        TTPB.AnimXTarget = TTPB.Prog / TTPB.Req * 1600
-        //length dec calc
-        tmp = string_length(prevWord) + ds_list_size(TabuList) - 9
-        if tmp &gt; 0
-          {
-          DecPB.Prog+= tmp
-          if DecPB.Prog &gt;= DecPB.Req
-            {
-            DecPB.Prog-= DecPB.Req
-            DecQty++
-            MinLen--
-            switch DecQty
-              {
-              case 2: case 3: DecPB.Req = 42; break;
-              case 4: case 5: DecPB.Req = 100; break;
-              case 6: DecPB.Req = 228; break;
-              case 7: DecPB.Req = 666; break;
-              default: DecPB.Req = 9000
-              }
-            }
-          DecPB.Anim = true
-          DecPB.AnimXTarget = DecPB.Prog / DecPB.Req * 1600
-          }
-        //tabu calc
-        TabuQtyPB.Prog++
-        if TabuQtyPB.Prog &gt;= TabuQtyPB.Req
-          {
-          TabuQty++
-          TabuQtyPB.Prog = 0
-          switch TabuQty
-            {
-            case 1: TabuQtyPB.Req = 10; break;
-            case 2: case 3: TabuQtyPB.Req = 42; break;
-            case 4: case 5: TabuQtyPB.Req = 98; break;
-            case 6: TabuQtyPB.Req = 666; break;
-            case 7: TabuQtyPB.Req = 9000; break;
-            default: TabuQtyPB.Req = 999999999
-            }
-          }
-        TabuQtyPB.Anim = true
-        TabuQtyPB.AnimXTarget = TabuQtyPB.Prog / TabuQtyPB.Req * 1600
-        //Tabu refresh
-        ds_list_clear(TabuList)
-        for (i=1; i&lt;=TabuQty; i++)
-          {
-//          tmp = funcNewTabuLetter(3 + TabuQtyPB.Prog / 100)      //3% chance of vowel tabu
-          if (tmp != string_char_at(prevWord,string_length(prevWord))) &amp;&amp; (ds_list_find_index(TabuList,tmp) == -1)
-            ds_list_add(TabuList,tmp)
-          }
-        Stat.banned+= ds_list_size(TabuList)
-        //HintRefresh
-        HintTimeUp = false
-        HintTooLong = false
-        Think = 0
-        HintWrong = 0
-        HintTimer+= 228
-        //Cube Post Operations 
-        Cube.NewLen = MinLen
-        Cube.TabuErr = false
-        Cube.TabuErrNum = -1
-        }
-      else
-        {
-        if HintWrong == 0
-          {
-          HintWrong = 1
-          HintTimer+= 228
-          }
-        Timer-= 150
-        Cube.LengthErr = true
-        Stat.dicts++
-        }
-      }
-    else
-      {
-      if HintWrong == 0
-        {
-        HintWrong = 1
-        HintTimer+= 228
-        }
-      Timer-= 150
-      Cube.LengthErr = true
-      Stat.dicts++
-      }
-    }
-  else
-    {
-    if HintWrong == 0
-      {
-      HintWrong = 1
-      HintTimer+= 228
-      }
-    Timer-= 150
-    Cube.LengthErr = true
-    Stat.dicts++
-    }
 </string>
           </argument>
         </arguments>
@@ -730,77 +483,7 @@ exit
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !prepared
-  exit
-  
-if Cube.Rot
-  exit
-
-if keyboard_check(vk_enter)
-  exit
-   
-//backspacing
-if keyboard_check(vk_backspace) 
-  {    
-  if string_length(currWord) &gt; 1 
-    {     
-    currWord = string_copy(currWord,1,string_length(currWord)-1)
-    Stat.lettersb++
-    }
-  Cube.TabuErr = false
-  Cube.TabuErrNum = -1
-  }
-//switch Unban ability
-else if keyboard_check(vk_tab) &amp;&amp; TTQty &gt; 0
-  {
-  if TT
-    {
-    TTNum++
-    if TTNum == ds_list_size(TabuList)
-      {
-      TTNum = -1
-      TT = false
-      }
-    }
-  else
-    {
-    TT = true
-    TTNum = 0
-    }
-  }
-//anykey: force EN layout
-else if (keyboard_lastkey &gt;= 65) &amp;&amp; (keyboard_lastkey &lt;= 90)
-  {
-  currWord+= chr(keyboard_lastkey)
-  keyboard_lastkey = -1
-  Stat.letters++
-  }
-//TODO: LOCALE!!!!! ! ! !
-else
-  {
-  keyboard_lastchar = string_upper(keyboard_lastchar)
-  if (ord(keyboard_lastchar)&gt;64)&amp;&amp;(ord(keyboard_lastchar)&lt;91)
-    {
-    currWord+= keyboard_lastchar
-    Stat.letters++
-    }
-  keyboard_lastchar = ''                //reset lastchar if next key is ctrl, alt or similar...
-  }
-Cube.w1 = currWord  
-Cube.NewWord = true
-
-//find similar in prevs
-prevOffset = -1
-for (i=words-1; i&gt;=0; i--)
-  {
-  if string_length(prevWordList[| i]) &lt; MinLen
-    continue
-  if currWord == string_copy(prevWordList[| i], 1,string_length(currWord))
-    {
-    prevOffset = i
-    break
-    }
-  }
+            <string>gameAnykeySolo(0)
 </string>
           </argument>
         </arguments>

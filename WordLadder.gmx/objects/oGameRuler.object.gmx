@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>1</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -420,7 +420,7 @@ switch (global.GameType)                    //GR: GameRuler
             <kind>1</kind>
             <string>draw_set_color(c_white)
 if loaded &amp;&amp; loadFading
-  draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,loadFade)
+  draw_sprite_ext(sPixel,0,global.G_LEFT,global.G_UP,global.UPORTW,global.UPORTH,0,0,loadFade)
 if !loaded || loadFade &gt; 0.749
   {
   draw_set_alpha(0.9)
@@ -480,12 +480,13 @@ if !loaded || loadFade &gt; 0.749
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if loaded
+            <string>/*if loaded
   {
   if Net != -1
     instance_destroy(Net,true)
   action_another_room(rMenu)
   }
+  */
 </string>
           </argument>
         </arguments>

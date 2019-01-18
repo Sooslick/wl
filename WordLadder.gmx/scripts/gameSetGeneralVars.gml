@@ -1,6 +1,9 @@
 //general
 prestart = false
 prepared = false
+paused = false
+bBack = -1
+bEnd = -1
 prevWord = ''
 currWord = ''
 //extra game vars

@@ -56,6 +56,10 @@ gameSetFirstWord()
             <kind>1</kind>
             <string>if BStart != -1
   instance_destroy(BStart, true)
+if bBack != -1 {
+  instance_destroy(bBack, true)
+  instance_destroy(bEnd, true)
+  }
 if HintObj != -1
   instance_destroy(HintObj, true)
 instance_destroy(wl, true)
@@ -91,7 +95,6 @@ instance_destroy(Cube, true)
             <string>if prepared {
   //timer
   if Timer.Timer&lt;=0 {
-    prepared = false
     with Stat {event_user(0)}
     instance_destroy(self, true)
     exit
@@ -109,8 +112,7 @@ instance_destroy(Cube, true)
     if (HintTimeUp || HintTooLong) &amp;&amp; HintTimer==0  //create
       funcCreateHint()
     }
-  //Stats   todo??? Tick counter -&gt; system time
-  Stat.ticks++
+  Stat.ticks+= Timer.Interval
   }
 
 </string>
@@ -165,6 +167,20 @@ instance_destroy(Cube, true)
     Timer.active = true
     Timer.LastTime = current_time
     global.profile[?'PSGAMES']++
+    exit
+    }
+  }
+if bBack != -1 {
+  if bBack.clicked {
+    funcProfileWrite()
+    funcSendProfile()
+    instance_destroy(Stat, true)
+    instance_destroy(self, true)
+    room_goto(rMenu)
+    }
+  else if bEnd.clicked {
+    with Stat {event_user(0)}
+    instance_destroy(self, true)
     }
   }
 </string>
@@ -266,6 +282,46 @@ var tmpm, tmpl, tmp;
     Cube.LengthErr = true
     Stat.dicts++
     }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if paused {
+  drawTextPreset(fImpact96, c_white, 1, fa_left, fa_top)
+  //background + border
+  draw_sprite_ext(sPixel,0,50,50,1100,1100,0,c_white,0.15)
+  for (var i=0; i&lt;4; i++)
+    draw_rectangle(50+i,50+i, 1150-i, 1150-i, true)
+  //caption
+  draw_text(100,60, 'CUSTOM GAME')
+  //hint
+  draw_set_font(fCube)
+  draw_text(65, 180, 'Press Esc to continue game')
+  //stat
+  draw_text(65, 260, 'GAME STAT#Playtime: ' + formatTimeString(Stat.ticks) + 
+    '#Words: ' + string(Stat.words) + 
+    '#Letters accepted: ' + string(Stat.lettersa) + 
+    '#Letters typed: ' + string(Stat.letters) + 
+    '#Greenletters: ' + string(Stat.targetsa))
+  }
 </string>
           </argument>
         </arguments>

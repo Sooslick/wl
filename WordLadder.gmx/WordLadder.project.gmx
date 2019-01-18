@@ -142,6 +142,7 @@
       <script>scripts\wordlistAddWord.gml</script>
       <script>scripts\wordlistTyped.gml</script>
       <script>scripts\lettersNext.gml</script>
+      <script>scripts\lettersUpdate.gml</script>
       <script>scripts\lettersNextBanPercent.gml</script>
       <script>scripts\funcGetHintWord.gml</script>
       <script>scripts\funcCreateHint.gml</script>
@@ -160,6 +161,7 @@
     <script>scripts\funcResChanged.gml</script>
     <script>scripts\funcSendProfile.gml</script>
     <script>scripts\funcByteEncode.gml</script>
+    <script>scripts\funcFreeGameSettings.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\shLinear.shader</shader>

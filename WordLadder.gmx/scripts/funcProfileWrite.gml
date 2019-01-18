@@ -8,8 +8,8 @@ if global.userdata[?'PNETID'] == 0
     file_bin_write_byte(f,0)
     file_bin_write_byte(f,0)
     file_bin_write_byte(f,0)
-    file_bin_write_byte(f,7)        //4 bytes: version
-    funcWriteLong(f,current_time)
+    file_bin_write_byte(f,9)        //4 bytes: version
+    funcWriteLong(f,current_time)   //TODO: check REAL time
     funcWriteLong(f,global.profile[?'PNETID'])
       
     //PLAYER NAME
@@ -101,6 +101,48 @@ if global.userdata[?'PNETID'] == 0
     for (var i=0; i<36; i++) {
       file_bin_write_byte(f, a[|i])
       funcWriteLong(f, p[|i])
+      }
+    
+    //saved endless state
+    file_bin_write_byte(f, global.profile[?'ENDSAVED'])
+    file_bin_write_byte(f, global.profile[?'ENDMINLEN'])
+    funcWriteLong(f, global.profile[?'ENDSCORE'])
+    funcWriteLong(f, global.profile[?'ENDL'])
+    funcWriteLong(f, global.profile[?'ENDLA'])
+    funcWriteLong(f, global.profile[?'ENDLB'])
+    funcWriteLong(f, global.profile[?'ENDAT'])
+    funcWriteLong(f, global.profile[?'ENDTIME'])
+    file_bin_write_byte(f, global.profile[?'ENDSHA'])
+    file_bin_write_byte(f, global.profile[?'ENDSHU'])
+    file_bin_write_byte(f, global.profile[?'ENDTTA'])
+    file_bin_write_byte(f, global.profile[?'ENDTTU'])
+    funcWriteLong(f, global.profile[?'ENDBANNED'])
+    funcWriteLong(f, global.profile[?'ENDFAILBAN'])
+    funcWriteLong(f, global.profile[?'ENDFAILTYP'])
+    funcWriteLong(f, global.profile[?'ENDFAILREP'])
+    funcWriteLong(f, global.profile[?'ENDFAILLEN'])
+    file_bin_write_byte(f, global.profile[?'ENDBANQTY'])
+    funcWriteLong(f, global.profile[?'ENDBANPROG'])
+    funcWriteLong(f, global.profile[?'ENDBANREQ'])
+    funcWriteLong(f, global.profile[?'ENDSHIFTPROG'])
+    funcWriteLong(f, global.profile[?'ENDSHIFTREQ'])
+    funcWriteLong(f, global.profile[?'ENDTTPROG'])
+    funcWriteLong(f, global.profile[?'ENDTTREQ'])
+    file_bin_write_byte(f, global.profile[?'ENDDEC'])
+    funcWriteLong(f, global.profile[?'ENDDECPROG'])
+    funcWriteLong(f, global.profile[?'ENDDECREQ'])
+    file_bin_write_byte(f, global.profile[?'ENDBB'])
+    for (var i=1; i<= string_length(global.profile[?'ENDBBSTR']) i++)
+      file_bin_write_byte(f, ord(string_char_at(global.profile[?'ENDBBSTR'], i)))
+    funcWriteLong(f, global.profile[?'ENDWORDS'])
+    
+    //endless wordlist write
+    var wl = global.profile[?'ENDWORDLIST']
+    for (var i=0; i<global.profile[?'ENDWORDS']; i++) {
+      var l = string_length(wl[|i])
+      file_bin_write_byte(f, l)
+      for (var j=1; j<=l; j++)
+        file_bin_write_byte(f, ord(string_char_at(wl[|i],j)))
       }
       
     file_bin_close(f)

@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>2</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -28,6 +28,7 @@
             <string>Timer = 0
 Str = '00:00:00.000'
 LastTime = current_time
+Interval = 0
 active = false
 </string>
           </argument>
@@ -51,16 +52,14 @@ active = false
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !active
-  exit
-
-Timer-= current_time - LastTime
+            <string>Interval = current_time - LastTime
 LastTime = current_time
-if Timer &gt; 0
-  Str = formatTimeString(Timer)
-else {
-  Str = '00:00:00.000'
-  //todo action endgame
+if active {
+  Timer-= Interval
+  if Timer &gt; 0
+    Str = formatTimeString(Timer)
+  else
+    Str = '00:00:00.000'
   }
 </string>
           </argument>

@@ -351,6 +351,7 @@ else if bGo.clicked
   global.config[?'CustomVowels'] = bVowel.currval
   global.config[?'CustomGreens'] = bGreen.num
   //todo refactor
+  funcFreeGameSettings()
   global.custom = ds_map_create()
   global.custom[?'StartLen'] = bStartLen.num + 4
   global.custom[?'Banned'] = bBan.num

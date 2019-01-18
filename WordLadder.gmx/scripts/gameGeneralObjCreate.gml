@@ -2,6 +2,8 @@
 BStart = instance_create(800,1000, oButton)
 BStart.content = 'BEGIN'
 BStart.parent = id
+BStart.depth = 0
+BStart.StartDepth = 0
 //game objects. 1: word list
 wl = instance_create(0,0,oWordList)
 wl.parent = id

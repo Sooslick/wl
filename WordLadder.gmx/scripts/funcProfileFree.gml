@@ -19,10 +19,11 @@ if !is_undefined(sects) {
     }
   ds_map_destroy(sects)
   }
-//TODO: check undefined. Will it works?
   
-//free achievements
+//free achievements & saved endless wordlist
 if !is_undefined(global.profile[?'ACHVS'])
   ds_list_destroy(global.profile[?'ACHVS'])
 if !is_undefined(global.profile[?'ACHVPROG'])
   ds_list_destroy(global.profile[?'ACHVPROG'])
+if !is_undefined(global.profile[?'ENDWORDLIST'])
+  ds_list_destroy(global.profile[?'ENDWORDLIST'])

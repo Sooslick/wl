@@ -41,6 +41,7 @@ global.config = ds_map_create()     //config map
 global.profile = ds_map_create()    //profile map
 global.userdata = ds_map_create()   //userdata map
 global.uiObjects = ds_map_create()  //ui objects pointers, Key: ptr, value: state
+global.custom = -1                  //game settings preset KV
 //todo: fix cfgwrite
 funcConfigRead()                    //read cfg file.
 funcLastloginRead()                 //read userdata to sign in

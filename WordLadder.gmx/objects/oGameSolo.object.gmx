@@ -50,6 +50,10 @@ with PCustom {uiRescale(500)}
 
 PBack = instance_create(300,800,oButton)
 PBack.content = 'BACK'
+//confirm
+bConf = -1
+bYes = -1
+bNo = -1
 //clickables list
 alist = ds_list_create()
 ds_list_add(alist, P1,P3,PCustom,PBack)
@@ -118,9 +122,11 @@ if surface_exists(ds)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if P1.clicked {
+            <string>//click process
+if P1.clicked {
   global.GameType = 1
   instance_destroy(parent, true)
+  funcFreeGameSettings()
   global.custom = ds_map_create()
   if global.profile[?'GM1'] &gt; 0
     global.custom[?'StartLen'] = 5
@@ -140,6 +146,7 @@ if surface_exists(ds)
 else if P2.clicked {
   global.GameType = 2
   instance_destroy(parent, true)
+  funcFreeGameSettings()
   global.custom = ds_map_create()
   if global.profile[?'GM2'] &gt; 0
     global.custom[?'StartLen'] = 7
@@ -157,10 +164,33 @@ else if P2.clicked {
   room_goto(rGame)
   }
 else if P3.clicked {
-  global.GameType = 3
-  instance_destroy(parent, true)
-  //todo settings preset
-  room_goto(rGame)
+  funcFreeGameSettings()
+  global.custom = ds_map_create()
+  global.custom[?'StartLen'] = 4
+  global.custom[?'Banned'] = 0
+  global.custom[?'Vowels'] = 3
+  global.custom[?'Dec'] = 1
+  global.custom[?'Unban'] = true
+  global.custom[?'Shift'] = true
+  global.custom[?'Hints'] = false
+  global.custom[?'StartTimer'] = -1
+  global.custom[?'Sec'] = 4
+  global.custom[?'Green'] = 2
+  if global.profile[?'ENDSAVED'] &gt; 0 {
+    //create confirmation window
+    bConf = instance_create(0,0,oConfirmButton);
+    bConf.parent = id
+    bConf.content = 'Load game?#If no data will be rewritten'
+    with bConf event_user(0) //set parent for buttons
+    bYes = bConf.bYes
+    bNo = bConf.bNo
+    uiSetClickable(alist, false)
+    }
+  else {
+    global.GameType = 3
+    instance_destroy(parent, true)
+    room_goto(rGame)
+    }
   }
 else if PCustom.clicked {
   with parent {
@@ -181,6 +211,51 @@ else if PBack.clicked {
   with parent.bNewGame {uiOnclick()}
   uiSetClickable(alist,false)
   }
+else if bYes != -1 
+  if bYes.clicked {
+    global.GameType = 3
+    instance_destroy(parent, true)
+    room_goto(rGame)
+    }
+  else if bNo.clicked {
+    //save reset
+    global.profile[?'ENDSAVED'] = 0
+    global.profile[?'ENDMINLEN'] = 0
+    global.profile[?'ENDSCORE'] = 0
+    global.profile[?'ENDL'] = 0
+    global.profile[?'ENDLA'] = 0
+    global.profile[?'ENDLB'] = 0
+    global.profile[?'ENDAT'] = 0
+    global.profile[?'ENDTIME'] = 0
+    global.profile[?'ENDSHA'] = 0
+    global.profile[?'ENDSHU'] = 0
+    global.profile[?'ENDTTA'] = 0
+    global.profile[?'ENDTTU'] = 0
+    global.profile[?'ENDBANNED'] = 0
+    global.profile[?'ENDFAILBAN'] = 0
+    global.profile[?'ENDFAILTYP'] = 0
+    global.profile[?'ENDFAILREP'] = 0
+    global.profile[?'ENDFAILLEN'] = 0
+    global.profile[?'ENDBANQTY'] = 0
+    global.profile[?'ENDBANPROG'] = 0
+    global.profile[?'ENDBANREQ'] = 0
+    global.profile[?'ENDSHIFTPROG'] = 0
+    global.profile[?'ENDSHIFTREQ'] = 0
+    global.profile[?'ENDTTPROG'] = 0
+    global.profile[?'ENDTTREQ'] = 0
+    global.profile[?'ENDDEC'] = 0
+    global.profile[?'ENDDECPROG'] = 0
+    global.profile[?'ENDDECREQ'] = 0
+    global.profile[?'ENDBB'] = 0
+    global.profile[?'ENDBBSTR'] = ''
+    global.profile[?'ENDWORDS'] = 0
+    if ds_exists(global.profile[?'ENDWORDLIST'], ds_type_list)
+      ds_list_destroy(global.profile[?'ENDWORDLIST'])
+    ds_map_add_list(global.profile, 'ENDWORDLIST', ds_list_create())
+    global.GameType = 3
+    instance_destroy(parent, true)
+    room_goto(rGame)
+    }
 </string>
           </argument>
         </arguments>
@@ -213,7 +288,7 @@ drawTextPreset(fImpact64, c_white, 1, fa_left, fa_top)
 if P1.hover &gt; 0
   draw_text_ext(600,30,'Type the words in squares and complete a simple task!',80,800)
 else if P2.hover &gt; 0
-  draw_text_ext(600,30,'Check the capacity of your vocabulary and complete the same task again!',80,800)
+  draw_text_ext(600,30,'Simple game is beaten? Check the capacity of your vocabulary and complete the same task again!',80,800)
 else if P3.hover &gt; 0
   draw_text_ext(600,30,'How long will your vocabulary last? Try to score the most points!',80,800)
 else if PCustom.hover &gt; 0

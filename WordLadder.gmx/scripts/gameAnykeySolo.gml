@@ -1,3 +1,30 @@
+//esc button here
+if keyboard_check_pressed(vk_escape) {
+  paused = funcBoolSwitch(paused)
+  if paused {
+    bBack = instance_create(325,1075,oButton)
+    bBack.content = 'QUIT'
+    bBack.dsc = 0.75
+    bBack.tsc = 0.66
+    bBack.parent = id
+    bEnd = instance_create(775,1075,oButton)
+    bEnd.content = 'END GAME'
+    bEnd.dsc = 0.75
+    bEnd.tsc = 0.66
+    bEnd.parent = id
+    }
+  else {
+    instance_destroy(bBack, true)
+    bBack = -1
+    instance_destroy(bEnd, true)
+    bEnd = -1
+    }
+  exit
+  }
+
+if paused
+  exit
+
 if !prepared
   exit
   

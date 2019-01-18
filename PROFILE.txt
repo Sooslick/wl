@@ -1,4 +1,4 @@
-Save version: v0.0.0.7
+Save version: v0.0.0.9
 
 bytes	info
 
@@ -61,6 +61,42 @@ TODO!
  36 x ACHIEVEMENTS
 1	Get
 4	Progress
+
+  ENDLESS SAVED STATE
+1	Is saved
+1	Current Word length
+4	Score
+4	Total letters typed
+4	Total letters accepted
+4	Total letters backspaced
+4	Input attempts
+4	Session playtime
+1	Shifts acquired
+1	Shifts used
+1	Unbans acquired
+1	Unbans used
+4	Total banned lettees
+4	Attempts failed by banned
+4	Attempts failed by typos
+4	Attempts failed by repeats
+4	Attempts failet by shortword
+1	BanQty
+4	BanProg
+4	BanReq
+4	ShiftProg
+4	ShiftReq
+4	UnbanProg
+4	UnbanReq
+1	DecQty
+4	DecProg
+4	DecReq
+1	B = Banned qty at the moment
+B	Banned letters
+4	W = Words
+
+   W x Words
+1	WL = Word Length
+WL	Word String
 
 todo: saved endless sessions
 _______________________________________

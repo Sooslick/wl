@@ -13,6 +13,8 @@ Stat.pp+= ws + ms + ls + ts
 Stat.targetsa+= ts
 Stat.targets+= ds_list_size(l.TargetList)
 Stat.banned+= bs
+//fix score display
+Abil.Value[0] = Stat.pp
 //Stat write new word
 Stat.LenWord = currWord
 with Stat {event_user(2)}

@@ -204,7 +204,7 @@ else if bYes != -1 {
     instance_destroy(parent, true)
     room_goto(rFirst)
     }
-  if bNo.clicked {
+  else if bNo.clicked {
     //destroy conf window
     instance_destroy(bConf)
     uiSetClickable(alist,true)
