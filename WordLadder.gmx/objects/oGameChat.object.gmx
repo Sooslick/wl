@@ -25,18 +25,19 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>for (i=0; i&lt;256; i++)
+            <string>for (i=0; i&lt;256; i++)   //message history
   Arr[i] = ''
-for (i=0; i&lt;5; i++)
+for (i=0; i&lt;5; i++)     //messages on display
   cdArr[i] = 0
 CurrPos = 0
 PendingStr = ''
 DrawFrom = 0
 GotStr = ''
-image_xscale = 320
+image_xscale = 320      //chatbox size *2
 image_yscale = 145
 image_alpha = 0.15
 Hover = false
+Active = false
 CursorTick = 0
 </string>
           </argument>
@@ -67,6 +68,11 @@ if CursorTick &gt; 20
 for (i=0; i&lt;5; i++)
   if cdArr[i] &gt; 0
     cdArr[i]--
+    
+if funcCheckGuiHover(400,0,1200,300)
+  Hover = true
+else
+  Hover = false
 </string>
           </argument>
         </arguments>
@@ -90,55 +96,9 @@ for (i=0; i&lt;5; i++)
           <argument>
             <kind>1</kind>
             <string>if Hover
-  parent.ChatActive = true
+  Active = true
 else
-  parent.ChatActive = false
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="6" enumb="11">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>Hover = false
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="6" enumb="10">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>Hover = true
+  Active = false
 </string>
           </argument>
         </arguments>
@@ -184,10 +144,10 @@ else
             <string>//prepare miltiline array
 var lines;
 var l = 0;
-var sym = 15;
+var sym = 15;                         //15 is min num of symbols can be placed on single line
 draw_set_font(fChat)
-while sym &lt; string_length(GotStr)
-  {
+while sym &lt; string_length(GotStr)     //cycle for cut one string to multi substrs
+  {                                   //sym will be incr while substr width &lt; chat window width
   if string_width(string_copy(GotStr,1,sym)) &gt; image_xscale*1.92
     {
     var spacePos = 0;
@@ -230,7 +190,7 @@ for (i=0; i &lt; l; i++)
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -247,20 +207,28 @@ for (i=0; i &lt; l; i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_self()
-draw_set_color(c_white)
-if parent.ChatActive
-  {
+            <string>//chatbox
+draw_self()
+//pending message line
+drawTextPreset(fChat, c_white, image_alpha, fa_left, fa_top)
+draw_rectangle(x-image_xscale, y-200,x+image_xscale, y-150, false)
+//outline &amp; pending message
+if Active {
   draw_set_alpha(1)
   draw_rectangle(x-image_xscale, y-image_yscale,x+image_xscale, y+image_yscale, true)
+  if (CursorTick &gt; 10)
+    draw_text(x-320, 0, '&gt;' + string_copy(PendingStr,DrawFrom+1,string_length(PendingStr) - DrawFrom) + '|')
+  else
+    draw_text(x-320, 0, '&gt;' + string_copy(PendingStr,DrawFrom+1,string_length(PendingStr) - DrawFrom))
   }
-draw_set_halign(fa_left)
-draw_set_valign(fa_top)
-draw_set_font(fChat)
-
+else {
+  draw_set_alpha(0.5)
+  draw_text(x-320,0, 'Click here to chat')
+  }
+  
+//chat messages
 var cp = CurrPos;
-for (var i=0; i&lt;5; i++)
-  {
+for (var i=0; i&lt;5; i++) {
   draw_set_alpha(clamp(cdArr[i] / 100, 0, 1))
   draw_text(x-320,75+i*50,Arr[cp])
   cp--;
@@ -268,21 +236,7 @@ for (var i=0; i&lt;5; i++)
     cp = 255
   }
   
-draw_set_alpha(image_alpha)
-draw_rectangle(x-image_xscale, y-200,x+image_xscale, y-150, false)
-if (parent.ChatActive)
-  {
-  draw_set_alpha(1)
-  if (CursorTick &gt; 10)
-    draw_text(x-320, 0, '&gt;' + string_copy(PendingStr,DrawFrom+1,string_length(PendingStr) - DrawFrom) + '|')
-  else
-    draw_text(x-320, 0, '&gt;' + string_copy(PendingStr,DrawFrom+1,string_length(PendingStr) - DrawFrom))
-  }
-else
-  {
-  draw_set_alpha(0.5)
-  draw_text(x-320,0, 'click here to type msg')
-  }
+//todo: individual line 4 every message
 </string>
           </argument>
         </arguments>
@@ -305,39 +259,36 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !parent.ChatActive
+            <string>if !Active
   exit
   
-if keyboard_check(vk_enter)
-  {
-  if string_length(PendingStr) &gt; 0
-    {
-    with parent {event_user(5)}
-    PendingStr = ''
+if keyboard_check(vk_enter){
+  if string_length(PendingStr) &gt; 0 {
+    with parent {event_user(5)}         //execute sendmsg event on server / client
+    PendingStr = ''                       //todo: refactor method
     DrawFrom = 0
     }
   exit     
   }
 
-if keyboard_check(vk_backspace) 
-  {   
-  if string_length(PendingStr) &gt; 0 
-    {
-    PendingStr = string_copy(PendingStr,1,string_length(PendingStr)-1)
+if keyboard_check(vk_backspace) {   
+  if string_length(PendingStr) &gt; 0 {
+    if string_copy(PendingStr, string_length(PendingStr), 1) == '#'
+      PendingStr = string_copy(PendingStr,1,string_length(PendingStr)-2)
+    else
+      PendingStr = string_copy(PendingStr,1,string_length(PendingStr)-1)
     if DrawFrom &gt; 0
       DrawFrom--
     }
   exit
   }
 
-if (ord(keyboard_lastchar)&gt;=32) &amp;&amp; (string_length(PendingStr)&lt;54)
-  {
+if (ord(keyboard_lastchar)&gt;=32) &amp;&amp; (string_length(PendingStr)&lt;54) {
   if keyboard_lastchar == '#'
           PendingStr+= '\#'
   else
           PendingStr+= keyboard_lastchar
-  if string_length(PendingStr) &gt; 15
-    {
+  if string_length(PendingStr) &gt; 15 {
     draw_set_font(fChat)
     while string_width(string_copy(PendingStr,DrawFrom+1,string_length(PendingStr) - DrawFrom)) &gt; image_xscale*1.92
       DrawFrom++

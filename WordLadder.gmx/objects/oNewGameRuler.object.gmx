@@ -195,7 +195,7 @@ if PSolo.hover {
   }
 else if PClient.hover {
   drawTextPreset(fImpact64,c_white,1,fa_top,fa_left)
-  draw_text_ext(600,30,'Play Word Ladder with other players, icooperatively or aganist each other.',80,800)
+  draw_text_ext(600,30,'Play Word Ladder with other players, cooperatively or aganist each other.',80,800)
   }
 else if PHtp.hover {
   drawTextPreset(fImpact64,c_white,1,fa_top,fa_left)

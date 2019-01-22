@@ -153,6 +153,7 @@
       <script>scripts\gameSetFirstWord.gml</script>
       <script>scripts\gameAnykeySolo.gml</script>
       <script>scripts\gameWordAcceptedSolo.gml</script>
+      <script>scripts\playerlistRemovePlayer.gml</script>
     </scripts>
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>
@@ -256,6 +257,10 @@
       <object>objects\oCallhim</object>
       <object>objects\oPreved</object>
       <object>objects\oEasterEggRuler</object>
+    </objects>
+    <objects name="Multiplayer">
+      <object>objects\oPlayer</object>
+      <object>objects\oPlayerList</object>
     </objects>
   </objects>
   <rooms name="rooms">

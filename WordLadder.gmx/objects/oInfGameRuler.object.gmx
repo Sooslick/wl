@@ -61,6 +61,7 @@ if global.profile[?'ENDSAVED'] &gt; 0 {
     }
   Cube.MinLen = MinLen
   Cube.NewLen = MinLen
+  Cube.y = 600+MinLen*32
   //restore letters
   l.TabuQty = global.profile[?'ENDBANQTY']
   l.TabuString = global.profile[?'ENDBBSTR']
@@ -411,10 +412,20 @@ var tmpm, tmpl, tmp;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if paused {
+            <string>//TabuHilight
+if TT {
+  var xt = Cube.x;
+  if Shift xt+= 72
+  draw_set_alpha(0.2)
+  draw_set_color(c_white)
+  j = MinLen*32
+  draw_rectangle(xt-j+TTNum*72,Cube.y-j-100,xt-j+TTNum*72+66,Cube.y-j-34,false)
+  }
+
+if paused {
   drawTextPreset(fImpact96, c_white, 1, fa_left, fa_top)
   //background + border
-  draw_sprite_ext(sPixel,0,50,50,1100,1100,0,c_white,0.2)
+  draw_sprite_ext(sPixel,0,50,50,1100,1100,0,0,0.75)
   for (var i=0; i&lt;4; i++)
     draw_rectangle(50+i,50+i, 1150-i, 1150-i, true)
   //caption
@@ -452,15 +463,6 @@ var tmpm, tmpl, tmp;
             <kind>1</kind>
             <string>//alpha background
 draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,0.5)
-//TabuHilight
-if TT {
-  var xt = Cube.x;
-  if Shift xt+= 72
-  draw_set_alpha(0.33)
-  draw_set_color(c_white)
-  j = MinLen*32
-  draw_rectangle(xt-j+TTNum*72,Cube.y-j-100,xt-j+TTNum*72+66,Cube.y-j-34,false)
-  }
 </string>
           </argument>
         </arguments>

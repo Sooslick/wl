@@ -56,10 +56,10 @@ TargetM.visible = true
 AllowDec = false
 //with TargetM {event_user(0)}
 TargetMLen = 12
-TargetB = instance_create(1200,200,oProgBar)
+TargetB = instance_create(1200,200,oProgSquare)
 TargetB.Req = 10        //extrabanneds
 TargetB.width = 30
-TargetB.content = '5 OR MORE BANNED'
+TargetB.content = '5+ BANNED'
 TargetB.visible = true
 //with TargetB {event_user(0)}
 success = false
@@ -258,7 +258,7 @@ for (i=2; i&lt;=string_length(currWord); i++) {
 
 //check prevword
 if wordlistTyped(wl,currWord, true) {
-  Timer-= 5000
+  Timer.Timer-= 5000
   Stat.prevs++
   exit
   }                                                      
@@ -293,6 +293,8 @@ var tmpm, tmpl, tmp;
         //5 ban
         if ds_list_size(l.TabuList) &gt;= 5
           TargetB.Prog++
+          
+        gameWordAcceptedSolo()
         
         if (TargetW.Prog &gt;= TargetW.Req) &amp;&amp;
            (TargetL.Prog &gt;= TargetL.Req) &amp;&amp;
@@ -300,10 +302,10 @@ var tmpm, tmpl, tmp;
            (TargetM.Prog &gt;= TargetM.Req) &amp;&amp;
            (TargetB.Prog &gt;= TargetB.Req) {
            success = true
+           prepared = false
+           with Stat {event_user(0)}
            instance_destroy(self, true)
            }
-        
-        gameWordAcceptedSolo()
         }
       else {
         Timer.Timer-= 5000
@@ -364,10 +366,20 @@ var tmpm, tmpl, tmp;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if paused {
+            <string>//TabuHilight
+if TT {
+  var xt = Cube.x;
+  if Shift xt+= 72
+  draw_set_alpha(0.2)
+  draw_set_color(c_white)
+  j = MinLen*32
+  draw_rectangle(xt-j+TTNum*72,Cube.y-j-100,xt-j+TTNum*72+66,Cube.y-j-34,false)
+  }
+
+if paused {
   drawTextPreset(fImpact96, c_white, 1, fa_left, fa_top)
   //background + border
-  draw_sprite_ext(sPixel,0,50,50,1100,1100,0,c_white,0.2)
+  draw_sprite_ext(sPixel,0,50,50,1100,1100,0,0,0.75)
   for (var i=0; i&lt;4; i++)
     draw_rectangle(50+i,50+i, 1150-i, 1150-i, true)
   //caption
@@ -407,15 +419,6 @@ var tmpm, tmpl, tmp;
             <kind>1</kind>
             <string>//alpha background
 draw_sprite_ext(sPixel,0,0,0,1600,1200,0,0,0.5)
-//TabuHilight
-if TT {
-  var xt = Cube.x;
-  if Shift xt+= 72
-  draw_set_alpha(0.33)
-  draw_set_color(c_white)
-  j = MinLen*32
-  draw_rectangle(xt-j+TTNum*72,Cube.y-j-100,xt-j+TTNum*72+66,Cube.y-j-34,false)
-  }
 </string>
           </argument>
         </arguments>

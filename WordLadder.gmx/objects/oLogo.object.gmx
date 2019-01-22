@@ -25,9 +25,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//Game Version 0.0.1.9         1*9 + 256*1 + *0 + *0   todo
-global.GameVersion = 265
-global.versionName = 'Demo 0.0.1.9: 60FPS update'
+            <string>//Game Version 0.0.1.10         1*10 + 256*1 + *0 + *0   todo
+global.GameVersion = 266
+global.versionName = 'Demo 0.0.1.10: alpha update prep'
 global.domain = 'http://sooslick.flaminggaming.ru/'
 //init globals
 randomize()

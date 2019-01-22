@@ -57,6 +57,8 @@ switch (global.GameType)
   case 3:
     RuleStr = 'ENDLESS MODE##' + RuleStr
     TargetStr = 'ENDLESS MODE##You have no set restrictions and goals in this mode.#Type in words, watch the timer and try to score the most points!'
+    TimerStr = "TIMER##This mode doesn't have a time limit. The game will end after you press 'END GAME' button.#"
+    //todo fix other strings
     break
   case 4:
     RuleStr = 'CUSTOM GAME##' + RuleStr
