@@ -100,7 +100,6 @@
     <script>scripts\funcChrCheck.gml</script>
     <script>scripts\funcSetWinResFromString.gml</script>
     <script>scripts\funcCheckGuiHover.gml</script>
-    <script>scripts\checkWord.gml</script>
     <scripts name="datarw">
       <script>scripts\funcCfgWrite.gml</script>
       <script>scripts\funcConfigRead.gml</script>
@@ -152,8 +151,14 @@
       <script>scripts\gameSetGeneralVars.gml</script>
       <script>scripts\gameSetFirstWord.gml</script>
       <script>scripts\gameAnykeySolo.gml</script>
+      <script>scripts\gameAnykeyMulti.gml</script>
       <script>scripts\gameWordAcceptedSolo.gml</script>
+      <script>scripts\gameWordAcceptedMulti.gml</script>
       <script>scripts\playerlistRemovePlayer.gml</script>
+      <script>scripts\checkWord.gml</script>
+      <script>scripts\voteInit.gml</script>
+      <script>scripts\serverClickReady.gml</script>
+      <script>scripts\serverAcceptWord.gml</script>
     </scripts>
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>
@@ -202,9 +207,6 @@
       <object>objects\oSquareHint</object>
       <object>objects\oProgBar</object>
       <object>objects\oProgSquare</object>
-      <object>objects\oGameClient</object>
-      <object>objects\oGameServer</object>
-      <object>objects\oGameChat</object>
       <object>objects\oWordList</object>
       <object>objects\oGameTimer</object>
       <object>objects\oGameAbil</object>
@@ -261,6 +263,9 @@
     <objects name="Multiplayer">
       <object>objects\oPlayer</object>
       <object>objects\oPlayerList</object>
+      <object>objects\oGameChat</object>
+      <object>objects\oGameClient</object>
+      <object>objects\oGameServer</object>
     </objects>
   </objects>
   <rooms name="rooms">

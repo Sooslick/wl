@@ -266,6 +266,26 @@ else
     <event eventtype="7" enumb="12">
       <action>
         <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>gametype recieved: loading screen</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
         <id>603</id>
         <kind>7</kind>
         <userelative>0</userelative>
@@ -316,15 +336,15 @@ switch (global.GameType)
         </arguments>
       </action>
     </event>
-    <event eventtype="7" enumb="11">
+    <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
+        <id>605</id>
+        <kind>0</kind>
         <userelative>0</userelative>
         <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
         <functionname></functionname>
         <codestring></codestring>
         <whoName>self</whoName>
@@ -333,16 +353,10 @@ switch (global.GameType)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//transition screen
-tmp = instance_create(0,0,oSquareTransition)
-tmp.parent = id
-TransitionEvent = 0
-</string>
+            <string>triggered when dict loaded</string>
           </argument>
         </arguments>
       </action>
-    </event>
-    <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -398,6 +412,8 @@ switch (global.GameType)                    //GR: GameRuler
     loaded = false
     //"wait" msg?
   }
+  
+  //todo: instance destroy?
 </string>
           </argument>
         </arguments>

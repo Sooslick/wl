@@ -5,7 +5,7 @@ var ms = Timer.Timer div 60000;         //minutes on timer
 var bs = ds_list_size(l.TabuList);      //banned
 var ts = 0;                             //target letters
 for (i=0; i< ds_list_size(l.TargetList); i++)       //count ts
-  ts+= string_count(l.TargetList[| i],prevWord)
+  ts+= string_count(l.TargetList[| i],currWord)
 //stats count
 Stat.words++
 Stat.lettersa+= ls

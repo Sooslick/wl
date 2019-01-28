@@ -4,7 +4,7 @@ SOCKET HEADERS
 1	server -> client	Init info
 2	server -> client	Ping
 3	client -> server	Ping
-4	server -> client	Ping broadcast
+4	server -> client	Ping broadcast			//Deprecated. Combined with socket 2
 5	client -> server	Player Info			//useless; works as Player Info broadcast request
 6	server -> client	Player Info broadcast
 7	server -> client	JSON Game Rules map set
@@ -29,6 +29,7 @@ SOCKET HEADERS
 26	server -> client	Player's ptp fields
 27	client -> server	End of ptp timer
 28	server -> client	Endgame signal
+#29	server -> client	Progbars synch
 _________________________________________
 
 Socket:
@@ -50,6 +51,8 @@ s8		Player ID
 2:
 s8		Header
 s32		Timestamp
+s8	P	Players
+Pxs16		Ping [ms]
 
 3:
 s8		Header
@@ -87,11 +90,11 @@ string		First word
 
 11:
 s8		Header
-s32		Timer [ticks]
+s32		preTimer [ms]
 
 12:
 s8		Header
-s32		Game Timer [ticks]
+s32		Game Timer [ms]
 
 13:
 s8		Header
@@ -120,7 +123,6 @@ string		Banned & Greens char sequence
 16:
 s8		Header
 s8	P	Players
-Pxs8		Pos
 Pxs32		Score
 
 17:
@@ -181,3 +183,12 @@ s8		Header
 
 28:
 s8		Header
+
+29:
+s8		Header
+s32		Shift Prog
+s32		Shift Req
+s32		Unban Prog
+s32		Unban Req
+s32		Dec Prog
+s32		Dec Req

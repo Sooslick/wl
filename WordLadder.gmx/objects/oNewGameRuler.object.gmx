@@ -32,7 +32,6 @@ PSolo.content = 'SINGLEPLAYER'
 //multi
 PClient = instance_create(300,260,oButton)
 PClient.content = 'MULTIPLAYER'
-PClient.clickable = false
 //how to play button
 PHtp = instance_create(300,500,oButton)
 PHtp.content = 'HOW TO PLAY'

@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>2</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -27,32 +27,29 @@
             <kind>1</kind>
             <string>network_set_config(network_config_use_non_blocking_socket, 1);
 client = network_create_socket(network_socket_tcp);
-network_connect(client, global.IP, 27015);
+network_connect(client, global.IP, 27015);            //todo: read port from global
 buffer_send = buffer_create(64, buffer_grow, 1);
 
-PID = -1
+PID = -1            //player sock's ID on server
 GR = -1
 Stat = -1
-timeout = 300
+timeout = 600
 connected = false
 ptp = false
 
 Players = 0
 Ready = 0
 
-PlsArrPing[0] = 0               
-PlsArrName[0] = ''
-PlsArrID[0] = 0
-PlsArrWord[0] = ''
-PlsArrScore[0] = 0
-PlsArrShift[0] = false
-PlsArrUnban[0] = -1
-PlsArrPos[0] = 0
+Plr[0] = -1
 
-RestartTimer = 150
+PlrList = instance_create(0,0,oPlayerList)
+PlrList.Players = 0
+PlrList.PlsArr = -1
+PlrList.MyPlr = 0
+
+RestartTimer = 359
 Restarting = false
 
-ChatActive = false
 Chat = instance_create(800,200,oGameChat)
 Chat.parent = id
 Chat.visible = false
@@ -79,6 +76,8 @@ Chat.visible = false
           <argument>
             <kind>1</kind>
             <string>network_destroy(client)
+
+//todo: destroy child object
 </string>
           </argument>
         </arguments>
@@ -103,20 +102,18 @@ Chat.visible = false
             <kind>1</kind>
             <string>timeout--
 if timeout &lt;= 0
-  if !connected || parent.loaded
-    {
+  if !connected || parent.loaded {
     network_destroy(client)
-    action_another_room(rMenu)
-    //todo msg
+    room_goto(rMenu)
+    //todo timeout msg
     }
     
-if Restarting
-  {
+if Restarting {
   RestartTimer--
-  if RestartTimer &lt;= 0
-    {
+  if RestartTimer &lt;= 0 {
     global.GameType = 0
-    action_another_room(rGame)
+    //todo: destroy!!! Inf reconnect bug
+    room_goto(rGame)
     }
   }
 </string>
@@ -146,10 +143,9 @@ type = ds_map_find_value(async_load, "type");
 sock = ds_map_find_value(async_load, "socket");
 ip = ds_map_find_value(async_load, "ip");
 msg_buff = ds_map_find_value(async_load, "buffer");
-timeout = 300
+timeout = 600
 
-if type = network_type_non_blocking_connect
-  {
+if type = network_type_non_blocking_connect {
   buffer_seek(buffer_send, buffer_seek_start, 0);
   buffer_write(buffer_send, buffer_s8, 0)
   buffer_write(buffer_send, buffer_s32, global.GameVersion)
@@ -161,17 +157,17 @@ if type = network_type_non_blocking_connect
   global.config[?'SavedIP'] = global.IP
   }
   
-else if type == network_type_data
-  {    
+else if type == network_type_data {    
   var header = buffer_read(msg_buff, buffer_s8)
-  switch header
-    {
+  switch header {
     //recv init info: GameMode + locale
     case 1:
+      //read buffer
       global.GameType = buffer_read(msg_buff, buffer_s8)
       parent.dict.locale = buffer_read(msg_buff, buffer_s8)
       PID = buffer_read(msg_buff, buffer_s8)
-      with parent {event_user(2)}
+      with parent {event_user(2)}                        //start loading and create GR obj
+      //write info request
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 5)           //plr info request
       network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
@@ -194,19 +190,25 @@ else if type == network_type_data
         PlsArrPing[i] = buffer_read(msg_buff, buffer_s32);
       break
       
-    //Player Infos  
+    //Player Infos  array
     case 6:
-      Players = buffer_read(msg_buff, buffer_s8);
-      for (var i=0; i&lt;Players; i++)
-        {
-        PlsArrID[i] = buffer_read(msg_buff, buffer_s32);
-        PlsArrName[i] = buffer_read(msg_buff, buffer_string);
-        PlsArrWord[i] = ''
-        PlsArrScore[i] = 0
-        PlsArrShift[i] = false
-        PlsArrUnban[i] = -1
-        PlsArrPos[i] = i
+      //badcode todo: rewrite plr arr
+      for (var i=0; i&lt;Players; i++) {
+        instance_destroy(Plr[i], true)
+        Plr[i] = -1
         }
+      //write players names
+      Players = buffer_read(msg_buff, buffer_s8);
+      for (var i=0; i&lt;Players; i++) {
+        Plr[i] = instance_create(0,0,oPlayer)
+        Plr[i].ID = buffer_read(msg_buff, buffer_s32);
+        Plr[i].Name = buffer_read(msg_buff, buffer_string);
+        if Plr[i].ID == global.profile[?'PNETID']             //refresh plrlist
+          PlrList.MyPlr = Plr[i]
+        }
+      PlrList.PlsArr = Plr
+      PlrList.Players = Players
+      //send request for gamerules
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 8)           //rules map request
       network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
@@ -217,12 +219,12 @@ else if type == network_type_data
       global.custom = json_decode(buffer_read(msg_buff, buffer_string))
       with parent.dict {event_user(0)}
       break
+      //todo check: why this event dont causes game reloading and re-creating rulers?
       
     //recv Ready qty
     case 10:
       Ready = buffer_read(msg_buff, buffer_s8);
-      if GR != -1
-        {
+      if GR != -1 {
         GR.prestart = true
         GR.currWord = buffer_read(msg_buff, buffer_string);
         GR.Cube.w1 = GR.currWord
@@ -232,87 +234,71 @@ else if type == network_type_data
     //sync prestart timer
     case 11:
       if GR != -1
-        GR.BTimer = buffer_read(msg_buff, buffer_s32);
+        GR.preTimer = buffer_read(msg_buff, buffer_s32);
       break
       
     //sync game timer or game start signal
     case 12:
-      if GR != -1
-        {
+      if GR != -1 {
         if !GR.prepared &amp;&amp; GR.BStart &lt; 0
-          {
-          GR.prepared = true
-          GR.currWord = string_char_at(GR.currWord,string_length(GR.currWord))
-          GR.Cube.Rot = true
-          }
-        GR.Timer = buffer_read(msg_buff, buffer_s32);
+          with GR event_user(4)
+        GR.Timer.Timer = buffer_read(msg_buff, buffer_s32);
         }
       break
       
     //word checked by server
     case 14:
-      if GR != -1
-          {
-          var pid = buffer_read(msg_buff, buffer_s8);     //player typed the word
-          if pid == PID
-            {
-            GR.waiting = false 
-            GR.myWord = true
-            } 
-          var success = buffer_read(msg_buff, buffer_bool);
-          var sh = buffer_read(msg_buff, buffer_bool);
-          var bb = buffer_read(msg_buff, buffer_bool);
-          PlsArrWord[pid] = buffer_read(msg_buff, buffer_string)
-          if success
-            {
-            if sh
-              {
-              GR.ShiftQty--
-              GR.ShiftU = true
-              }
-            if bb
-              {
-              GR.TTQty--
-              GR.TTU = true
-              }
-            GR.currWord = PlsArrWord[pid]
-            GR.Cube.w1 = GR.currWord
-            with GR {event_user(1)}
-            GR.waiting = false
-            for (var i=0; i&lt;Players; i++)
-              PlsArrWord[i] = ''
-            }
+      if GR != -1 {
+        var pid = buffer_read(msg_buff, buffer_s8);     //player typed the word
+        var mw = false;                                 //my word flag
+        if pid == PID
+          mw = true
+        var success = buffer_read(msg_buff, buffer_bool);
+        var sh = buffer_read(msg_buff, buffer_bool);
+        var bb = buffer_read(msg_buff, buffer_bool);
+        var word = buffer_read(msg_buff, buffer_string);
+        Plr[pid].Word = word
+        if success {
+          if sh
+            GR.Shift = true
+          if bb
+            GR.TT = true
+          GR.currWord = word
+          GR.Cube.w1 = word
+          gameWordAcceptedMulti(GR, mw)
+          for (var i=0; i&lt;Players; i++)
+            Plr[i].Word = ''
           }
+        }
       break
       
     //refresh Ban &amp; Green Lists
     case 15:
-      if GR != -1
-          {
-          GR.ShiftQty = buffer_read(msg_buff, buffer_s8);
-          GR.TTQty = buffer_read(msg_buff, buffer_s8);
-          GR.MinLen = buffer_read(msg_buff, buffer_s8);
-          GR.Cube.NewLen = GR.MinLen
-          var B = buffer_read(msg_buff, buffer_s8);
-          var G = buffer_read(msg_buff, buffer_s8);
-          var S = buffer_read(msg_buff, buffer_string);
-          ds_list_clear(GR.TabuList)
-          for (var i=1; i&lt;=B; i++)
-            ds_list_add(GR.TabuList,string_char_at(S,i))
-          ds_list_clear(GR.TargetList)
-          for (var i=B+1; i&lt;=B+G; i++)
-            ds_list_add(GR.TargetList,string_char_at(S,i))
-          }
+      if GR != -1 {
+        var ab = GR.Abil;
+        var l = GR.l;
+        ab.Value[1] = buffer_read(msg_buff, buffer_s8);
+        ab.Value[2] = buffer_read(msg_buff, buffer_s8);
+        GR.MinLen = buffer_read(msg_buff, buffer_s8);
+        GR.Cube.NewLen = GR.MinLen
+        var B = buffer_read(msg_buff, buffer_s8);       //todo: letters next
+        var G = buffer_read(msg_buff, buffer_s8);       //fix empty line reading
+        var S = buffer_read(msg_buff, buffer_string);   //to implement good code
+        ds_list_clear(l.TabuList)
+        for (var i=1; i&lt;=B; i++)
+          ds_list_add(l.TabuList,string_char_at(S,i))
+        ds_list_clear(l.TargetList)
+        for (var i=B+1; i&lt;=B+G; i++)
+          ds_list_add(l.TargetList,string_char_at(S,i))
+        }
       break
       
     //refresh scoretable
     case 16:
       Players = buffer_read(msg_buff, buffer_s8);
-      for (var i=0; i&lt;Players; i++)
-        {
-        PlsArrPos[i] = buffer_read(msg_buff, buffer_s8);
-        PlsArrScore[i] = buffer_read(msg_buff, buffer_s32);
-        }
+      for (var i=0; i&lt;Players; i++) 
+        Plr[i].Score = buffer_read(msg_buff, buffer_s32);
+      with PlrList event_user(0)
       break
       
     //disconnected
@@ -359,23 +345,33 @@ else if type == network_type_data
     
     //Vote init event
     case 21:
-      buffer_read(msg_buff, buffer_s8);
-      var VoteStarter = buffer_read(msg_buff, buffer_s8);
-      GR.VoteText = buffer_read(msg_buff, buffer_string);
-      with GR {event_user(3)}
+      buffer_read(msg_buff, buffer_s8);                   //scope
+      buffer_read(msg_buff, buffer_s8);                   //votestarter
+      var txt = buffer_read(msg_buff, buffer_string);
+      voteInit(GR, txt)
       //TODO Force Yes if PID == VoteStarter
       break
+      
+    //Vote progress
+    case 22:
+      var p = buffer_read(msg_buff, buffer_s8);
+      if p != PID {
+        var answer = buffer_read(msg_buff, buffer_bool);
+        if answer
+          GR.VoteY++
+        else
+          GR.VoteN++
+        }
+      break
     
-    //Vote Progress event
+    //Vote end event
     case 23:
-      Players = buffer_read(msg_buff, buffer_s8);
-      GR.VoteY = buffer_read(msg_buff, buffer_s8);
-      GR.VoteN = buffer_read(msg_buff, buffer_s8);
+      Vote = false
+      GR.Vote = false
       var isResult = buffer_read(msg_buff, buffer_bool);
-      if isResult
-        {
-        Vote = false
-        GR.Vote = false
+      if !isResult {
+        GR.waiting = false;
+        GR.Cube.LengthErr = true
         }
       break
       
@@ -514,6 +510,7 @@ network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
             <kind>1</kind>
             <string>buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 22)
+buffer_write(buffer_send, buffer_s8, PID)
 buffer_write(buffer_send, buffer_bool, GR.VoteChoice)
 network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
 </string>
@@ -712,8 +709,8 @@ network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
             <kind>1</kind>
             <string>buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 13)
-buffer_write(buffer_send, buffer_s8, GR.TTNum)
-buffer_write(buffer_send, buffer_bool, GR.Shift)
+buffer_write(buffer_send, buffer_s8, GR.TTNum)      //unused if accept = false?
+buffer_write(buffer_send, buffer_bool, GR.Shift)    //same
 buffer_write(buffer_send, buffer_bool, false)
 buffer_write(buffer_send, buffer_string, GR.currWord)
 network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
@@ -792,90 +789,25 @@ if Stat != -1
   if Stat.active
     exit
 
-draw_set_font(fImpact64)
-draw_set_color(c_white)
-draw_set_halign(fa_right)
-draw_set_valign(fa_top)
+drawTextPreset(fImpact64, c_white, 1, fa_right, fa_top)
 
-for (var i=0; i&lt;Players; i++)
-  {
-  var j = PlsArrPos[i];
-  var p = PlsArrPos[PID]-j;
-  if abs(p) &lt; 6
-    {
-    draw_set_alpha(1 - abs(p)/5)
-    //name column
-    var w = string_width(PlsArrName[i]);
-    if w &lt; 350
-      draw_text(1595,575-p*70,PlsArrName[i])
-    else
-      draw_text_transformed(1595,575-p*70,PlsArrName[i],350/w,1,0)
-    //score column
-    draw_text(1240,575-p*70,string(PlsArrScore[i]))
-    //draw_text(1240,575-p*70,string(PlsArrPos[i]))
-    //word column
-    if p != 0
-      draw_text(1080,575-p*70,PlsArrWord[i])
-    }
-  }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="8" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>if !parent.loaded
-  exit
-
-if Stat != -1
-  if Stat.active
-    exit
-  
-draw_set_font(fImpact64)
-draw_set_color(c_white)
-draw_set_alpha(1)
-draw_set_halign(fa_right)
-draw_set_valign(fa_top)
-
-draw_text(1595,65,'Players: ' + string(Players))
-
-//ping column
-//for (var i=0; i&lt;Players; i++)
-//  draw_text(1595,500-i*65,string(PlsArrPing[i]))
+draw_text(global.G_RIGHT-5,65,'Players: ' + string(Players))
 
 //prestart string
 if GR != -1
-  if !GR.prepared
-    {
-    var s = 'Waiting for players#Ready: ' + string(Ready) + ' / ' + string(Players);
+  if !GR.prepared {
+    s = 'Waiting for players#Ready: ' + string(Ready) + ' / ' + string(Players)
     draw_set_halign(fa_center)
     draw_set_valign(fa_center)
     draw_text(800, 400, s)
     }
-
-if Restarting
-  {
+    
+if Restarting {
   draw_set_halign(fa_center)
   draw_set_valign(fa_center)
   draw_set_font(fImpact96)
-  var s = 'Restarting in#';
-  s+= formatTimeString(RestartTimer)
+  var s = 'Restarting in ';
+  s+= string(RestartTimer div 60)
   draw_text(800, 600, s)
   }
 </string>
