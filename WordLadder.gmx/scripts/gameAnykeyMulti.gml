@@ -34,6 +34,9 @@ if !prepared
 if Cube.Rot
   exit
   
+if Cube.ApplyBw
+  exit
+  
 if Net.Chat.Active      //todo perenesti Chat constructor to GR
   exit
   

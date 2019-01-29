@@ -35,6 +35,8 @@ Players = 1
 Ready = 0
 ptp = false
 ptpPlayers = 0
+PtpPos = 0
+PtpPosMax = 0
 
 Plr[0] = instance_create(0,0,oPlayer)
 Plr[0].IP = 'localhost'
@@ -140,7 +142,7 @@ if PingTimer == 0 {
     else {
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 12)
-      buffer_write(buffer_send, buffer_s32, GR.Timer)
+      buffer_write(buffer_send, buffer_s32, GR.Timer.Timer)
       for (var i=1; i&lt;Players; i++)
         network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
       }
@@ -342,78 +344,61 @@ else if type = network_type_data {
       Plr[eid].Word = word
       if enter &amp;&amp; ptp {
         var cnt = 0;
-        for (var i=0; i&lt; ds_list_size(GR.TargetList); i++)
-                cnt+= string_count(GR.TargetList[| i],word)
-        PlsArrScore[eid]+= 1 + cnt
+        for (var i=0; i&lt; ds_list_size(GR.l.TargetList); i++)
+          cnt+= string_count(GR.l.TargetList[| i],word)
         cnt++
-        PtpArrShiftProg[eid]+= cnt;
-        if PtpArrShiftProg[eid] &gt; 33
-          {
-          PtpArrShiftProg[eid]-= 33
-          PtpArrShift[eid]++
+        Plr[eid].Score+= cnt
+        Plr[eid].ShiftProg+= cnt;
+        if Plr[eid].ShiftProg &gt; 33 {
+          Plr[eid].ShiftProg-= 33
+          Plr[eid].Shift++
           }
-        PtpArrUnbanProg[eid]+= cnt;
-        if PtpArrUnbanProg[eid] &gt; 42
-          {
-          PtpArrUnbanProg[eid]-= 42
-          PtpArrUnban[eid]++
+        Plr[eid].UnbanProg+= cnt;
+        if Plr[eid].UnbanProg &gt; 42 {
+          Plr[eid].UnbanProg-= 42
+          Plr[eid].Unban++
           }
-        PtpArrTimer[eid] = GR.Timer + (GR.MinLen-1)*GR.SecPerLetter + cnt*GR.SecPerLetter*0.5
+        Plr[eid].Timer = GR.Timer.Timer + (GR.MinLen-1)*GR.SecPerLetter + cnt*GR.SecPerLetter*0.5
         if string_length(word) &gt; GR.MinLen
-          PtpArrTimer[eid] = PtpArrTimer[eid] div 2
-        buffer_seek(buffer_send, buffer_seek_start, 0);
-        buffer_write(buffer_send, buffer_s8, 14)
-        buffer_write(buffer_send, buffer_s8, eid)
-        buffer_write(buffer_send, buffer_bool, true)
-        buffer_write(buffer_send, buffer_bool, false)
-        buffer_write(buffer_send, buffer_bool, false)
-        buffer_write(buffer_send, buffer_string, word)
-        for (var i=1; i&lt;Players; i++)
-          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
-        PlsArrWord[eid] = ''
-        GR.currWord = word
-        GR.Cube.w1 = word
-        with GR {event_user(1)}
-        if TTNum != -1
-          PtpArrUnban[eid]--
-        if Shift
-          PtpArrShift[eid]--
+          Plr[eid].Timer = Plr[eid].Timer div 2
+        if GR.TT
+          Plr[eid].Unban--
+        if GR.Shift
+          Plr[eid].Shift--
+        //accept word &amp; send it
+        serverAcceptWord(0)  
+          
+        //AFTER ACCEPTING WORD: CHANGE PLAYER TODO REFACTOR!
         var searching = true;
-        while searching
-          {
+        while searching {
           PtpPos++
-          if PtpPos &gt; PtpPosMax
-            {
+          if PtpPos &gt; PtpPosMax {
             PtpPos = 0
-            GR.ptpwords++
+            //GR.ptpwords++           //TODO fix
             }
           for (var i=0; i&lt;Players; i++)
-            if PtpArrPos[i] == PtpPos &amp;&amp; PtpArrPlaying[i] == true
+            if Plr[i].Pos == PtpPos &amp;&amp; Plr[i].Playing == true
               searching = false
           }
-        for (var i=1; i&lt;Players; i++)
-          {
+        for (var i=1; i&lt;Players; i++) {
           //ptp fields
           buffer_seek(buffer_send, buffer_seek_start, 0);
           buffer_write(buffer_send, buffer_s8, 26)
-          buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
-          if PtpPos == PtpArrPos[i]
-            {
+          buffer_write(buffer_send, buffer_s32, Plr[i].Timer)
+          if PtpPos == Plr[i].Pos {
             buffer_write(buffer_send, buffer_bool, true)
-            GR.Timer = PtpArrTimer[i]
+            GR.Timer.Timer = Plr[i].Timer
             }
           else
             buffer_write(buffer_send, buffer_bool, false)
-          buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
-          buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
-          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+          buffer_write(buffer_send, buffer_s8, Plr[i].Shift)
+          buffer_write(buffer_send, buffer_s8, Plr[i].Unban)
+          network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
           }
-        if PtpArrPos[0] == PtpPos
-          {
+        if Plr[0].Pos == PtpPos {
           GR.myWord = true
           GR.waiting = false
           GR.Cube.ApplyBw = false
-          GR.Timer = PtpArrTimer[0]
           }
         } 
       else if enter &amp;&amp; VoteScope == 0 {       //word ok
@@ -464,7 +449,7 @@ else if type = network_type_data {
         buffer_write(buffer_send, buffer_s8, VoteP)
         buffer_write(buffer_send, buffer_string, Desc)
         for (var i=1; i&lt;Players; i++)
-          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+          network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
         voteInit(GR, Desc)
         }
       break 
@@ -476,7 +461,7 @@ else if type = network_type_data {
       buffer_write(buffer_send, buffer_s8, 20)
       buffer_write(buffer_send, buffer_string, Chat.GotStr)
       for (var i=1; i&lt;Players; i++)
-            network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+        network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
       with Chat {event_user(0)}
       break
       
@@ -525,6 +510,11 @@ else if type = network_type_data {
           serverAcceptWord(VoteP)
           }
         else {
+          GR.Vote = false
+          if VoteP == 0 {
+            GR.waiting = false
+            GR.Cube.LengthErr = true
+            }
           buffer_seek(buffer_send, buffer_seek_start, 0);
           buffer_write(buffer_send, buffer_s8, 14)
           buffer_write(buffer_send, buffer_s8, VoteP)
@@ -865,6 +855,11 @@ if isResult {
     serverAcceptWord(VoteP)
     }
   else {
+    GR.Vote = false
+    if VoteP == 0 {
+      GR.waiting = false
+      GR.Cube.LengthErr = true
+      }
     buffer_seek(buffer_send, buffer_seek_start, 0);
     buffer_write(buffer_send, buffer_s8, 14)
     buffer_write(buffer_send, buffer_s8, VoteP)
@@ -1120,83 +1115,63 @@ if Shift
   VoteScope+= 4
   
 if ptp
-  {
+  {             //todo: ptp badcode refactor!
   var cnt = 0;
-  for (var i=0; i&lt; ds_list_size(GR.TargetList); i++)
-          cnt+= string_count(GR.TargetList[| i],word)
-  PlsArrScore[0]+= 1 + cnt
+  for (var i=0; i&lt; ds_list_size(GR.l.TargetList); i++)
+    cnt+= string_count(GR.l.TargetList[| i],word)
   cnt++
-  PtpArrShiftProg[0]+= cnt;
-  if PtpArrShiftProg[0] &gt; 33
-    {
-    PtpArrShiftProg[0]-= 33
-    PtpArrShift[0]++
+  Plr[0].Score+= cnt
+  Plr[0].ShiftProg+= cnt;
+  if Plr[0].ShiftProg &gt; 33 {
+    Plr[0].ShiftProg-= 33
+    Plr[0].Shift++
     }
-  PtpArrUnbanProg[0]+= cnt;
-  if PtpArrUnbanProg[0] &gt; 42
-    {
-    PtpArrUnbanProg[0]-= 42
-    PtpArrUnban[0]++
+  Plr[0].UnbanProg+= cnt;
+  if Plr[0].UnbanProg &gt; 42 {
+    Plr[0].UnbanProg-= 42
+    Plr[0].Unban++
     }
-  PtpArrTimer[0] = GR.Timer + (GR.MinLen-1)*GR.SecPerLetter + cnt*GR.SecPerLetter*0.5
+  Plr[0].Timer = GR.Timer.Timer + (GR.MinLen-1)*GR.SecPerLetter + cnt*GR.SecPerLetter*0.5
   if string_length(word) &gt; GR.MinLen
-    PtpArrTimer[0] = PtpArrTimer[0] div 2
-  buffer_seek(buffer_send, buffer_seek_start, 0);
-  buffer_write(buffer_send, buffer_s8, 14)
-  buffer_write(buffer_send, buffer_s8, 0)
-  buffer_write(buffer_send, buffer_bool, true)
-  buffer_write(buffer_send, buffer_bool, false)
-  buffer_write(buffer_send, buffer_bool, false)
-  buffer_write(buffer_send, buffer_string, GR.currWord)
-  for (var i=1; i&lt;Players; i++)
-    network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
-  PlsArrWord[eid] = ''
-  GR.currWord = word
-  GR.Cube.w1 = word
-  with GR {event_user(1)}
-  GR.waiting = true
-  GR.myWord = false
-  GR.Cube.ApplyBw = true
-  if TTNum != -1
-    PtpArrUnban[0]--
-  if Shift
-    PtpArrShift[0]--
+    Plr[0].Timer = Plr[0].Timer div 2
+  if GR.TT
+    Plr[0].Unban--
+  if GR.Shift
+    Plr[0].Shift--
+  //accept word &amp; send it
+  serverAcceptWord(0)  
+    
+  //AFTER ACCEPTING WORD: CHANGE PLAYER TODO REFACTOR!
   var searching = true;
-  while searching
-    {
+  while searching {
     PtpPos++
-    if PtpPos &gt; PtpPosMax
-      {
+    if PtpPos &gt; PtpPosMax {
       PtpPos = 0
-      GR.ptpwords++
+      //GR.ptpwords++           //TODO fix
       }
     for (var i=0; i&lt;Players; i++)
-      if PtpArrPos[i] == PtpPos &amp;&amp; PtpArrPlaying[i] == true
+      if Plr[i].Pos == PtpPos &amp;&amp; Plr[i].Playing == true
         searching = false
     }
-  for (var i=1; i&lt;Players; i++)
-    {
+  for (var i=1; i&lt;Players; i++) {
     //ptp fields
     buffer_seek(buffer_send, buffer_seek_start, 0);
     buffer_write(buffer_send, buffer_s8, 26)
-    buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
-    if PtpPos == PtpArrPos[i]
-      {
+    buffer_write(buffer_send, buffer_s32, Plr[i].Timer)
+    if PtpPos == Plr[i].Pos {
       buffer_write(buffer_send, buffer_bool, true)
-      GR.Timer = PtpArrTimer[i]
+      GR.Timer.Timer = Plr[i].Timer
       }
     else
       buffer_write(buffer_send, buffer_bool, false)
-    buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
-    buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
-    network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+    buffer_write(buffer_send, buffer_s8, Plr[i].Shift)
+    buffer_write(buffer_send, buffer_s8, Plr[i].Unban)
+    network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
     }
-  if PtpArrPos[0] == PtpPos
-    {
+  if Plr[0].Pos == PtpPos {
     GR.myWord = true
     GR.waiting = false
     GR.Cube.ApplyBw = false
-    GR.Timer = PtpArrTimer[0]
     }
   }  
 //accept word no problemos

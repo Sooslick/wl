@@ -24,34 +24,32 @@ if Players == Ready {
   if ptp { 
     for (var i=0; i<Players; i++)
       {
-      PtpArrTimer[i] = GR.Timer
-      PtpArrPlaying[i] = true
+      Plr[i].Timer = GR.Timer.Timer
+      Plr[i].Playing = true
+      //shuffle player's pos
       var r = irandom_range(0, Players-1);
-      if r != i
-        {
-        var p = PtpArrPos[i];
-        PtpArrPos[i] = PtpArrPos[r];
-        PtpArrPos[r] = p;
+      if r != i {
+        var p = Plr[i].Pos;
+        Plr[i].Pos = Plr[r].Pos
+        Plr[r].Pos = p;
         }
       }
     PtpPos = 0
     PtpPosMax = Players - 1
-    for (var i=1; i<Players; i++)
-      {
+    for (var i=1; i<Players; i++) {
       //ptp fields
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 26)
-      buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
-      if PtpPos == PtpArrPos[i]
+      buffer_write(buffer_send, buffer_s32, Plr[i].Timer)
+      if PtpPos == Plr[i].Pos
         buffer_write(buffer_send, buffer_bool, true)
       else
         buffer_write(buffer_send, buffer_bool, false)
-      buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
-      buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
-      network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+      buffer_write(buffer_send, buffer_s8, Plr[i].Shift)
+      buffer_write(buffer_send, buffer_s8, Plr[i].Unban)
+      network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
       }
-    if PtpArrPos[0] == PtpPos
-      {
+    if Plr[0].Pos == PtpPos {
       GR.myWord = true
       GR.waiting = false
       GR.Cube.ApplyBw = false

@@ -226,8 +226,8 @@ else if type == network_type_data {
       Ready = buffer_read(msg_buff, buffer_s8);
       if GR != -1 {
         GR.prestart = true
-        GR.currWord = buffer_read(msg_buff, buffer_string);
-        GR.Cube.w1 = GR.currWord
+        GR.prevWord = buffer_read(msg_buff, buffer_string);
+        GR.Cube.w1 = GR.prevWord
         }
       break
       
@@ -393,22 +393,20 @@ else if type == network_type_data {
       GR.currWord = string_char_at(GR.Cube.w1,string_length(GR.Cube.w1))
       break
       
-    //ptp: my state
+    //ptp: my state TODO: refactor
     case 26:
-      GR.Timer = buffer_read(msg_buff, buffer_s32);
+      GR.Timer.Timer = buffer_read(msg_buff, buffer_s32);
       GR.myWord = buffer_read(msg_buff, buffer_bool);
-      if GR.myWord
-        {
+      if GR.myWord {
         GR.waiting = false
         GR.Cube.ApplyBw = false
         }
-      else
-        {
+      else {
         GR.Cube.ApplyBw = true
         GR.waiting = true
         }
-      GR.ShiftQty = buffer_read(msg_buff, buffer_s8);
-      GR.TTQty = buffer_read(msg_buff, buffer_s8);
+      GR.Abil.Value[1] = buffer_read(msg_buff, buffer_s8);      //shift
+      GR.Abil.Value[2] = buffer_read(msg_buff, buffer_s8);      //unban
       break
       
     //ptp: endgame
