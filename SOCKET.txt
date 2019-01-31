@@ -25,11 +25,11 @@ SOCKET HEADERS
 22	client -> server	Voting
 23	server -> client	Vote result
 24	server -> client	Full word history
-25	server -> client	Current GameCube state
+25	server -> client	Current GameCube state		//Deprecated and unused
 26	server -> client	Player's ptp fields
 27	client -> server	End of ptp timer
 28	server -> client	Endgame signal
-#29	server -> client	Progbars synch
+29	server -> client	Progbars sync
 _________________________________________
 
 Socket:
@@ -186,9 +186,9 @@ s8		Header
 
 29:
 s8		Header
-s32		Shift Prog
-s32		Shift Req
-s32		Unban Prog
-s32		Unban Req
-s32		Dec Prog
-s32		Dec Req
+s16		Shift Prog
+s16		Shift Req
+s16		Unban Prog
+s16		Unban Req
+s16		Dec Prog
+s16		Dec Req

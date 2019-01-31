@@ -159,6 +159,7 @@
       <script>scripts\voteInit.gml</script>
       <script>scripts\serverClickReady.gml</script>
       <script>scripts\serverAcceptWord.gml</script>
+      <script>scripts\serverBroadcastLetters.gml</script>
     </scripts>
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>

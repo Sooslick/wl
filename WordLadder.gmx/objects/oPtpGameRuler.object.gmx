@@ -90,6 +90,7 @@ instance_destroy(ShiftPB, true)
 instance_destroy(ptpPB, true)
 instance_destroy(TTPB, true)
 instance_destroy(Cube, true)
+instance_destroy(Net, true)
 </string>
           </argument>
         </arguments>
@@ -198,11 +199,6 @@ if bBack != -1 {
     instance_destroy(Stat, true)
     instance_destroy(self, true)
     room_goto(rMenu)
-    exit
-    }
-  if bEnd.clicked {
-    with Stat event_user(0)
-    instance_destroy(self, true)
     exit
     }
   }

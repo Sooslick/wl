@@ -77,7 +77,7 @@ Chat.visible = false
             <kind>1</kind>
             <string>network_destroy(client)
 
-//todo: destroy child object
+//todo: destroy child object (chat, plrlist, plrs...)
 </string>
           </argument>
         </arguments>
@@ -112,7 +112,7 @@ if Restarting {
   RestartTimer--
   if RestartTimer &lt;= 0 {
     global.GameType = 0
-    //todo: destroy!!! Inf reconnect bug
+    instance_destroy(GR, true)
     room_goto(rGame)
     }
   }
@@ -187,7 +187,7 @@ else if type == network_type_data {
     case 4:
       Players = buffer_read(msg_buff, buffer_s8);
       for (var i=0; i&lt;Players; i++)
-        PlsArrPing[i] = buffer_read(msg_buff, buffer_s32);
+        Plr[i].Ping = buffer_read(msg_buff, buffer_s32);
       break
       
     //Player Infos  array
@@ -208,6 +208,7 @@ else if type == network_type_data {
         }
       PlrList.PlsArr = Plr
       PlrList.Players = Players
+      with PlrList event_user(0)
       //send request for gamerules
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 8)           //rules map request
@@ -227,14 +228,17 @@ else if type == network_type_data {
       if GR != -1 {
         GR.prestart = true
         GR.prevWord = buffer_read(msg_buff, buffer_string);
-        GR.Cube.w1 = GR.prevWord
+        if GR.wl.Words == 0
+          GR.Cube.w1 = GR.prevWord
         }
       break
       
     //sync prestart timer
     case 11:
-      if GR != -1
+      if GR != -1 {
         GR.preTimer = buffer_read(msg_buff, buffer_s32);
+        GR.prestart = true
+        }
       break
       
     //sync game timer or game start signal
@@ -242,6 +246,8 @@ else if type == network_type_data {
       if GR != -1 {
         if !GR.prepared &amp;&amp; GR.BStart &lt; 0
           with GR event_user(4)
+        else if GR.prestart &amp;&amp; GR.BStart != -1                //wtf 
+          with GR.BStart uiOnclick()                          //wtf x2
         GR.Timer.Timer = buffer_read(msg_buff, buffer_s32);
         }
       break
@@ -303,38 +309,26 @@ else if type == network_type_data {
       
     //disconnected
     case 17:
-      network_destroy(client)
-      action_another_room(rMenu)
+      instance_destroy(GR, true)
       //todo msg
       break
       
     //someone disconnected
     case 18:
       var pid = buffer_read(msg_buff, buffer_s8);
-        //Shift Table Pos
-      for (var i=0; i&lt;Players; i++)
-        if PlsArrPos[i] &gt; PlsArrPos[pid]
-          PlsArrPos[i]-- 
           //shift array
-      for (var i = pid; i &lt; Players-1; i++)
-        {
-        PlsArrPing[i] = PlsArrPing[i+1]
-        PlsArrName[i] = PlsArrName[i+1]
-        PlsArrID[i] = PlsArrID[i+1]
-        PlsArrWord[i] = PlsArrWord[i+1]
-        PlsArrScore[i] = PlsArrScore[i+1]
-        PlsArrShift[i] = PlsArrShift[i+1]
-        PlsArrUnban[i] = PlsArrUnban[i+1]
-        PlsArrPos[i] = PlsArrPos[i+1]
-        }
+      for (var i = pid; i &lt; Players-1; i++)       //todo refactor rhis method
+        Plr[i] = Plr[i+1]
       Players--
+      PlrList.PlsArr = Plr
+      PlrList.Players = Players
+      with PlrList event_user(0)
       break
       
     //restart signal
     case 19:
       RestartTimer = 150
       Restarting = true
-      network_destroy(client)
       break
       
     //chat event
@@ -377,9 +371,24 @@ else if type == network_type_data {
       
     //full word history recv
     case 24:
+      //get history
       var tmp = buffer_read(msg_buff, buffer_s32);
+      var w = GR.wl;
+      w.Words = 0
       for (var i=0; i&lt;tmp; i++)
-        ds_list_add(GR.prevWordList,buffer_read(msg_buff, buffer_string));
+        wordlistAddWord(w, buffer_read(msg_buff, buffer_string));
+      //set Cube state
+      var c = GR.Cube;
+      if w.Words &gt; 0 {
+        c.w2 = w.Arr[w.Words-1]
+        if w.Words &gt; 1 {
+          c.w3 = w.Arr[w.Words-2]
+          if w.Words &gt; 2
+            c.w4 = w.Arr[w.Words-3]
+          }
+        }
+      GR.prevWord = c.w2
+      GR.currWord = string_char_at(c.w2, string_length(c.w2))
       break
       
     //current game state recv
@@ -411,7 +420,6 @@ else if type == network_type_data {
       
     //ptp: endgame
     case 28:
-      with GR {event_user(3)}
       event_user(4)
       break
     }                
@@ -600,18 +608,18 @@ network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
           <argument>
             <kind>1</kind>
             <string>//Stat passed from GameRuler in endgame event
+with Stat event_user(0)
 var bestpl = -1;
 var bestsc = -1;
 for (var i=0; i&lt;Players; i++)
-  if PlsArrScore[i] &gt; bestsc
-    {
+  if Plr[i].Score &gt; bestsc {
     bestpl = i
-    bestsc = PlsArrScore[i]
+    bestsc = Plr[i].Score         //refactor!!!
     }
 var s = 'BEST PLAYER:#';
-s+= PlsArrName[bestpl]
+s+= Plr[bestpl].Name
 s+= '##SCORE:#'
-s+= string(PlsArrScore[bestpl])
+s+= string(Plr[bestpl].Score)
 Stat.s = s
 Chat.visible = false
 </string>

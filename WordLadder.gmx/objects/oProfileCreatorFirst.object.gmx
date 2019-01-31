@@ -286,7 +286,7 @@ load = false
   if !encpw {
     encpw = true
     if pwForm.content != pwForm.contentSaved
-      pwForm.contentSaved = content
+      pwForm.contentSaved = pwForm.content
     pwForm.contentSaved = sha1_string_utf8(pwForm.contentSaved)
     }
   http_get(global.domain+'wl/authUser.php?login=' + nameForm.contentSaved + '&amp;passw=' + pwForm.contentSaved)

@@ -29,6 +29,7 @@
 buffer_send = buffer_create(64, buffer_grow, 1);
 buffer_hist = buffer_create(64, buffer_grow, 1);
 
+OnclickEvent = 15
 GR = -1
 Stat = -1
 Players = 1
@@ -46,7 +47,7 @@ Plr[0].ID = global.profile[?'PNETID']
 PlrList = instance_create(0,0,oPlayerList)
 PlrList.Players = 1
 PlrList.PlsArr = Plr
-PlrList.MyPlr = 0
+PlrList.MyPlr = Plr[0]
 
 //general fields
 PingTimestamp = 0
@@ -86,11 +87,12 @@ VoteBan = false
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+            <string>//TODO: Check if this is not socket 19 (game restart)
+buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 17)  
 buffer_write(buffer_send, buffer_string, 'Server shut down')  
 for (i=1; i&lt;Players; i++)
-    network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+  network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
     
 network_destroy(server)
 
@@ -148,40 +150,6 @@ if PingTimer == 0 {
       }
     }
   }
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="6" enumb="56">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>if BRestart != -1
-  if BRestart.clicked
-    {
-    buffer_seek(buffer_send, buffer_seek_start, 0);
-    buffer_write(buffer_send, buffer_s8, 19)
-    for (var i=1; i&lt;Players; i++)
-        network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
-    network_destroy(server)
-    action_another_room(rGame)
-    }
-    
-//todo - reconnect bug?
 </string>
           </argument>
         </arguments>
@@ -290,10 +258,19 @@ else if type = network_type_data {
     //player clicked "begin" button  
     case 9:
       if GR.prepared {
+        //send word history socket 24
+        buffer_seek(buffer_hist, buffer_seek_start, 0);
+        buffer_write(buffer_hist, buffer_s8, 24)
+        var w = GR.wl;
+        buffer_write(buffer_hist, buffer_s32, w.Words)
+        for (var i=0; i&lt;w.Words; i++)
+          buffer_write(buffer_hist, buffer_string, w.Arr[i])
+        network_send_packet( Plr[eid].Sock, buffer_hist, buffer_tell(buffer_hist) );
+        //send rdy signal
         buffer_seek(buffer_send, buffer_seek_start, 0);
         buffer_write(buffer_send, buffer_s8, 10)
         buffer_write(buffer_send, buffer_s8, Ready)
-        buffer_write(buffer_send, buffer_string, GR.Cube.w1)
+        buffer_write(buffer_send, buffer_string, GR.prevWord)
           network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
         //broadcast timer
         buffer_seek(buffer_send, buffer_seek_start, 0);
@@ -301,25 +278,8 @@ else if type = network_type_data {
         buffer_write(buffer_send, buffer_s32, GR.Timer.Timer)
         for (var i=1; i&lt;Players; i++)
           network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
-        //send word history socket 24
-        buffer_seek(buffer_hist, buffer_seek_start, 0);
-        buffer_write(buffer_hist, buffer_s8, 24)
-        var w = GR.words;
-        buffer_write(buffer_hist, buffer_s32, w)
-        for (var i=0; i&lt;w; i++)
-          buffer_write(buffer_hist, buffer_string, GR.prevWordList[|i])
-        network_send_packet( PlsArrSock[eid], buffer_hist, buffer_tell(buffer_hist) );
-        //send GameCube state socket 25
-        buffer_seek(buffer_send, buffer_seek_start, 0);
-        buffer_write(buffer_send, buffer_s8, 25)
-        buffer_write(buffer_send, buffer_s8, GR.MinLen)
-        buffer_write(buffer_send, buffer_s32, GR.words)
-        buffer_write(buffer_send, buffer_string, GR.Cube.w2)
-        buffer_write(buffer_send, buffer_string, GR.Cube.w3)
-        buffer_write(buffer_send, buffer_string, GR.Cube.w4)
-        network_send_packet( PlsArrSock[eid], buffer_send, buffer_tell(buffer_send) );
         //send current game state &amp; score
-        event_user(3)
+        serverBroadcastLetters()          //todo: score socket?
         }
       else 
         serverClickReady(eid)
@@ -456,7 +416,7 @@ else if type = network_type_data {
     
     //chat str
     case 20:
-      Chat.GotStr = PlsArrName[eid] + ':' + chr(888) + buffer_read(msg_buff, buffer_string);
+      Chat.GotStr = Plr[eid].Name + ':' + chr(888) + buffer_read(msg_buff, buffer_string);
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 20)
       buffer_write(buffer_send, buffer_string, Chat.GotStr)
@@ -529,21 +489,18 @@ else if type = network_type_data {
       
       //ptp timer off
     case 27:
-      PtpArrPlaying[eid] = false
+      Plr[eid].Playing = false
       ptpPlayers--
-      if ptpPlayers &gt; 1
-        {
+      if ptpPlayers &gt; 1 {
         var searching = true;
-        while searching
-          {
+        while searching {
           PtpPos++
-          if PtpPos &gt; PtpPosMax
-            {
+          if PtpPos &gt; PtpPosMax {
             PtpPos = 0
             GR.ptpwords++
             }
           for (var i=0; i&lt;Players; i++)
-            if PtpArrPos[i] == PtpPos &amp;&amp; PtpArrPlaying[i] == true
+            if Plr[i].Pos == PtpPos &amp;&amp; Plr[i].Playing == true
               searching = false
           }
         for (var i=1; i&lt;Players; i++)
@@ -551,107 +508,94 @@ else if type = network_type_data {
           //ptp fields
           buffer_seek(buffer_send, buffer_seek_start, 0);
           buffer_write(buffer_send, buffer_s8, 26)
-          buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
-          if PtpPos == PtpArrPos[i]
-            {
+          buffer_write(buffer_send, buffer_s32, Plr[i].Timer)
+          if PtpPos == Plr[i].Pos {
             buffer_write(buffer_send, buffer_bool, true)
-            GR.Timer = PtpArrTimer[i]
+            GR.Timer = Plr[i].Timer
             }
           else
             buffer_write(buffer_send, buffer_bool, false)
-          buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
-          buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
-          network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+          buffer_write(buffer_send, buffer_s8, Plr[i].Shift)
+          buffer_write(buffer_send, buffer_s8, Plr[i].Unban)
+          network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
           }
-        if PtpArrPos[0] == PtpPos
-          {
+        if Plr[0].Pos == PtpPos {
           GR.myWord = true
           GR.waiting = false
           GR.Cube.ApplyBw = false
-          GR.Timer = PtpArrTimer[0]
           }
         }
-      else
-        {
+      else {
         buffer_seek(buffer_send, buffer_seek_start, 0);
         buffer_write(buffer_send, buffer_s8, 28)
         for (var i=1; i&lt;Players; i++)
-            network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+            network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
         event_user(4)
         }
       break
     }
   }
-else if type = network_type_disconnect
-  {
+else if type = network_type_disconnect {
   for (var i=0; i&lt;Players; i++)
-    if sock == PlsArrSock[i]
-      {
+    if sock == Plr[i].Sock {
       eid = i
       break
       }
    
   //Pl count ?
-  if PlsArrReady[eid]
+  if Plr[eid].Ready
     Ready--    
     
   //ptp operations  
-  if PtpArrPlaying[eid]
+  if Plr[eid].Playing
     ptpPlayers--
     
-  if PtpPos == PtpArrPos[eid]
-    {
-    PtpArrPlaying[eid] = false
-    if ptpPlayers &gt; 1
-      {
-      var searching = true;
-      while searching
-        {
-        PtpPos++
-        if PtpPos &gt; PtpPosMax
-          {
-          PtpPos = 0
-          GR.ptpwords++
+  if ptp {
+    if PtpPos == Plr[eid].Pos {
+      Plr[eid].Playing = false
+      if ptpPlayers &gt; 1 {           //refactor ths plz
+        var searching = true;
+        while searching {
+          PtpPos++
+          if PtpPos &gt; PtpPosMax {
+            PtpPos = 0
+            GR.ptpwords++
+            }
+          for (var i=0; i&lt;Players; i++)
+            if Plr[i].Pos == PtpPos &amp;&amp; Plr[i].Playing == true
+              searching = false
           }
-        for (var i=0; i&lt;Players; i++)
-          if PtpArrPos[i] == PtpPos &amp;&amp; PtpArrPlaying[i] == true
-            searching = false
-        }
-      for (var i=1; i&lt;Players; i++)
-        {
-        //ptp fields
-        buffer_seek(buffer_send, buffer_seek_start, 0);
-        buffer_write(buffer_send, buffer_s8, 26)
-        buffer_write(buffer_send, buffer_s32, PtpArrTimer[i])
-        if PtpPos == PtpArrPos[i]
-          {
-          buffer_write(buffer_send, buffer_bool, true)
-          GR.Timer = PtpArrTimer[i]
+        for (var i=1; i&lt;Players; i++) {
+          //ptp fields
+          buffer_seek(buffer_send, buffer_seek_start, 0);
+          buffer_write(buffer_send, buffer_s8, 26)
+          buffer_write(buffer_send, buffer_s32, Plr[i].Timer)
+          if PtpPos == Plr[i].Pos {
+            buffer_write(buffer_send, buffer_bool, true)
+            GR.Timer.Timer = Plr[i].Timer
+            }
+          else
+            buffer_write(buffer_send, buffer_bool, false)
+          buffer_write(buffer_send, buffer_s8, Plr[i].Shift)
+          buffer_write(buffer_send, buffer_s8, Plr[i].Unban)
+          network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
           }
-        else
-          buffer_write(buffer_send, buffer_bool, false)
-        buffer_write(buffer_send, buffer_s8, PtpArrShift[i])
-        buffer_write(buffer_send, buffer_s8, PtpArrUnban[i])
-        network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
-        }
-      if PtpArrPos[0] == PtpPos
-        {
-        GR.myWord = true
-        GR.waiting = false
-        GR.Cube.ApplyBw = false
-        GR.Timer = PtpArrTimer[0]
+        if Plr[0].Pos == PtpPos {
+          GR.myWord = true
+          GR.waiting = false
+          GR.Cube.ApplyBw = false
+          }
         }
       }
-    }
-    
-  if ptp &amp;&amp; ptpPlayers &lt; 2
-    {
-    buffer_seek(buffer_send, buffer_seek_start, 0);
-    buffer_write(buffer_send, buffer_s8, 28)
-    for (var i=1; i&lt;Players; i++)
-        network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
-    event_user(4)
-    with GR {event_user(3)}
+      
+    if ptpPlayers &lt; 2
+      {
+      buffer_seek(buffer_send, buffer_seek_start, 0);
+      buffer_write(buffer_send, buffer_s8, 28)
+      for (var i=1; i&lt;Players; i++)
+        network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+      event_user(4)
+      }
     }
     
   //disconnect socket  
@@ -659,38 +603,70 @@ else if type = network_type_disconnect
   buffer_write(buffer_send, buffer_s8, 18)
   buffer_write(buffer_send, buffer_s8, eid)
   for (var i=1; i&lt;Players; i++)
-    network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
-  
-  //Shift Table Pos
-  for (var i=0; i&lt;Players; i++)
-    if PlsArrPos[i] &gt; PlsArrPos[eid]
-      PlsArrPos[i]--  
+    network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) ); 
       
   //shift array
   for (var i = eid; i &lt; Players-1; i++)
-    {
-    PlsArrSock[i] = PlsArrSock[i+1]
-    PlsArrIP[i] = PlsArrIP[i+1]
-    PlsArrPing[i] = PlsArrPing[i+1]
-    PlsArrName[i] = PlsArrName[i+1]
-    PlsArrID[i] = PlsArrID[i+1]
-    PlsArrWord[i] = PlsArrWord[i+1]
-    PlsArrScore[i] = PlsArrScore[i+1]
-    PlsArrShift[i] = PlsArrShift[i+1]
-    PlsArrUnban[i] = PlsArrUnban[i+1]
-    PlsArrReady[i] = PlsArrReady[i+1]
-    PlsArrPos[i] = PlsArrPos[i+1]
-    PtpArrTimer[i] = PtpArrTimer[i+1]
-    PtpArrPlaying[i] = PtpArrPlaying[i+1]
-    PtpArrShift[i] = PtpArrShift[i+1]
-    PtpArrShiftProg[i] = PtpArrShiftProg[i+1]
-    PtpArrUnban[i] = PtpArrUnban[i+1]
-    PtpArrUnbanProg[i] = PtpArrUnbanProg[i+1]
-    PtpArrPos[i] = PtpArrPos[i+1]
-    }
+    Plr[i] = Plr[i+1]
   Players--
+  PlrList.PlsArr = Plr
+  PlrList.Players = Players
+  with PlrList event_user(0)
   }
 </string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="25">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if BRestart != -1
+  if BRestart.clicked {
+    buffer_seek(buffer_send, buffer_seek_start, 0);
+    buffer_write(buffer_send, buffer_s8, 19)
+    for (var i=1; i&lt;Players; i++)
+      network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+    instance_destroy(GR, true)
+    room_goto(rGame)
+    }
+    
+//todo - reconnect bug?
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>ui onclick event</string>
           </argument>
         </arguments>
       </action>
@@ -963,6 +939,7 @@ with Chat {event_user(0)}
             <kind>1</kind>
             <string>BRestart = instance_create(1328,1100,oButton)
 BRestart.content = 'RESTART'
+BRestart.parent = id
 
 //Stat passed from GameRuler in step event
 with Stat event_user(0)
@@ -979,9 +956,9 @@ s+= '##SCORE:#'
 s+= string(Plr[bestpl].Name)
 Stat.s = s
 Chat.visible = false
-instance_destroy(GR, true)
+//instance_destroy(GR, true)???
 
-//todo: send endgame socket???
+//todo: send endgame socket? It is necessary?
 
 //todo: wtf??? Rework event
 </string>
@@ -1030,25 +1007,7 @@ instance_destroy(GR, true)
 var l = GR.l;
 with l lettersNext()
 //B &amp; G BROADCAST
-buffer_seek(buffer_send, buffer_seek_start, 0);
-buffer_write(buffer_send, buffer_s8, 15)                //header
-buffer_write(buffer_send, buffer_s8, GR.Abil.Value[1])  //shift
-buffer_write(buffer_send, buffer_s8, GR.Abil.Value[2])  //unban
-buffer_write(buffer_send, buffer_s8, GR.MinLen)         //length
-
-var B = ds_list_size(l.TabuList);
-var G = ds_list_size(l.TargetList);
-var S = '';
-for (var i=0; i&lt;B; i++)
-  S+= l.TabuList[|i]
-for (var i=0; i&lt;G; i++)
-  S+= l.TargetList[|i]
-
-buffer_write(buffer_send, buffer_s8, B)             //Banned qty
-buffer_write(buffer_send, buffer_s8, G)             //Greens Qty
-buffer_write(buffer_send, buffer_string, S)         //Banned + Greens char sequence
-for (var i=1; i&lt;Players; i++)
-  network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+serverBroadcastLetters()
   
 //SCORE BROADCAST
 buffer_seek(buffer_send, buffer_seek_start, 0);
