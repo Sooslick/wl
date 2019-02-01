@@ -75,7 +75,7 @@ if ($ok)
 	//read
 	$f = fopen($fn, 'r');
 	fgets($f);				//upd not required
-	fgets($f);				//pnetid not required
+	$name = fgets($f);			//name string		//old pnetid... not required
 	$ip = str_replace("\n","",fgets($f));	//ip
 	$gm = str_replace("\n","",fgets($f));	//gamemode
 	if (isset($state)) {
@@ -94,10 +94,10 @@ if ($ok)
 	//write
 	$f = fopen($fn, 'w');
 	$rcon = strval(time()) . "\n"		//last upd
-	. strval($pnetid) . "\n"		//host pnetid
+	. strval($name) . "\n"			//hoster name		//old host pnetid
 	. $ip . "\n"				//host ip
-	. $gm . "\n"			//gametype
-	. strval($state) . "\n"					 //gamestate, pls, words
+	. $gm . "\n"				//gametype
+	. strval($state) . "\n"			//gamestate, pls, words
 	. strval($pls) . "\n"
 	. strval($words) . "\n";
 	$bw = fwrite($f, $rcon);

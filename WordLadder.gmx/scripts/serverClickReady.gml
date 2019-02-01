@@ -55,6 +55,8 @@ if Players == Ready {
       GR.Cube.ApplyBw = false
       }
     }
+    //finally: send room upd request
+    serverUpdRoom()
   }
 //send ready count otherwise
 else {

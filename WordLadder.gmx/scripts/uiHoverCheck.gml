@@ -1,6 +1,17 @@
 //argument0: elem x
 //argument1: elem y
-if funcCheckGuiHover((argument0-256*dsc), (argument1-64*dsc), (argument0+256*dsc), (argument1+64*dsc))    
+var ex = argument[0];
+var ey = argument[1];
+var ew, eh;
+if argument_count > 2 {
+  ew = argument[2]*dsc
+  eh = argument[3]*dsc
+  }
+else {
+  ew = 256*dsc
+  eh = 64*dsc
+  }
+if funcCheckGuiHover(ex-ew, ey-eh, ex+ew, ey+eh)    
         {
         hover = 1            //check cursor pos not by mouse enter/leave event
         if clickable {  

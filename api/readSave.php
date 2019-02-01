@@ -43,6 +43,13 @@ $tmp = $sav[$pos];
 $pos++;
 echo "Used locale: $tmp <br>";
 
+$tmp = '';
+for ($i = 0; $i < 12; $i++) {
+	$tmp+= $sav[$pos];
+	$pos++;
+	}
+echo "Last headline: $tmp <br>";
+
 $tmp = readLong($sav, $pos);
 $pos+= 4;
 echo "Ingame time: $tmp <br>";

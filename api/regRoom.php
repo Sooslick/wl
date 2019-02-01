@@ -41,13 +41,15 @@ if ($ok)
 if ($ok)
 {	
 	//log by pnetid
-	$req = "SELECT PNETID FROM main_users WHERE ACCESS_TOKEN = \"$at\"";
+	$req = "SELECT PNETID, DISPLAY_NAME FROM main_users WHERE ACCESS_TOKEN = \"$at\"";
 	//db select
 	$stmt = $pdo->query($req);
 	$response = $stmt->fetch();
 	if (empty($response)) {$ok = false; $err_string = 'User not found';}
 	else {
-		$pnetid = $response['PNETID'];}
+		$pnetid = $response['PNETID'];
+		$name = $response['DISPLAY_NAME'];
+		}
 }
 
 //update
@@ -57,10 +59,10 @@ if ($ok)
 	$fn = '../../wl/rooms/r' . strval($rid);
 	$f = fopen($fn, 'w');
 	$rcon = strval($rid) . "\n"		//last upd
-	. strval($pnetid) . "\n"		//host pnetid
+	. strval($name) . "\n"			//host name	//todo: store pnetid such as time ago
 	. $ip . "\n"				//host ip
 	. strval($gm) . "\n"			//gametype
-	. "0\n1\n0\n";					 //gamestate, pls, words
+	. "0\n1\n0\n";				//gamestate, pls, words
 	$bw = fwrite($f, $rcon);
 	if ($bw == false) {
 		$ok = false;

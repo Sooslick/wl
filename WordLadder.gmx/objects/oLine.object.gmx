@@ -28,6 +28,7 @@
             <string>//init fields
 uiCreate()
 w = 1600    //line width
+h = 128     //default line height
 align = fa_left
 cols = 0
 cw[0] = 1   //column width
@@ -77,7 +78,7 @@ cc[0] = ''  //column content
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>uiHoverCheck(sx,sy)
+            <string>uiHoverCheck(sx,sy,w,h)
 </string>
           </argument>
         </arguments>
@@ -185,16 +186,18 @@ var wp = 0;                     //width processed
 //draw cols
 for (var i=0; i&lt;cols; i++) {
   var wc = cw[i]*w;               //width current in pixels
-  tsc = wc / string_width(cc[i])  //text scale calc
-  if tsc &gt;= 1
-    tsc = dsc
-  else
-    tsc*= dsc
-  if align == fa_left
-    draw_text_transformed(x+wp,y,cc[i],tsc,dsc,0)
-  else
-    draw_text_transformed(x-wp,y,cc[i],tsc,dsc,0)
-  wp+= wc
+  if wc &gt; 0 {
+    tsc = wc / string_width(cc[i])  //text scale calc
+    if tsc &gt;= 1
+      tsc = dsc
+    else
+      tsc*= dsc
+    if align == fa_left
+      draw_text_transformed(x+wp,y,cc[i],tsc,dsc,0)
+    else
+      draw_text_transformed(x-wp,y,cc[i],tsc,dsc,0)
+    wp+= wc
+    }
   }
 
 uiDrawHint()

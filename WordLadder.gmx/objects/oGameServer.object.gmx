@@ -64,7 +64,15 @@ VoteWord = ''
 VoteShift = false
 VoteBan = false
 
-//TODO Api request
+ServerRID = -1
+ServerRefreshTimer = 5000
+
+var gmode;
+if ptp
+  gmode = '1'
+else
+  gmode = '0'
+http_get(global.domain+'wl/regRoom.php?gmode=' + gmode + '&amp;access_token=' + global.userdata[?'AT'])
 </string>
           </argument>
         </arguments>
@@ -95,6 +103,9 @@ for (i=1; i&lt;Players; i++)
   network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
     
 network_destroy(server)
+
+//send room close request
+http_get(global.domain+'wl/delRoom.php?rid=' + ServerRID + '&amp;access_token=' + global.userdata[?'AT'])
 
 //todo: destroy child objects
 </string>
@@ -150,6 +161,10 @@ if PingTimer == 0 {
       }
     }
   }
+  
+ServerRefreshTimer--
+if (ServerRefreshTimer &lt;= 0) &amp;&amp; (ServerRID &gt; 0)
+  serverUpdRoom()
 </string>
           </argument>
         </arguments>
@@ -222,6 +237,8 @@ else if type = network_type_data {
       buffer_write(buffer_send, buffer_s8, global.profile[?'PLOCALE'])
       buffer_write(buffer_send, buffer_s8, eid)
       network_send_packet( eid, buffer_send, buffer_tell(buffer_send) );
+      //update room
+      serverUpdRoom()
       break
     
     //client ping pong answer
@@ -612,7 +629,48 @@ else if type = network_type_disconnect {
   PlrList.PlsArr = Plr
   PlrList.Players = Players
   with PlrList event_user(0)
+  
+  //update room
+  serverUpdRoom()
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="62">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//todo: refactor async_load checks!
+
+//data not loaded completely
+if async_load[? "status"] &gt; 0
+  exit
+
+//error
+if async_load[? "status"] &lt; 0
+  instance_destroy(self, true)      //destroy -&gt; create log in form
+  
+//answer loaded
+var html = json_decode(async_load[? "result"])
+if html != -1
+  //check roomid
+  if !is_undefined(html[?'ROOMID'])
+    ServerRID = string(html[?'ROOMID'])
 </string>
           </argument>
         </arguments>
@@ -956,6 +1014,7 @@ s+= '##SCORE:#'
 s+= string(Plr[bestpl].Name)
 Stat.s = s
 Chat.visible = false
+
 //instance_destroy(GR, true)???
 
 //todo: send endgame socket? It is necessary?

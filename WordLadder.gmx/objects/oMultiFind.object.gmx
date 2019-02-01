@@ -31,9 +31,6 @@ bRef = instance_create(300,100,oButton)
 bRef.content = 'REFRESH'
 bRef.dsc = 0.8
 with bRef uiRescale(500)
-//connect baton
-bConnect = instance_create(1200,800,oButton)
-bConnect.content = 'CONNECT'
 //back baton
 bBack = instance_create(300,800,oButton)
 bBack.content = 'BACK'
@@ -43,7 +40,7 @@ LinesList[0] = -1
 Selected = -1
 //clickables list
 alist = ds_list_create()
-ds_list_add(alist, bRef,bConnect,bBack)
+ds_list_add(alist, bRef, bBack)
 for (var i=0; i&lt;ds_list_size(alist); i++) {
   alist[|i].parent = id
   alist[|i].useParentSurface = true
@@ -80,7 +77,6 @@ LoadRot = 0
           <argument>
             <kind>1</kind>
             <string>instance_destroy(bRef, true)
-instance_destroy(bConnect, true)
 instance_destroy(bBack, true)
 for (var i=0; i&lt;Lines; i++)
   instance_destroy(LinesList[i], true)
@@ -155,11 +151,13 @@ if html != -1
       LinesList[i] = instance_create(25, 275+i*75, oLine)
       LinesList[i].font = fCube
       LinesList[i].w = 1450
+      LinesList[i].h = 36
       LinesList[i].sx = LinesList[i].x+50
       LinesList[i].sy = LinesList[i].y+180
       LinesList[i].parent = id
       LinesList[i].useParentSurface = true
-      uiLineAddCol(LinesList[i], 0.4, string(CURR_ROOM[?'PNETID']))
+      uiLineAddCol(LinesList[i], 0.0, string(CURR_ROOM[?'IP']))
+      uiLineAddCol(LinesList[i], 0.4, string(CURR_ROOM[?'PNETID']))   //todo fix it
       uiLineAddCol(LinesList[i], 0.3, gm)
       uiLineAddCol(LinesList[i], 0.1, string(CURR_ROOM[?'PLS']))
       uiLineAddCol(LinesList[i], 0.1, string(CURR_ROOM[?'STATE']))
@@ -215,16 +213,13 @@ else if bRef.clicked {
   Selected = -1
   http_get(global.domain+'wl/roomList.php')
   }
-else if bConnect.clicked {
-  //check selected
-  
-  //todo api: getUser: multiID
-  //todo API: log client ip 
-  }
 else
   for (var i=0; i&lt;Lines; i++)
     if LinesList[i].clicked {
-      Selected = i
+      global.GameType = 0
+      global.IP = LinesList[i].cc[0]
+      instance_destroy(parent, true)
+      room_goto(rGame)
       exit
       }
 </string>
@@ -256,11 +251,11 @@ surface_set_target(ds)
 draw_clear_alpha(0,0)
 //draw captions
 drawTextPreset(fCube,c_white,1,fa_left,fa_center)
-draw_text(100, 200, 'Game Host')
-draw_text(650, 200, 'Gamemode')
-draw_text(1050,200, 'Plrs')
-draw_text(1200,200, 'State')
-draw_text(1350,200, 'Words')
+draw_text(25, 200, 'Game Host')
+draw_text(600, 200, 'Gamemode')
+draw_text(1000,200, 'Plrs')
+draw_text(1150,200, 'State')
+draw_text(1300,200, 'Words')
 //draw loading
 if Loading 
   drawLoading(LoadRot,1400,80)
