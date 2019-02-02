@@ -42,3 +42,5 @@ Stat = instance_create(0,0,oGameStatCounter)
 Stat.parent = id
 Stat.Cube = Cube
 Stat.GameTypeID = argument0  //CUSTOM
+//Background
+Bg = instance_create(0,0,oBglineRuler)

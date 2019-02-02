@@ -1,4 +1,4 @@
-ServerRefreshTimer = 5000
+ServerRefreshTimer = 4000
 var state = '0'
 var w = '0'
 if GR != -1 {

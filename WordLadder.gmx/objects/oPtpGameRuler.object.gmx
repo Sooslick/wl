@@ -90,6 +90,7 @@ instance_destroy(ShiftPB, true)
 instance_destroy(ptpPB, true)
 instance_destroy(TTPB, true)
 instance_destroy(Cube, true)
+instance_destroy(Bg, true)
 instance_destroy(Net, true)
 </string>
           </argument>

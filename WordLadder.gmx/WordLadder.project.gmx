@@ -221,8 +221,6 @@
       <object>objects\oMenuStuff</object>
       <object>objects\oNewsLoader</object>
       <object>objects\oNewsRuler</object>
-      <object>objects\oSquareRuler</object>
-      <object>objects\oSquare</object>
       <object>objects\oOptionsRuler</object>
       <object>objects\oAuthorsRuler</object>
       <object>objects\oAuthorsCube</object>
@@ -268,6 +266,12 @@
       <object>objects\oGameChat</object>
       <object>objects\oGameClient</object>
       <object>objects\oGameServer</object>
+    </objects>
+    <objects name="Background">
+      <object>objects\oSquareRuler</object>
+      <object>objects\oSquare</object>
+      <object>objects\oBglineRuler</object>
+      <object>objects\oBgline</object>
     </objects>
   </objects>
   <rooms name="rooms">

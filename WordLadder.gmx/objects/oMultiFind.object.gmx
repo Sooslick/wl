@@ -34,13 +34,17 @@ with bRef uiRescale(500)
 //back baton
 bBack = instance_create(300,800,oButton)
 bBack.content = 'BACK'
+//connect baton
+bConnect = instance_create(1200,800,oButton)
+bConnect.content = 'RANDOM ROOM'
+with bConnect uiRescale(506)
 //lines list
 Lines = 0
 LinesList[0] = -1
 Selected = -1
 //clickables list
 alist = ds_list_create()
-ds_list_add(alist, bRef, bBack)
+ds_list_add(alist, bRef, bBack, bConnect)
 for (var i=0; i&lt;ds_list_size(alist); i++) {
   alist[|i].parent = id
   alist[|i].useParentSurface = true
@@ -78,6 +82,7 @@ LoadRot = 0
             <kind>1</kind>
             <string>instance_destroy(bRef, true)
 instance_destroy(bBack, true)
+instance_destroy(bConnect, true)
 for (var i=0; i&lt;Lines; i++)
   instance_destroy(LinesList[i], true)
 ds_list_destroy(alist)
@@ -204,6 +209,16 @@ if bBack.clicked {
     }
   uiSetClickable(alist,false)
   }
+//rand room
+else if bConnect.clicked {
+  if Lines &gt; 0 {
+    var i = irandom(Lines);
+    global.GameType = 0
+    global.IP = LinesList[i].cc[0]
+    instance_destroy(parent, true)
+    room_goto(rGame)
+    }
+  }
 //refresh
 else if bRef.clicked {
   for (var i=0; i&lt;Lines; i++)
@@ -220,7 +235,6 @@ else
       global.IP = LinesList[i].cc[0]
       instance_destroy(parent, true)
       room_goto(rGame)
-      exit
       }
 </string>
           </argument>

@@ -75,7 +75,7 @@ if ($ok)
 	//read
 	$f = fopen($fn, 'r');
 	fgets($f);				//upd not required
-	$name = fgets($f);			//name string		//old pnetid... not required
+	$name = str_replace("\n","",fgets($f));	//name string		//old pnetid... not required
 	$ip = str_replace("\n","",fgets($f));	//ip
 	$gm = str_replace("\n","",fgets($f));	//gamemode
 	if (isset($state)) {
@@ -110,8 +110,7 @@ if ($ok)
 //return json
 if ($ok)
 {
-	$answer = array("ROOMID" => $rid);
-	echo(json_encode($answer));
+	echo("SUCCESS");
 	file_put_contents('../../wl/apilog.txt', PHP_EOL . date('d.m.y H:i:s') . ' updRoom request: success; PNETID: ' . $pnetid . '; IP: ' . $ip, FILE_APPEND);
 }
 else

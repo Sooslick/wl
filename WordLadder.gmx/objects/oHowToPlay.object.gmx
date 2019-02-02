@@ -65,6 +65,8 @@ Cube.NewLen = MinLen
 Cube.w1 = prevWord
 Cube.Letters = l
 
+Bg = instance_create(0,0,oBglineRuler)
+
 TextPt = 0
 TextArr[0] = 'HOW TO PLAY'
 TextArr[1] = 'This is your play area.'

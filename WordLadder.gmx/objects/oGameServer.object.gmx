@@ -163,7 +163,7 @@ if PingTimer == 0 {
   }
   
 ServerRefreshTimer--
-if (ServerRefreshTimer &lt;= 0) &amp;&amp; (ServerRID &gt; 0)
+if (ServerRefreshTimer &lt;= 0) &amp;&amp; (ServerRID != -1)
   serverUpdRoom()
 </string>
           </argument>
