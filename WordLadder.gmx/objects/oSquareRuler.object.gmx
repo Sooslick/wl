@@ -583,7 +583,7 @@ for (i=0; i&lt;ARRMAX; i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/*
+            <string>
 //initial operations
 if !surface_exists(ds)
   ds = surface_create(2048,2048)
@@ -622,7 +622,7 @@ if chBlur
   draw_surface_ext(ds, dsx, dsy, 1,1, rot, c_white,1)
   shader_reset()
   }
-*/
+
 </string>
           </argument>
         </arguments>

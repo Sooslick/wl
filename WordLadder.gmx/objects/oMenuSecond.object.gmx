@@ -34,11 +34,13 @@ posOut = global.G_DOWN - 50
 //Buttons init
 bHide = instance_create(300,posOut,oButton)
 bHide.content = 'SWITCH'
+bHide.hintMsg = 'Enable interactive background' //todo unavailable if disabled in settings...
 bHide.dsc = 0.66
 bHide.tsc = 0.65
 bHide.parent = id
 bAccept = instance_create(300,posOut+100,oButton)
 bAccept.content = 'ACCEPT'
+bAccept.hintMsg = 'Apply some magic'
 bAccept.dsc = 0.66
 bAccept.tsc = 0.65
 bAccept.parent = id
@@ -110,6 +112,10 @@ ds_list_destroy(alist)
     AnimTick = 0
     isInside = funcBoolSwitch(isInside)
     bg.active = funcBoolSwitch(bg.active)
+    if bg.active
+      bHide.hintMsg = 'Disable interactive background'
+    else
+      bHide.hintMsg = 'Enable interactive background'
     uiSetClickable(alist, true)
     }
   }
