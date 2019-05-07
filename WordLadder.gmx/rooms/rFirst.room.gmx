@@ -11,6 +11,20 @@
   <colour>0</colour>
   <showcolour>-1</showcolour>
   <code>ds_map_clear(global.uiObjects)
+
+//check forced offline
+if global.config[?'ForceOffline'] {
+  global.config[?'ProfileFile'] = 'anonymous'
+  global.userdata[?'PNETID'] = 0
+  funcLastloginWrite();
+  funcProfileRead()
+  //todo change login data and refactor
+  //todo is required to rewrite last login data?
+  room_goto(rMenu)
+  exit
+  }
+
+//else create form of automatically log in
 if global.userdata[?'AUTOLOG'] &gt; 0
   instance_create(0,0,oAutolog)
 else

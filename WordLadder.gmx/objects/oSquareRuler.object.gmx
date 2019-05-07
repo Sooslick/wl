@@ -583,7 +583,10 @@ for (i=0; i&lt;ARRMAX; i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>
+            <string>//skip drawevent if config
+if !global.config[?'InteractiveBg']
+  exit
+    
 //initial operations
 if !surface_exists(ds)
   ds = surface_create(2048,2048)

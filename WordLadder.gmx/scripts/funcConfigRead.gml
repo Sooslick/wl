@@ -89,6 +89,10 @@ if is_undefined(global.config[?'MultiGreens'])
     global.config[?'MultiGreens'] = '0'
 if is_undefined(global.config[?'MultiMode'])
     global.config[?'MultiMode'] = '0'
+if is_undefined(global.config[?'ForceOffline'])
+    global.config[?'ForceOffline'] = 'false'
+if is_undefined(global.config[?'InteractiveBg'])
+    global.config[?'InteractiveBg'] = 'true'
     
 //format non-string values
 global.config[?'ShowLogo'] = formatBool(global.config[?'ShowLogo'], true)
@@ -124,6 +128,8 @@ global.config[?'MultiBans'] = formatReal(global.config[?'MultiBans'],0)
 global.config[?'MultiVowels'] = formatReal(global.config[?'MultiVowels'],0)
 global.config[?'MultiGreens'] = formatReal(global.config[?'MultiGreens'],0)
 global.config[?'MultiMode'] = formatReal(global.config[?'MultiMode'],0)
+global.config[?'ForceOffline'] = formatBool(global.config[?'ForceOffline'],false)
+global.config[?'InteractiveBg'] = formatBool(global.config[?'InteractiveBg'],true)
 
 //fix screen res 
 //TODO? 

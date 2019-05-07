@@ -150,5 +150,14 @@
     s = 'MultiMode=' + string(global.config[?'MultiMode'])
     file_text_write_string(f,s)
     file_text_writeln(f)
+    
+    s = 'ForceOffline=' + formatBoolString(global.config[?'ForceOffline'], false)
+    file_text_write_string(f,s)
+    file_text_writeln(f)
+    
+    s = 'InteractiveBg=' + formatBoolString(global.config[?'InteractiveBg'], true)
+    file_text_write_string(f,s)
+    file_text_writeln(f)
 
     file_text_close(f)
+    //possible to refactor this
