@@ -105,7 +105,7 @@ for (i=1; i&lt;Players; i++)
 network_destroy(server)
 
 //send room close request
-http_get(global.domain+'wl/delRoom.php?rid=' + ServerRID + '&amp;access_token=' + global.userdata[?'AT'])
+http_get(global.domain+'wl/delRoom.php?rid=' + string(ServerRID) + '&amp;access_token=' + global.userdata[?'AT'])
 
 //todo: destroy child objects
 </string>
@@ -658,12 +658,8 @@ else if type = network_type_disconnect {
             <string>//todo: refactor async_load checks!
 
 //data not loaded completely
-if async_load[? "status"] &gt; 0
+if async_load[? "status"] != 0
   exit
-
-//error
-if async_load[? "status"] &lt; 0
-  instance_destroy(self, true)      //destroy -&gt; create log in form
   
 //answer loaded
 var html = json_decode(async_load[? "result"])

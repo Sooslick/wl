@@ -40,18 +40,20 @@ LastLine = Line[0]
 //direction switch
 MoveLeft = true
 
-Strings[0] = "someone gift me a blue shark from IKEA"
-Strings[1] = 'the game is never the game is never the game is never'
-Strings[2] = 'You would be a good dancer except for two things'
-Strings[3] = "I know what's wrong with you - you've broken your finger!"
-Strings[4] = '&lt;script&gt;alert("OH HELLO THERE!!!");&lt;/script&gt;'
-Strings[5] = 'Take the spoon out of the mug before you drink.'
-Strings[6] = "I would look even funnier if I didn't wear it."
-Strings[7] = "You see, it pays to be bilingual!"
-Strings[8] = "How would we know they were late, if we didn't have a schedule?"
+Strings[0] = "SOMEONE GIFT ME A BLUE SHARK FROM IKEA"
+Strings[1] = 'THE END IS NEVER THE END IS NEVER THE END IS NEVER TH'
+Strings[2] = 'YOU WOULD BE A GOOD DANCER EXCEPT FOR TWO THINGS'
+Strings[3] = "I KNOW WHAT'S WRONG WITH YOU - YOU'VE BROKEN YOUR FINGER!"
+Strings[4] = '&lt;SCRIPT&gt;ALERT("OH HELLO THERE!!!");&lt;/SCRIPT&gt;'
+Strings[5] = 'TAKE THE SPOON OUT OF THE MUG BEFORE YOU DRINK.'
+Strings[6] = "I WOULD LOOK EVEN FUNNIER IF I DIDN'T WEAR IT."
+Strings[7] = "YOU SEE, IT PAYS TO BE BILINGUAL!"
+Strings[8] = "HOW WOULD WE KNOW THEY WERE LATE, IF WE DIDN'T HAVE A SCHEDULE?"
+Strings[9] = 'ANYTHING THAT CAN POSSIBLY GO WRONG, DOES.'
+Strings[10] = 'THE PERVERSITY OF THE UNIVERSE TENDS TOWARDS A MAXIMUM.'
 
 currStr = 0
-StrMax = 9
+StrMax = 11
 </string>
           </argument>
         </arguments>
