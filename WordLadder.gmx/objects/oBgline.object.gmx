@@ -93,7 +93,7 @@ else {
   
 y-= constFloatSpeed
   
-if y&lt;-300
+if y&lt;-320
   instance_destroy(self, true)
 </string>
           </argument>

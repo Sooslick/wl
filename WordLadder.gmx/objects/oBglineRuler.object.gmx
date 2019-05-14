@@ -34,6 +34,9 @@ Line[0].LineId = 0
 Lines = 1
 MaxLines = 8
 
+for (var i=1; i&lt;MaxLines; i++)
+  Line[i] = -1
+
 //last line ptr
 LastLine = Line[0]
 

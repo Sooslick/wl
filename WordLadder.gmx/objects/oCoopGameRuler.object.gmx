@@ -126,6 +126,7 @@ if prepared {
   if Timer.Timer&lt;=0 {
     Net.Stat = Stat
     with Net event_user(4)
+    instance_destroy(self, true)
     exit
     }
   //process hint
