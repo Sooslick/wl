@@ -44,6 +44,8 @@ Plr[0].IP = 'localhost'
 Plr[0].Name = global.profile[?'PNAME']
 Plr[0].ID = global.profile[?'PNETID']
 
+Leavers = ds_list_create()              //init archived plrs list
+
 PlrList = instance_create(0,0,oPlayerList)
 PlrList.Players = 1
 PlrList.PlsArr = Plr
@@ -226,7 +228,17 @@ else if type = network_type_data {
         }
       Plr[eid].ID = buffer_read(msg_buff, buffer_s32)
       Plr[eid].Name = buffer_read(msg_buff, buffer_string)
-      //TODO: find player w/ same ID (check if reconnect)
+      //find player w/ same ID (check if reconnect)
+      for (var i=0; i&lt;ds_list_size(Leavers); i++) {
+        var cp = Leavers[|i];
+        //check if connected plr in leavers list
+        if (cp.ID == Plr[eid].ID) {
+          playerCopyData(cp, Plr[eid])
+          instance_destroy(cp)
+          ds_list_delete(Leavers, i)
+          break
+          }
+        }
       PlrList.Players = Players
       PlrList.PlsArr = Plr
       with PlrList event_user(0)
@@ -622,6 +634,10 @@ else if type = network_type_disconnect {
   for (var i=1; i&lt;Players; i++)
     network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) ); 
       
+  //add Plr to Leavers if he isnt anonymous
+  if Plr[eid].ID != 0
+    ds_list_add(Leavers, Plr[eid])  
+    
   //shift array
   for (var i = eid; i &lt; Players-1; i++)
     Plr[i] = Plr[i+1]
