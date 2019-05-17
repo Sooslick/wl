@@ -97,7 +97,6 @@ instance_destroy(ShiftPB, true)
 instance_destroy(TTPB, true)
 instance_destroy(Cube, true)
 instance_destroy(Bg, true)
-instance_destroy(Net, true)
 </string>
           </argument>
         </arguments>
@@ -125,6 +124,7 @@ if prepared {
   //timer
   if Timer.Timer&lt;=0 {
     Net.Stat = Stat
+    Stat.Net = Net
     with Net event_user(4)
     instance_destroy(self, true)
     exit
@@ -202,9 +202,10 @@ else if prestart {
   }
 if bBack != -1 {
   if bBack.clicked {
-    funcProfileWrite()
+    funcProfileWrite() //todo: data ISNT saving at this point. Move it to Stat destructor 
     funcSendProfile()
     instance_destroy(Stat, true)
+    instance_destroy(Net, true)
     instance_destroy(self, true)
     room_goto(rMenu)
     exit

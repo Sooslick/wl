@@ -1012,6 +1012,7 @@ BRestart.content = 'RESTART'
 BRestart.parent = id
 
 //Stat passed from GameRuler in step event
+GR = -1
 with Stat event_user(0)
 var bestpl = -1;
 var bestsc = -1;
@@ -1027,11 +1028,9 @@ s+= string(Plr[bestpl].Name)
 Stat.s = s
 Chat.visible = false
 
-//instance_destroy(GR, true)???
-
 //todo: send endgame socket? It is necessary?
 
-//todo: wtf??? Rework event
+//todo: wtf??? So many bugs and perf degr after endgame
 </string>
           </argument>
         </arguments>

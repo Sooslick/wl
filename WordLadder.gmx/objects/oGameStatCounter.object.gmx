@@ -25,7 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>OnclickEvent = 3
+            <string>GameTypeID = -1             //gametype changed after creating ig gameGeneralObjCreate
+OnclickEvent = 3
 //game's counters
 pp = 0                      //score
 words = 0
@@ -68,6 +69,9 @@ LenWord = ''
 sSpec[0] = ''
 sSpec[1] = ''
 sSpec[2] = ''
+
+//todo: refactor stat obj. Net -&gt; custom stat counter
+Net = -1
 </string>
           </argument>
         </arguments>
@@ -175,8 +179,11 @@ sSpec[2] = ''
             <kind>1</kind>
             <string>if B1 &gt; 0
   if B1.clicked {
-    funcProfileWrite()
+    funcProfileWrite()  //todo why not in event_user0? Data loss if altf4 from endgame screen
     funcSendProfile()
+    instance_destroy(self,true)
+    if Net != -1
+      instance_destroy(Net, true)
     room_goto(rMenu)
     }
 </string>

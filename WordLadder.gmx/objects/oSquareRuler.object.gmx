@@ -123,7 +123,13 @@ if surface_exists(ds)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//animation calc
+            <string>//skip stepevent if config
+//todo: alternate squareruler obj 4 disabled bg to optimize checks
+//todo: perfomance degradation after endgame
+if !global.config[?'InteractiveBg']
+  exit
+
+//animation calc
 if !chStop
 {
 //////////
