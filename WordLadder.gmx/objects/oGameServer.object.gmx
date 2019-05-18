@@ -101,8 +101,10 @@ http_get(global.domain+'wl/regRoom.php?gmode=' + gmode + '&amp;access_token=' + 
 buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 17)  
 buffer_write(buffer_send, buffer_string, 'Server shut down')  
-for (i=1; i&lt;Players; i++)
+for (i=1; i&lt;Players; i++) {
   network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+  network_destroy(Plr[i].Sock)
+  }
     
 network_destroy(server)
 
@@ -222,7 +224,7 @@ else if type = network_type_data {
     case 0:
       var gv = buffer_read(msg_buff, buffer_s32)
       if gv != global.GameVersion
-        //todo errmsg / disconnect socket
+        //todo errmsg / disconnect socket / rm plr obj
         {
         break
         }
@@ -266,6 +268,7 @@ else if type = network_type_data {
     case 5:
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 6)
+      buffer_write(buffer_send, buffer_s8, eid)
       buffer_write(buffer_send, buffer_s8, Players)
       for (var i=0; i&lt;Players; i++) {
         buffer_write(buffer_send, buffer_s32, Plr[i].ID)
@@ -274,7 +277,6 @@ else if type = network_type_data {
       for (var i=1; i&lt;Players; i++)
         network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
       break
-      //todo: optimize. Socket 6 causes a lot of JSON requests after every reconnect
       
     //requested game rules
     case 8:

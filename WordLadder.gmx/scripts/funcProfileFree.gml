@@ -1,3 +1,6 @@
+//rm tempfile
+if file_exists('profiles/temp.dat')
+  file_delete('profiles/temp.dat')
 //sections
 var sects = global.profile[?'PSSECTIONS'];            //GLOBAL SECTIONS MAP <ID, SECTMAP>
 if !is_undefined(sects) {

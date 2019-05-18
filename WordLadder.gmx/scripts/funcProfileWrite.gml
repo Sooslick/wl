@@ -7,8 +7,8 @@ if global.userdata[?'PNETID'] == 0
     f = file_bin_open('profiles/' + global.config[?'ProfileFile'] + '.save',1)
     file_bin_write_byte(f,0)
     file_bin_write_byte(f,0)
-    file_bin_write_byte(f,0)
-    file_bin_write_byte(f,9)        //4 bytes: version
+    file_bin_write_byte(f,1)
+    file_bin_write_byte(f,11)        //4 bytes: version      //todo: rm hardcode
     funcWriteLong(f,current_time)   //TODO: check REAL time
     funcWriteLong(f,global.profile[?'PNETID'])
       

@@ -69,6 +69,7 @@ s8		Header
 
 6:
 s8		Header
+s8		Initiator's PID
 s8	P	Players
 Pxs32		PNETID
 Pxstring	Name

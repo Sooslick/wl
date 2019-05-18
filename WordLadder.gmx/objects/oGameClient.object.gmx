@@ -103,7 +103,7 @@ Chat.visible = false
             <string>timeout--
 if timeout &lt;= 0
   if !connected || parent.loaded {
-    network_destroy(client)
+    instance_destroy(GR, true)
     room_goto(rMenu)
     //todo timeout msg
     }
@@ -198,6 +198,7 @@ else if type == network_type_data {
         Plr[i] = -1
         }
       //write players names
+      var init_eid = buffer_read(msg_buff, buffer_s8);
       Players = buffer_read(msg_buff, buffer_s8);
       for (var i=0; i&lt;Players; i++) {
         Plr[i] = instance_create(0,0,oPlayer)
@@ -210,9 +211,11 @@ else if type == network_type_data {
       PlrList.Players = Players
       with PlrList event_user(0)
       //send request for gamerules
-      buffer_seek(buffer_send, buffer_seek_start, 0);
-      buffer_write(buffer_send, buffer_s8, 8)           //rules map request
-      network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
+      if init_eid == PID {
+        buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 8)           //rules map request
+        network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
+        }
       break
       
     //recv game rules set
@@ -309,8 +312,9 @@ else if type == network_type_data {
       
     //disconnected
     case 17:
-      instance_destroy(GR, true)
-      //todo msg
+      timeout = 9999
+      connected = false
+      GR.Timer.Timer = 0        //force endgame by timer reset
       break
       
     //someone disconnected
@@ -616,12 +620,19 @@ for (var i=0; i&lt;Players; i++)
     bestpl = i
     bestsc = Plr[i].Score         //refactor!!!
     }
-var s = 'BEST PLAYER:#';
+var s;
+if connected
+  s = '#'
+else
+  s = 'HOST LEFT THE ROOM##'
+s+= 'BEST PLAYER: '
 s+= Plr[bestpl].Name
-s+= '##SCORE:#'
+s+= '##SCORE: '
 s+= string(Plr[bestpl].Score)
 Stat.s = s
 Chat.visible = false
+
+//your score??? todo
 </string>
           </argument>
         </arguments>

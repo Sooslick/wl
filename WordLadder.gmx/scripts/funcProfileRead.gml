@@ -17,7 +17,7 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
     v[1] = file_bin_read_byte(f)
     v[2] = file_bin_read_byte(f)
     v[3] = file_bin_read_byte(f)
-    if !(v[0] == 0 && v[1] == 0 && v[2] == 0 && v[3] == 9)
+    if !(v[0] == 0 && v[1] == 0 && v[2] == 1 && v[3] == 11) //todo: rm hardcode
         ok = false
     if ok
         {
