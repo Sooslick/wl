@@ -138,7 +138,7 @@ instance_destroy(Bg, true)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>click begin</string>
+            <string>click ui</string>
           </argument>
         </arguments>
       </action>
@@ -173,11 +173,7 @@ instance_destroy(Bg, true)
   }
 if bBack != -1 {
   if bBack.clicked {
-    funcProfileWrite()
-    funcSendProfile()
-    instance_destroy(Stat, true)
-    instance_destroy(self, true)
-    room_goto(rMenu)
+    gameLeave()
     }
   else if bEnd.clicked {
     with Stat {event_user(0)}

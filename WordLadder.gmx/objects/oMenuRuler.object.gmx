@@ -536,10 +536,11 @@ draw_text(800,100,Header)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if keyboard_check(vk_control) &amp;&amp; keyboard_check(vk_shift) {
-  instance_destroy(self, true)
-  room_goto(rDev)
-  }
+            <string>if global.config[?'DebugMode']
+  if keyboard_check(vk_control) &amp;&amp; keyboard_check(vk_shift) {
+    instance_destroy(self, true)
+    room_goto(rDev)
+    }
 </string>
           </argument>
         </arguments>

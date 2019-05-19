@@ -93,6 +93,10 @@ if is_undefined(global.config[?'ForceOffline'])
     global.config[?'ForceOffline'] = 'false'
 if is_undefined(global.config[?'InteractiveBg'])
     global.config[?'InteractiveBg'] = 'true'
+if is_undefined(global.config[?'DebugMode'])
+    global.config[?'DebugMode'] = 'false'
+if is_undefined(global.config[?'DebugDetailLog'])
+    global.config[?'DebugDetailLog'] = 'true'
     
 //format non-string values
 global.config[?'ShowLogo'] = formatBool(global.config[?'ShowLogo'], true)
@@ -130,6 +134,8 @@ global.config[?'MultiGreens'] = formatReal(global.config[?'MultiGreens'],0)
 global.config[?'MultiMode'] = formatReal(global.config[?'MultiMode'],0)
 global.config[?'ForceOffline'] = formatBool(global.config[?'ForceOffline'],false)
 global.config[?'InteractiveBg'] = formatBool(global.config[?'InteractiveBg'],true)
+global.config[?'DebugMode'] = formatBool(global.config[?'DebugMode'], false)
+global.config[?'DebugDetailLog'] = formatBool(global.config[?'DebugDetailLog'], true)
 
 //fix screen res 
 //TODO? 
