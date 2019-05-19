@@ -34,6 +34,7 @@ GR = -1
 Stat = -1
 Players = 1
 Ready = 0
+Restarting = false
 ptp = false
 ptpPlayers = 0
 PtpPos = 0
@@ -97,13 +98,19 @@ http_get(global.domain+'wl/regRoom.php?gmode=' + gmode + '&amp;access_token=' + 
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//TODO: Check if this is not socket 19 (game restart)
-buffer_seek(buffer_send, buffer_seek_start, 0);
-buffer_write(buffer_send, buffer_s8, 17)  
-buffer_write(buffer_send, buffer_string, 'Server shut down')  
+            <string>if Restarting {
+  buffer_seek(buffer_send, buffer_seek_start, 0);
+  buffer_write(buffer_send, buffer_s8, 19) 
+  }
+else {
+  buffer_seek(buffer_send, buffer_seek_start, 0);
+  buffer_write(buffer_send, buffer_s8, 17)  
+  buffer_write(buffer_send, buffer_string, 'Server shut down') 
+  }
 for (i=1; i&lt;Players; i++) {
   network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
   network_destroy(Plr[i].Sock)
+  instance_destroy(Plr[i], true)
   }
     
 network_destroy(server)
@@ -709,15 +716,12 @@ if html != -1
             <kind>1</kind>
             <string>if BRestart != -1
   if BRestart.clicked {
-    buffer_seek(buffer_send, buffer_seek_start, 0);
-    buffer_write(buffer_send, buffer_s8, 19)
-    for (var i=1; i&lt;Players; i++)
-      network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+    Restarting = true
+    instance_destroy(self, true)
     instance_destroy(GR, true)
+    instance_destroy(Stat, true)
     room_goto(rGame)
     }
-    
-//todo - reconnect bug?
 </string>
           </argument>
         </arguments>

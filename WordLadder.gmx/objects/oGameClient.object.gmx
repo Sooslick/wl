@@ -103,16 +103,20 @@ Chat.visible = false
             <string>timeout--
 if timeout &lt;= 0
   if !connected || parent.loaded {
+    instance_destroy(self, true)
     instance_destroy(GR, true)
+    instance_destroy(Stat, true)
     room_goto(rMenu)
-    //todo timeout msg
+    //todo refactor gameroom destructor
     }
     
 if Restarting {
   RestartTimer--
   if RestartTimer &lt;= 0 {
     global.GameType = 0
+    instance_destroy(self, true)
     instance_destroy(GR, true)
+    instance_destroy(Stat, true)
     room_goto(rGame)
     }
   }
@@ -331,7 +335,7 @@ else if type == network_type_data {
       
     //restart signal
     case 19:
-      RestartTimer = 150
+      RestartTimer = 359
       Restarting = true
       break
       
@@ -802,12 +806,18 @@ network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
             <string>if !parent.loaded
   exit
   
+if Restarting {
+  drawTextPreset(fImpact96, c_white, 1, fa_center, fa_center)
+  var s = 'Restarting in ';
+  s+= string(RestartTimer div 60)
+  draw_text(800, 600, s)
+  }
+  
 if Stat != -1
   if Stat.active
     exit
 
 drawTextPreset(fImpact64, c_white, 1, fa_right, fa_top)
-
 draw_text(global.G_RIGHT-5,65,'Players: ' + string(Players))
 
 //prestart string
@@ -818,15 +828,6 @@ if GR != -1
     draw_set_valign(fa_center)
     draw_text(800, 400, s)
     }
-    
-if Restarting {
-  draw_set_halign(fa_center)
-  draw_set_valign(fa_center)
-  draw_set_font(fImpact96)
-  var s = 'Restarting in ';
-  s+= string(RestartTimer div 60)
-  draw_text(800, 600, s)
-  }
 </string>
           </argument>
         </arguments>
