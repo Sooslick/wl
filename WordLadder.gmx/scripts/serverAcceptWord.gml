@@ -19,8 +19,8 @@ for (var i=1; i<Players; i++)
 var sc = gameWordAcceptedMulti(GR, mw);
 Plr[p].Score+= sc
 //todo bad code!!! Refactor score updating
-if p == 0 {
-  GR.Abil.Value[p]+= sc   //display score
+if p == 0 {               //personal score
+  GR.Abil.Value[0]+= sc   //display score
   GR.Stat.pp+= sc         //Stat score
   }
 //reset draft words

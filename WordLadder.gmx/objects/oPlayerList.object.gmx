@@ -97,7 +97,9 @@ for (var i=0; i&lt;Players; i++)
           <argument>
             <kind>1</kind>
             <string>var textright1 = global.G_RIGHT - 5
-var textright2 = textright1 - 100
+var textright2 = textright1 - 120
+var textright3 = textright2 - 400
+//todo: optimize calcs
 drawTextPreset(fImpact64, c_white, 1, fa_right, fa_top)
 //fader      
 draw_sprite_ext(sSquareFaded,0,global.G_RIGHT-384,vert+13,1.5,0.28,0,c_white,0.75)
@@ -105,6 +107,8 @@ draw_sprite_ext(sSquareFaded,0,global.G_RIGHT-384,vert+13,1.5,0.28,0,c_white,0.7
 if Players &gt; 0 {
   var pos = MyPos;
   for (var i=0; i&lt;5; i++) {
+    if pos != MyPos
+      draw_text(textright3, vert + i*70, PlsArr[pos].Word)          //move from cycle
     draw_text(textright2, vert + i*70, PlsArr[pos].Name)
     draw_text(textright1, vert + i*70, string(PlsArr[pos].Score))
     draw_set_alpha(draw_get_alpha()-0.2)

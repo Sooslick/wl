@@ -278,7 +278,9 @@ else if type == network_type_data {
             GR.TT = true
           GR.currWord = word
           GR.Cube.w1 = word
-          gameWordAcceptedMulti(GR, mw)
+          var sc = gameWordAcceptedMulti(GR, mw);
+          GR.Abil.Value[0]+= sc   //display score
+          GR.Stat.pp+= sc         //Stat score
           for (var i=0; i&lt;Players; i++)
             Plr[i].Word = ''
           }

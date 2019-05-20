@@ -446,6 +446,7 @@ else if type = network_type_data {
         buffer_write(buffer_send, buffer_s8, VoteScope)
         buffer_write(buffer_send, buffer_s8, VoteP)
         buffer_write(buffer_send, buffer_string, Desc)
+        //todo: optimize buffer
         for (var i=1; i&lt;Players; i++)
           network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
         voteInit(GR, Desc)
