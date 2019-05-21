@@ -47,6 +47,7 @@ s8		Header
 s8		GameType
 s8		Locale
 s8		Player ID
+bool		is reconnect
 
 2:
 s8		Header

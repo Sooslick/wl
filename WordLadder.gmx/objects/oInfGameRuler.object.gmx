@@ -97,6 +97,7 @@ if global.profile[?'ENDSAVED'] &gt; 0 {
   Stat.prevs = global.profile[?'ENDFAILREP']
   Stat.lens = global.profile[?'ENDFAILLEN']
   Stat.decrements = global.profile[?'ENDDEC']
+  //todo gigaproblem: stat duplicate at save/load
   }
 </string>
           </argument>

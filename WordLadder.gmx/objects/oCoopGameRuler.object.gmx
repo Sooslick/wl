@@ -39,6 +39,7 @@ loadRot = 0
 preTimer = 30000
 waiting = false       //waiting for server accepts word
 myWord = false        //should ruler to write accepted word to stat
+reconnect = false     //if false PSGAMES and PSSERVERS ++
 //Vote var  TODO refactor vote obj
 Vote = false
 VoteText = ''
@@ -376,9 +377,11 @@ if wl.Words == 0
   Cube.Rot = true
 Timer.active = true
 Timer.LastTime = current_time
-//if !reconnect check todo
-global.profile[?'PSGAMES']++
-global.profile[?'PSSERVERS']++
+if !reconnect {
+  global.profile[?'PSGAMES']++
+  global.profile[?'PSSERVERS']++
+  //todo: local stat restore
+  }
 exit
 </string>
           </argument>

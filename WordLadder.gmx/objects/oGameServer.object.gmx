@@ -238,10 +238,12 @@ else if type = network_type_data {
       Plr[eid].ID = buffer_read(msg_buff, buffer_s32)
       Plr[eid].Name = buffer_read(msg_buff, buffer_string)
       //find player w/ same ID (check if reconnect)
+      var rc = false;
       for (var i=0; i&lt;ds_list_size(Leavers); i++) {
         var cp = Leavers[|i];
         //check if connected plr in leavers list
         if (cp.ID == Plr[eid].ID) {
+          rc = true
           playerCopyData(cp, Plr[eid])
           instance_destroy(cp)
           ds_list_delete(Leavers, i)
@@ -257,6 +259,7 @@ else if type = network_type_data {
       buffer_write(buffer_send, buffer_s8, global.GameType)
       buffer_write(buffer_send, buffer_s8, global.profile[?'PLOCALE'])
       buffer_write(buffer_send, buffer_s8, eid)
+      buffer_write(buffer_send, buffer_bool, rc)
       network_send_packet( eid, buffer_send, buffer_tell(buffer_send) );
       //update room
       serverUpdRoom()
@@ -1092,6 +1095,18 @@ buffer_write(buffer_send, buffer_s8, 16)            //header
 buffer_write(buffer_send, buffer_s8, Players)       //pls
 for (var i=0; i&lt;Players; i++)
   buffer_write(buffer_send, buffer_s32, Plr[i].Score)
+for (var i=1; i&lt;Players; i++)
+  network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+  
+//PROGBARS BROADCAST
+buffer_seek(buffer_send, buffer_seek_start, 0);         //refactor socket + join to socket 16
+buffer_write(buffer_send, buffer_s8, 29)            //header
+buffer_write(buffer_send, buffer_s16, GR.ShiftPB.Prog)            //shift prog
+buffer_write(buffer_send, buffer_s16, GR.ShiftPB.Req)            //shift req
+buffer_write(buffer_send, buffer_s16, GR.TTPB.Prog)            //unban prog
+buffer_write(buffer_send, buffer_s16, GR.TTPB.Req)            //unban req
+buffer_write(buffer_send, buffer_s16, GR.DecPB.Prog)            //dec prog
+buffer_write(buffer_send, buffer_s16, GR.DecPB.Req)            //dec req
 for (var i=1; i&lt;Players; i++)
   network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
 </string>

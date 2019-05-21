@@ -170,6 +170,7 @@ else if type == network_type_data {
       global.GameType = buffer_read(msg_buff, buffer_s8)
       parent.dict.locale = buffer_read(msg_buff, buffer_s8)
       PID = buffer_read(msg_buff, buffer_s8)
+      GR.reconnect = buffer_read(msg_buff, buffer_bool)
       with parent {event_user(2)}                        //start loading and create GR obj
       //write info request
       buffer_seek(buffer_send, buffer_seek_start, 0);
@@ -431,6 +432,17 @@ else if type == network_type_data {
     //ptp: endgame
     case 28:
       event_user(4)
+      break
+      
+    //synch progbars
+    case 29:
+      GR.ShiftPB.Prog = buffer_read(msg_buff, buffer_s16);
+      GR.ShiftPB.Req = buffer_read(msg_buff, buffer_s16);
+      GR.TTPB.Prog = buffer_read(msg_buff, buffer_s16);
+      GR.TTPB.Req = buffer_read(msg_buff, buffer_s16);
+      GR.DecPB.Prog = buffer_read(msg_buff, buffer_s16);
+      GR.DecPB.Req = buffer_read(msg_buff, buffer_s16);
+      //todo: fix progbar delaying
       break
     }                
   }

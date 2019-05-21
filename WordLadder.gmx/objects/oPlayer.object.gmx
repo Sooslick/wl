@@ -32,19 +32,19 @@ Ping = 0
 Name = ''
 ID = 0
 //general game info
-Word = ''
+Word = ''           //typed word at the moment
 Score = 0
-Shift = false
-Unban = -1
+Shift = false       //using shift at the moment
+Unban = -1          //unban num at the moment
 Ready = false
 //ptpfields
 Timer = 0
 Playing = false
 Typing = false
-Shift = 0
-ShiftProg = 0    //new shift after every 33 points
-Unban = 0
-UnbanProg = 0      //new unban after every 42 points
+PtpShift = 0
+PtpShiftProg = 0    //new shift after every 33 points
+PtpUnban = 0
+PtpUnbanProg = 0      //new unban after every 42 points
 Pos = 0
 //access fields
 Connected = true
