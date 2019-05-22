@@ -400,6 +400,7 @@ switch (global.GameType)                    //GR: GameRuler
     GR.parent = id
     GR.Net = Net
     Net.GR = GR
+    with Net event_user(8) //sync event. Triggered on client-side
     break
   case 11:
     GR = instance_create(0,0,oPtpGameRuler)

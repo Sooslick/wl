@@ -228,7 +228,6 @@ else if type == network_type_data {
       global.custom = json_decode(buffer_read(msg_buff, buffer_string))
       with parent.dict {event_user(0)}
       break
-      //todo check: why this event dont causes game reloading and re-creating rulers?
       
     //recv Ready qty
     case 10:
@@ -406,11 +405,11 @@ else if type == network_type_data {
     case 25:
       GR.MinLen = buffer_read(msg_buff, buffer_s8);
       GR.Cube.MinLen = GR.MinLen
-      GR.words = buffer_read(msg_buff, buffer_s32);
-      GR.Cube.w1 = buffer_read(msg_buff, buffer_string);
       GR.Cube.w2 = buffer_read(msg_buff, buffer_string);
       GR.Cube.w3 = buffer_read(msg_buff, buffer_string);
-      GR.currWord = string_char_at(GR.Cube.w1,string_length(GR.Cube.w1))
+      GR.Cube.w4 = buffer_read(msg_buff, buffer_string);
+      GR.Cube.w1 = string_char_at(GR.Cube.w2, string_length(GR.Cube.w2))
+      //todo firstword?
       break
       
     //ptp: my state TODO: refactor
@@ -447,6 +446,52 @@ else if type == network_type_data {
     }                
   }
 </string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="18">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+buffer_write(buffer_send, buffer_s8, 30)
+network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
+//todo: function?
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>request local state</string>
           </argument>
         </arguments>
       </action>

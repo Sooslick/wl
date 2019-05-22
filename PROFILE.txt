@@ -1,4 +1,4 @@
-Save version: v0.0.0.9
+WordLadder savefile struct
 
 bytes	info
 
@@ -79,7 +79,7 @@ TODO!
 4	Attempts failed by banned
 4	Attempts failed by typos
 4	Attempts failed by repeats
-4	Attempts failet by shortword
+4	Attempts failed by shortword
 1	BanQty
 4	BanProg
 4	BanReq

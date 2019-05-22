@@ -30,6 +30,7 @@ SOCKET HEADERS
 27	client -> server	End of ptp timer
 28	server -> client	Endgame signal
 29	server -> client	Progbars sync
+30	client -> server	Pre-start sync event
 _________________________________________
 
 Socket:
@@ -168,7 +169,6 @@ Wxstring	Word
 25:
 s8		Header
 s8		MinLen
-s32		words
 string		Word 2
 string		Word 3
 string		Word 4
@@ -194,3 +194,6 @@ s16		Unban Prog
 s16		Unban Req
 s16		Dec Prog
 s16		Dec Req
+
+30:
+s8		Header

@@ -575,6 +575,28 @@ else if type = network_type_data {
         event_user(4)
         }
       break
+    case 30:
+      //send 25 cube state
+      //todo: first word check?
+      buffer_seek(buffer_send, buffer_seek_start, 0);
+      buffer_write(buffer_send, buffer_s8, 25)
+      buffer_write(buffer_send, buffer_s8, GR.MinLen)
+      buffer_write(buffer_send, buffer_string, GR.Cube.w2)
+      buffer_write(buffer_send, buffer_string, GR.Cube.w3)
+      buffer_write(buffer_send, buffer_string, GR.Cube.w4)
+      network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
+      //PROGBARS BROADCAST
+      buffer_seek(buffer_send, buffer_seek_start, 0);         //refactor socket + join to socket 16
+      buffer_write(buffer_send, buffer_s8, 29)            //header
+      buffer_write(buffer_send, buffer_s16, GR.ShiftPB.Prog)            //shift prog
+      buffer_write(buffer_send, buffer_s16, GR.ShiftPB.Req)            //shift req
+      buffer_write(buffer_send, buffer_s16, GR.TTPB.Prog)            //unban prog
+      buffer_write(buffer_send, buffer_s16, GR.TTPB.Req)            //unban req
+      buffer_write(buffer_send, buffer_s16, GR.DecPB.Prog)            //dec prog
+      buffer_write(buffer_send, buffer_s16, GR.DecPB.Req)            //dec req
+      network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
+      //todo: local stat
+      break
     }
   }
 else if type = network_type_disconnect {
@@ -1095,18 +1117,6 @@ buffer_write(buffer_send, buffer_s8, 16)            //header
 buffer_write(buffer_send, buffer_s8, Players)       //pls
 for (var i=0; i&lt;Players; i++)
   buffer_write(buffer_send, buffer_s32, Plr[i].Score)
-for (var i=1; i&lt;Players; i++)
-  network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
-  
-//PROGBARS BROADCAST
-buffer_seek(buffer_send, buffer_seek_start, 0);         //refactor socket + join to socket 16
-buffer_write(buffer_send, buffer_s8, 29)            //header
-buffer_write(buffer_send, buffer_s16, GR.ShiftPB.Prog)            //shift prog
-buffer_write(buffer_send, buffer_s16, GR.ShiftPB.Req)            //shift req
-buffer_write(buffer_send, buffer_s16, GR.TTPB.Prog)            //unban prog
-buffer_write(buffer_send, buffer_s16, GR.TTPB.Req)            //unban req
-buffer_write(buffer_send, buffer_s16, GR.DecPB.Prog)            //dec prog
-buffer_write(buffer_send, buffer_s16, GR.DecPB.Req)            //dec req
 for (var i=1; i&lt;Players; i++)
   network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
 </string>
