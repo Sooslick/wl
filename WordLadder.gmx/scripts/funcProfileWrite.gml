@@ -146,3 +146,5 @@ if global.userdata[?'PNETID'] == 0
       }
       
     file_bin_close(f)
+    
+funcLogString('SaveWrite')

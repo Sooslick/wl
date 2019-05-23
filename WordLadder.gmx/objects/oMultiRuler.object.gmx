@@ -362,16 +362,16 @@ else if bBack.clicked {
   
 else if bGo.clicked
   {
-  global.config[?'CustomStart'] = bStartLen.num
-  global.config[?'CustomTimer'] = bStartTimer.num
-  global.config[?'CustomInc'] = bSec.num
-  global.config[?'CustomDec'] = bDec.num
-  global.config[?'CustomUnbans'] = bUnban.checked
-  global.config[?'CustomShifts'] = bShift.checked
-  global.config[?'CustomHints'] = bHints.checked
-  global.config[?'CustomBans'] = bBan.num
-  global.config[?'CustomVowels'] = bVowel.currval
-  global.config[?'CustomGreens'] = bGreen.num
+  global.config[?'MultiStart'] = bStartLen.num
+  global.config[?'MultiTimer'] = bStartTimer.num
+  global.config[?'MultiInc'] = bSec.num
+  global.config[?'MultiDec'] = bDec.num
+  global.config[?'MultiUnbans'] = bUnban.checked
+  global.config[?'MultiShifts'] = bShift.checked
+  global.config[?'MultiHints'] = bHints.checked
+  global.config[?'MultiBans'] = bBan.num
+  global.config[?'MultiVowels'] = bVowel.currval
+  global.config[?'MultiGreens'] = bGreen.num
   global.config[?'MultiMode'] = bType.num
   //todo refactor
   global.custom = ds_map_create()

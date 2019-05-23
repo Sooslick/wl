@@ -148,6 +148,7 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
         ds_map_add_list(global.profile, 'ENDWORDLIST', wl)
         
         file_bin_close(f)
+        funcLogString('SaveRead')
         exit
         }        
     file_bin_close(f)
@@ -215,3 +216,4 @@ global.profile[?'ENDWORDS'] = 0
 ds_map_add_list(global.profile, 'ENDWORDLIST', ds_list_create())
 
 global.SaveCorrupted = true
+funcLogString('SaveCorrupted!')

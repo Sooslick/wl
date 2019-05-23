@@ -96,7 +96,7 @@ if is_undefined(global.config[?'InteractiveBg'])
 if is_undefined(global.config[?'DebugMode'])
     global.config[?'DebugMode'] = 'false'
 if is_undefined(global.config[?'DebugDetailLog'])
-    global.config[?'DebugDetailLog'] = 'true'
+    global.config[?'DebugDetailLog'] = 'false'
     
 //format non-string values
 global.config[?'ShowLogo'] = formatBool(global.config[?'ShowLogo'], true)
@@ -135,7 +135,7 @@ global.config[?'MultiMode'] = formatReal(global.config[?'MultiMode'],0)
 global.config[?'ForceOffline'] = formatBool(global.config[?'ForceOffline'],false)
 global.config[?'InteractiveBg'] = formatBool(global.config[?'InteractiveBg'],true)
 global.config[?'DebugMode'] = formatBool(global.config[?'DebugMode'], false)
-global.config[?'DebugDetailLog'] = formatBool(global.config[?'DebugDetailLog'], true)
+global.config[?'DebugDetailLog'] = formatBool(global.config[?'DebugDetailLog'], false)
 
 //fix screen res 
 //TODO? 
@@ -144,3 +144,5 @@ if global.config[?'Fullscreen']
   global.config[?'ScreenW'] = display_get_width()
   global.config[?'ScreenH'] = display_get_height()
   }
+  
+funcLogString('CfgRead')

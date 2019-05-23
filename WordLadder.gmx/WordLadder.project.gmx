@@ -112,6 +112,8 @@
       <script>scripts\funcWriteLong.gml</script>
       <script>scripts\funcReadString.gml</script>
       <script>scripts\getProfileTimestamp.gml</script>
+      <script>scripts\funcLogString.gml</script>
+      <script>scripts\funcLogPrepare.gml</script>
     </scripts>
     <scripts name="dataformat">
       <script>scripts\formatBool.gml</script>
@@ -269,6 +271,7 @@
       <object>objects\oGameChat</object>
       <object>objects\oGameClient</object>
       <object>objects\oGameServer</object>
+      <object>objects\oSocketLogCollector</object>
     </objects>
     <objects name="Background">
       <object>objects\oSquareRuler</object>

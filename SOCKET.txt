@@ -30,7 +30,8 @@ SOCKET HEADERS
 27	client -> server	End of ptp timer
 28	server -> client	Endgame signal
 29	server -> client	Progbars sync
-30	client -> server	Pre-start sync event
+30	client -> server	Pre-start sync event + local stat request
+31	server -> client	Player's local stat
 _________________________________________
 
 Socket:
@@ -197,3 +198,8 @@ s16		Dec Req
 
 30:
 s8		Header
+
+31:
+s8		Header
+s32		Local Score
+...		...

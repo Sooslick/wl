@@ -163,6 +163,8 @@ if type = network_type_non_blocking_connect {
   
 else if type == network_type_data {    
   var header = buffer_read(msg_buff, buffer_s8)
+  if global.config[?'DebugDetailLog']
+    funcLogString('client recv socket ' + string(header))
   switch header {
     //recv init info: GameMode + locale
     case 1:
@@ -442,6 +444,12 @@ else if type == network_type_data {
       GR.DecPB.Prog = buffer_read(msg_buff, buffer_s16);
       GR.DecPB.Req = buffer_read(msg_buff, buffer_s16);
       //todo: fix progbar delaying
+      break
+      
+    //get local stat
+    case 31:
+      GR.Abil.Value[0] = buffer_read(msg_buff, buffer_s32)
+      //todo other stat + reconnect check
       break
     }                
   }

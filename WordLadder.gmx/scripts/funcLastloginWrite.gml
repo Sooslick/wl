@@ -40,3 +40,5 @@ else
   file_bin_write_byte(f,0)
 
 file_bin_close(f)
+
+funcLogString('CredWrite')

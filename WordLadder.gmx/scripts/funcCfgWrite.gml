@@ -150,14 +150,28 @@
     s = 'MultiMode=' + string(global.config[?'MultiMode'])
     file_text_write_string(f,s)
     file_text_writeln(f)
-    
+
+    //DISABLE AUTH SCREEN    
     s = 'ForceOffline=' + formatBoolString(global.config[?'ForceOffline'], false)
     file_text_write_string(f,s)
     file_text_writeln(f)
     
+    //ENABLE MAIN MENU BACKGROUND
     s = 'InteractiveBg=' + formatBoolString(global.config[?'InteractiveBg'], true)
+    file_text_write_string(f,s)
+    file_text_writeln(f)
+    
+    //ENABLE DEBUG MODE
+    s = 'DebugMode=' + formatBoolString(global.config[?'DebugMode'], false)
+    file_text_write_string(f,s)
+    file_text_writeln(f)
+    
+    //ENABLE LOG SPAMMING
+    s = 'DebugDetailLog=' + formatBoolString(global.config[?'DebugDetailLog'], false)
     file_text_write_string(f,s)
     file_text_writeln(f)
 
     file_text_close(f)
     //possible to refactor this
+    
+funcLogString('CfgWrite')

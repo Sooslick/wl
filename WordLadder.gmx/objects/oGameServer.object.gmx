@@ -225,7 +225,9 @@ else if type = network_type_data {
       break
       }
   
-  var header = buffer_read(msg_buff, buffer_s8); 
+  var header = buffer_read(msg_buff, buffer_s8);
+  if global.config[?'DebugDetailLog']
+    funcLogString('server recv socket ' + string(header))
   switch(header) {
     //client info socket
     case 0:
@@ -585,7 +587,7 @@ else if type = network_type_data {
       buffer_write(buffer_send, buffer_string, GR.Cube.w3)
       buffer_write(buffer_send, buffer_string, GR.Cube.w4)
       network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
-      //PROGBARS BROADCAST
+      //PROGBARS
       buffer_seek(buffer_send, buffer_seek_start, 0);         //refactor socket + join to socket 16
       buffer_write(buffer_send, buffer_s8, 29)            //header
       buffer_write(buffer_send, buffer_s16, GR.ShiftPB.Prog)            //shift prog
@@ -595,7 +597,12 @@ else if type = network_type_data {
       buffer_write(buffer_send, buffer_s16, GR.DecPB.Prog)            //dec prog
       buffer_write(buffer_send, buffer_s16, GR.DecPB.Req)            //dec req
       network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
-      //todo: local stat
+      //LOCAL STAT
+      buffer_seek(buffer_send, buffer_seek_start, 0);
+      buffer_write(buffer_send, buffer_s8, 31)                  //header
+      buffer_write(buffer_send, buffer_s32, Plr[eid].Score)       //score
+      //todo: other stat synch + reconnect check
+      network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
       break
     }
   }

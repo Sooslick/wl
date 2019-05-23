@@ -42,8 +42,9 @@ global.profile = ds_map_create()    //profile map
 global.userdata = ds_map_create()   //userdata map
 global.uiObjects = ds_map_create()  //ui objects pointers, Key: ptr, value: state
 global.custom = -1                  //game settings preset KV
-//todo: fix cfgwrite
+//init config
 funcConfigRead()                    //read cfg file.
+funcLogPrepare()                    //flush old .log file
 funcLastloginRead()                 //read userdata to sign in
 funcResChanged()                    //set screen resolution and calc screen globals
 //LOGO ROOM scale
