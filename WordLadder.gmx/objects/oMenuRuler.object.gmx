@@ -226,6 +226,7 @@ ds_list_destroy(alist)
 //check buttons pressed
 if bNewGame.clicked
   {
+  funcLogString('clicked bNewGame')
   if layerObj == -1
     {
     Header = 'PLAY WORD LADDER'
@@ -275,6 +276,7 @@ if bNewGame.clicked
 //similar sections    
 else if bProfile.clicked
   {
+  funcLogString('clicked bProfile')
   if layerObj == -1
     {
     Header = 'PROFILE'
@@ -323,6 +325,7 @@ else if bProfile.clicked
   
 else if bOptions.clicked
   {
+  funcLogString('clicked bOptions')
   if layerObj == -1
     {
     Header = 'SETTINGS'
@@ -371,6 +374,7 @@ else if bOptions.clicked
 //todo: comment ALL buttons!
 else if bAuthors.clicked
   {
+  funcLogString('clicked bAuthors')
   if layerObj == -1
     {
     Header = 'CREDITS'

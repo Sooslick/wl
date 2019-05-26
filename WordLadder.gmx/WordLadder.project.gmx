@@ -114,6 +114,7 @@
       <script>scripts\getProfileTimestamp.gml</script>
       <script>scripts\funcLogString.gml</script>
       <script>scripts\funcLogPrepare.gml</script>
+      <script>scripts\funcLogDetail.gml</script>
     </scripts>
     <scripts name="dataformat">
       <script>scripts\formatBool.gml</script>

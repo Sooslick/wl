@@ -98,6 +98,7 @@ else if global.GameType == 0
   }
 else
   with dict {event_user(0)}
+funcLogString('Start game loading')
 </string>
           </argument>
         </arguments>
@@ -413,7 +414,7 @@ switch (global.GameType)                    //GR: GameRuler
     loaded = false
     //"wait" msg?
   }
-  
+funcLogString('gameruler gamemode ' + string(global.GameType))
   //todo: instance destroy?
 </string>
           </argument>

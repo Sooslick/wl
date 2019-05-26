@@ -43,3 +43,4 @@ global.G_UP = -global.G_VOFF
 global.G_DOWN = 1200+global.G_VOFF
 //display_set_gui_size(1600,1200)
 display_set_gui_maximise(global.DRAW_SCALE, global.DRAW_SCALE, global.DRAW_HOFF, global.DRAW_VOFF)
+funcLogString('res changed!')

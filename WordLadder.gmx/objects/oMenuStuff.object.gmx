@@ -26,6 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>active = true                     //should game to draw splash 
+timeout = 900
 motd = ''                           //splash
 motd_ready = false                //is http-request completed and content passed
 stat[0] = global.versionName       //version caption
@@ -73,6 +74,10 @@ if Tick &gt;= 200
   if State &gt;= 5
     State = 0
   }
+//http timeout
+timeout--
+if timeout == 0
+  answers = 2
 </string>
           </argument>
         </arguments>

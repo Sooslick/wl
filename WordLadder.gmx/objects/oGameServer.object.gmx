@@ -76,6 +76,9 @@ if ptp
 else
   gmode = '0'
 http_get(global.domain+'wl/regRoom.php?gmode=' + gmode + '&amp;access_token=' + global.userdata[?'AT'])
+
+if global.config[?'DebugDetailLog']
+  funcLogString('server initialized')
 </string>
           </argument>
         </arguments>
@@ -217,6 +220,7 @@ if type = network_type_connect {
   //    PtpArrPos[Players] = 250    //wtffffffff
   Players++
   parent.tc.online = true
+  funcLogString('client ' + Plr[p].IP + ' connected')
   }
 else if type = network_type_data {  
   for (var i=0; i &lt; Players; i++)
@@ -226,8 +230,7 @@ else if type = network_type_data {
       }
   
   var header = buffer_read(msg_buff, buffer_s8);
-  if global.config[?'DebugDetailLog']
-    funcLogString('server recv socket ' + string(header))
+  funcLogDetail('server recv socket ' + string(header))
   switch(header) {
     //client info socket
     case 0:
@@ -675,6 +678,8 @@ else if type = network_type_disconnect {
   buffer_write(buffer_send, buffer_s8, eid)
   for (var i=1; i&lt;Players; i++)
     network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) ); 
+    
+  funcLogString('client ' + Plr[eid].IP + ' disconnected')  
       
   //add Plr to Leavers if he isnt anonymous
   if Plr[eid].ID != 0
@@ -721,10 +726,12 @@ if async_load[? "status"] != 0
   
 //answer loaded
 var html = json_decode(async_load[? "result"])
-if html != -1
+if html != -1 {
   //check roomid
   if !is_undefined(html[?'ROOMID'])
     ServerRID = string(html[?'ROOMID'])
+  funcLogDetail('recv rest roomid')
+  }
 </string>
           </argument>
         </arguments>
@@ -754,6 +761,7 @@ if html != -1
     instance_destroy(GR, true)
     instance_destroy(Stat, true)
     room_goto(rGame)
+    funcLogDetail('server restart')
     }
 </string>
           </argument>
@@ -861,6 +869,7 @@ else
   event_user(4)
   with GR {event_user(3)}
   }
+funcLogDetail('server event 7')
 </string>
           </argument>
         </arguments>
@@ -955,6 +964,7 @@ if isResult {
     network_send_packet( Plr[VoteP].Sock, buffer_send, buffer_tell(buffer_send) );
     }
   }
+funcLogDetail('server event 6')
 </string>
           </argument>
         </arguments>
@@ -1067,6 +1077,8 @@ s+= string(Plr[bestpl].Name)
 Stat.s = s
 Chat.visible = false
 
+funcLogDetail('server event 4')
+
 //todo: send endgame socket? It is necessary?
 
 //todo: wtf??? So many bugs and perf degr after endgame
@@ -1126,6 +1138,8 @@ for (var i=0; i&lt;Players; i++)
   buffer_write(buffer_send, buffer_s32, Plr[i].Score)
 for (var i=1; i&lt;Players; i++)
   network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+  
+funcLogDetail('server event 3')
 </string>
           </argument>
         </arguments>
@@ -1276,6 +1290,7 @@ else {
   GR.waiting = false
   GR.Cube.LengthErr = true
   }
+funcLogDetail('server event 2')
 </string>
           </argument>
         </arguments>

@@ -31,6 +31,7 @@ TimeOut = 300
 GameReady = false
 LoadReady = false
 mr = -1                 //menu ruler
+stuff = -1
 
 var get = "";
 if global.config[?'LastHeadline'] &gt; 0
@@ -164,8 +165,13 @@ if html != -1
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if !LoadReady
-    drawLoading(LoadRot)
+            <string>if stuff != -1 {
+  if stuff.answers &gt;= 2
+    if !LoadReady
+      drawLoading(LoadRot)
+  }
+else if !LoadReady
+  drawLoading(LoadRot)
 </string>
           </argument>
         </arguments>

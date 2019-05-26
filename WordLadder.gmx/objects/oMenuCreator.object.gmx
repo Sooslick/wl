@@ -49,6 +49,7 @@ else
   bg.ruler = ms
   bg.main = mr
   bg.stuff = mf
+  news.stuff = mf
   instance_destroy()
   }
 </string>
@@ -90,6 +91,7 @@ if wait &lt; 0
   bg.main = mr
   bg.stuff = mf
   news.mr = mr
+  news.stuff = mf
   news.GameReady = true
   global.NewsLoader = false
   instance_destroy()

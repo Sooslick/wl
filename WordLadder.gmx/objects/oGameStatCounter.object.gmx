@@ -53,6 +53,7 @@ sc = 1
 //targets completed?
 success = false
 //tech active swithes
+debug = false
 active = false              //true = gameover
 B1 = -1                     //"back" button
 s = ''                      //content
@@ -537,6 +538,54 @@ statWrite(true)
   draw_sprite_ext(sArrowScroll,0,640,990,1,1,180,c_white,op)
   draw_sprite_ext(sArrowScroll,0,920,990,1,1,0,c_white,1.5-op)
   }
+else if debug {
+  drawTextPreset(fDebug, c_white, 1, fa_left, fa_center)
+  draw_text(0, 20, 'pp '+string(pp))
+  draw_text(0, 40, 'ws '+string(words))
+  draw_text(0, 60, 'll '+string(letters))
+  draw_text(0, 80, 'la '+string(lettersa))
+  draw_text(0, 100, 'lb '+string(lettersb))
+  draw_text(0, 120, 'at '+string(attempts))
+  draw_text(0, 140, 'ts '+string(ticks))
+  draw_text(0, 160, 'hs '+string(hints))
+  draw_text(0, 180, 'sa '+string(shiftsa))
+  draw_text(0, 200, 'su '+string(shiftsu))
+  draw_text(0, 220, 'ua '+string(unbansa))
+  draw_text(0, 240, 'uu '+string(unbansu))
+  draw_text(0, 260, 'bd '+string(banned))
+  draw_text(0, 280, 'tb '+string(tabus))
+  draw_text(0, 300, 'dc '+string(dicts))
+  draw_text(0, 320, 'pv '+string(prevs))
+  draw_text(0, 340, 'ln '+string(lens))
+  draw_text(0, 360, 'tg '+string(targets))
+  draw_text(0, 380, 'ta '+string(targetsa))
+  draw_text(0, 400, 'ds '+string(decrements))
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="90">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if global.config[?'DebugMode']
+  if keyboard_check(vk_control) &amp;&amp; keyboard_check(vk_shift) 
+    debug = funcBoolSwitch(debug)
 </string>
           </argument>
         </arguments>

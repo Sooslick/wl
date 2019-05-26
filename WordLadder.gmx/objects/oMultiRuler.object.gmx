@@ -26,6 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>OnclickEvent = 0
+uiDelay = false
 ////////////////////////
 //START WORD LENGTH LIST
 bStartLen = instance_create(300,220,oList)
@@ -257,6 +258,33 @@ if surface_exists(ds)
         </arguments>
       </action>
     </event>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if !uiDelay
+  exit
+  
+uiDelay = false
+uiSetClickable(alist, true)
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
@@ -280,8 +308,7 @@ if surface_exists(ds)
     bStartLen.clickable = true
     }
   else                            //list closed
-    uiSetClickable(alist, true)
-  
+    uiDelay = true
   }
   
 else if bBan.clicked {
@@ -290,8 +317,7 @@ else if bBan.clicked {
     bBan.clickable = true
     }
   else                            //list closed
-    uiSetClickable(alist, true)
-  
+    uiDelay = true
   }
   
 else if bDec.clicked {
@@ -300,8 +326,7 @@ else if bDec.clicked {
     bDec.clickable = true
     }
   else                            //list closed
-    uiSetClickable(alist, true)
-  
+    uiDelay = true
   }
   
 else if bStartTimer.clicked {
@@ -310,8 +335,7 @@ else if bStartTimer.clicked {
     bStartTimer.clickable = true
     }
   else                            //list closed
-    uiSetClickable(alist, true)
-  
+    uiDelay = true
   }
   
 else if bSec.clicked {
@@ -320,8 +344,7 @@ else if bSec.clicked {
     bSec.clickable = true
     }
   else                            //list closed
-    uiSetClickable(alist, true)
-  
+    uiDelay = true
   }
   
 else if bGreen.clicked {
@@ -330,8 +353,7 @@ else if bGreen.clicked {
     bGreen.clickable = true
     }
   else                            //list closed
-    uiSetClickable(alist, true)
-  
+    uiDelay = true
   }
   
 else if bType.clicked {
@@ -340,8 +362,7 @@ else if bType.clicked {
     bType.clickable = true
     }
   else                            //list closed
-    uiSetClickable(alist, true)
-  
+    uiDelay = true
   }
   
 else if bBack.clicked {

@@ -54,6 +54,8 @@ loadStr = 'Initialization'
 
 //links
 parent = -1         //GameRuler Object
+
+funcLogDetail('created dict loader')
 </string>
           </argument>
         </arguments>
@@ -267,6 +269,7 @@ else
   currSize = 1
   }
 init = true
+funcLogDetail('dict loader init from event 0')
 </string>
           </argument>
         </arguments>

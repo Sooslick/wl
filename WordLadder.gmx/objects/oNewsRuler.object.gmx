@@ -29,6 +29,7 @@
 //tech variables
 ScrollPos = 0
 Headlines = 0
+stuff = -1          //link to stuff obj to prevend double loading. Todo: global loadrot obj
 //headlines read
 MaxPos = 20
 var dir = file_find_first('cache/*',fa_directory)
