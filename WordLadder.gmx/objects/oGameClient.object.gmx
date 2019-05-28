@@ -258,7 +258,7 @@ else if type == network_type_data {
         if !GR.prepared &amp;&amp; GR.BStart &lt; 0
           with GR event_user(4)
         else if GR.prestart &amp;&amp; GR.BStart != -1                //wtf 
-          with GR.BStart uiOnclick()                          //wtf x2
+          with GR.BStart uiOnclick()                          //wtf x2: todo fix forced begin to continue draw rules
         GR.Timer.Timer = buffer_read(msg_buff, buffer_s32);
         }
       break
@@ -902,6 +902,10 @@ if GR != -1
     draw_set_halign(fa_center)
     draw_set_valign(fa_center)
     draw_text(800, 400, s)
+    if GR.prestart {
+      draw_set_font(fHint)
+      draw_text(800,900, 'Start in ' + string(GR.preTimer div 1000)) //todo move from draw event
+      }
     }
 </string>
           </argument>

@@ -197,6 +197,7 @@ else if prestart {
   if BStart.clicked {
     instance_destroy(BStart,true)
     BStart = -1
+    drawRules = false
     with Net event_user(0)
     //todo: profile games++ servers++ if not reconnected
     exit
@@ -380,7 +381,7 @@ Timer.LastTime = current_time
 if !reconnect {
   global.profile[?'PSGAMES']++
   global.profile[?'PSSERVERS']++
-  //todo: local stat restore
+  //todo: full local stat restore
   }
 exit
 </string>

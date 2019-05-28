@@ -1,6 +1,7 @@
 //general
 prestart = false
 prepared = false
+drawRules = true
 paused = false
 bBack = -1
 bEnd = -1

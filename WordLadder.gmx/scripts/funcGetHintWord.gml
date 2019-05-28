@@ -4,6 +4,7 @@ var wordlong = '';
 var foundlong = false;
 var longlen = 0;
 var attempts = irandom_range(1, 100 div MinLen);
+var lettersobj = self.l;
 //currword: from Ruler
 //MinLen: from Ruler
 //TabuList: from Ruler
@@ -27,13 +28,13 @@ if m != -1
         if string_length(w) < MinLen
           continue
         //check prev words
-        if wordlistTyped(wl,w, false) != -1
+        if wordlistTyped(wl,w, false)
           continue
         //check tabus
         var ok = true
         for (k=2; k<=string_length(w); k++)
           {
-          var tmp = ds_list_find_index(TabuList, string_char_at(w,k))
+          var tmp = ds_list_find_index(lettersobj.TabuList, string_char_at(w,k))
           if (tmp != -1)
             {
             ok = false 

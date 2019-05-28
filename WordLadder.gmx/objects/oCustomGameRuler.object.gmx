@@ -163,6 +163,7 @@ instance_destroy(Bg, true)
     instance_destroy(BStart,true)
     BStart = -1
     prepared = true
+    drawRules = false       //todo refactor
     currWord = string_char_at(prevWord,string_length(prevWord))
     Cube.Rot = true
     Timer.active = true
