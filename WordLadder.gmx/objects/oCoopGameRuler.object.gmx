@@ -36,7 +36,7 @@ gameSetFirstWord()
 Abil.vert = 950
 //other
 loadRot = 0
-preTimer = 30000
+preTimer = 10000
 waiting = false       //waiting for server accepts word
 myWord = false        //should ruler to write accepted word to stat
 reconnect = false     //if false PSGAMES and PSSERVERS ++

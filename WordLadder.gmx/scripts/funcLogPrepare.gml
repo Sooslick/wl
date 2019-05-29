@@ -1,7 +1,7 @@
 var dir = 'log'
 var new = dir + '/latest.log'
 var old = dir + '/old.log'
-var arch = dir + '/old' + string(current_time) + '.log'
+var arch = 'old' + string(current_time) + '.log'
 // 0) create logdir if !exists
 if !directory_exists(dir)
   directory_create(dir)
