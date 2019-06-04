@@ -410,8 +410,8 @@ else if type == network_type_data {
       GR.Cube.w2 = buffer_read(msg_buff, buffer_string);
       GR.Cube.w3 = buffer_read(msg_buff, buffer_string);
       GR.Cube.w4 = buffer_read(msg_buff, buffer_string);
-      GR.Cube.w1 = string_char_at(GR.Cube.w2, string_length(GR.Cube.w2))
-      //todo firstword?
+      if GR.wl.Words &gt; 0
+        GR.Cube.w1 = string_char_at(GR.Cube.w2, string_length(GR.Cube.w2))
       break
       
     //ptp: my state TODO: refactor
@@ -427,7 +427,7 @@ else if type == network_type_data {
         GR.waiting = true
         }
       GR.Abil.Value[1] = buffer_read(msg_buff, buffer_s8);      //shift
-      GR.Abil.Value[2] = buffer_read(msg_buff, buffer_s8);      //unban
+       GR.Abil.Value[2] = buffer_read(msg_buff, buffer_s8);      //unban
       break
       
     //ptp: endgame
@@ -453,6 +453,8 @@ else if type == network_type_data {
       break
     }               
   }
+if GR != -1
+  funcLogString('after socket: ' + GR.prevWord+'/'+GR.Cube.w1)  
 </string>
           </argument>
         </arguments>

@@ -61,8 +61,8 @@ http_get(global.domain+'wl/getNews.php' + get)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>LoadRot+= 5
-if !LoadReady {
+            <string>if !LoadReady {
+    LoadRot+= 5
     TimeOut--
     if TimeOut &lt;= 0
         instance_destroy(self, true)

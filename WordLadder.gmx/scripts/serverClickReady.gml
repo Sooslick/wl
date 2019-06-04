@@ -11,7 +11,7 @@ if Players == Ready {
   buffer_seek(buffer_send, buffer_seek_start, 0);
   buffer_write(buffer_send, buffer_s8, 10)
   buffer_write(buffer_send, buffer_s8, Ready)
-  buffer_write(buffer_send, buffer_string, GR.Cube.w1)
+  buffer_write(buffer_send, buffer_string, GR.prevWord)
   for (var i=1; i<Players; i++)
     network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
   //send timer state
@@ -64,7 +64,7 @@ else {
   buffer_seek(buffer_send, buffer_seek_start, 0);
   buffer_write(buffer_send, buffer_s8, 10)
   buffer_write(buffer_send, buffer_s8, Ready)
-  buffer_write(buffer_send, buffer_string, GR.currWord)
+  buffer_write(buffer_send, buffer_string, GR.prevWord)
   for (var i=1; i<Players; i++)
       network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
   }
