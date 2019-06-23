@@ -149,7 +149,7 @@ if prepared {
 else if prestart {
   preTimer-= Timer.Interval
   if preTimer &lt;= 0
-    with Net event_user(0)
+    with Net event_user(0)     //on timeout - called every fuckin' tick. Todo: bugfix rdy+leave and begin button
   }
 </string>
           </argument>

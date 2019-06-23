@@ -12,14 +12,12 @@ if Players == Ready {
   buffer_write(buffer_send, buffer_s8, 10)
   buffer_write(buffer_send, buffer_s8, Ready)
   buffer_write(buffer_send, buffer_string, GR.prevWord)
-  for (var i=1; i<Players; i++)
-    network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+  serverBroadcastSocket()
   //send timer state
   buffer_seek(buffer_send, buffer_seek_start, 0);
   buffer_write(buffer_send, buffer_s8, 12)
   buffer_write(buffer_send, buffer_s32, GR.Timer.Timer)
-  for (var i=1; i<Players; i++)
-      network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+  serverBroadcastSocket()
   //todo check  
   if ptp { 
     for (var i=0; i<Players; i++)
@@ -65,7 +63,6 @@ else {
   buffer_write(buffer_send, buffer_s8, 10)
   buffer_write(buffer_send, buffer_s8, Ready)
   buffer_write(buffer_send, buffer_string, GR.prevWord)
-  for (var i=1; i<Players; i++)
-      network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+  serverBroadcastSocket()
   }
 funcLogDetail('server +rdy')

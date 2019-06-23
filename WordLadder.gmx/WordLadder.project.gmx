@@ -167,6 +167,7 @@
       <script>scripts\playerCopyData.gml</script>
       <script>scripts\statWrite.gml</script>
       <script>scripts\gameLeave.gml</script>
+      <script>scripts\serverBroadcastSocket.gml</script>
     </scripts>
     <script>scripts\funcChrEncode.gml</script>
     <script>scripts\funcChrDecode.gml</script>

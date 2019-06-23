@@ -154,24 +154,21 @@ if PingTimer == 0 {
   buffer_write(buffer_send, buffer_s8, Players)
   for (var i=0; i&lt;Players; i++)
     buffer_write(buffer_send, buffer_s16, Plr[i].Ping)
-  for (var i=1; i &lt; Players; i++)
-    network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+  serverBroadcastSocket()
   //prestart timer sync
   if GR != -1 {
     if !GR.prepared {
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 11)
       buffer_write(buffer_send, buffer_s32, GR.preTimer)
-      for (var i=1; i&lt;Players; i++)
-        network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+      serverBroadcastSocket()
       }
     //main timer sync
     else {
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 12)
       buffer_write(buffer_send, buffer_s32, GR.Timer.Timer)
-      for (var i=1; i&lt;Players; i++)
-        network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+      serverBroadcastSocket()
       }
     }
   }
@@ -289,8 +286,7 @@ else if type = network_type_data {
         buffer_write(buffer_send, buffer_s32, Plr[i].ID)
         buffer_write(buffer_send, buffer_string, Plr[i].Name)
         }
-      for (var i=1; i&lt;Players; i++)
-        network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+      serverBroadcastSocket()
       break
       
     //requested game rules
@@ -317,13 +313,12 @@ else if type = network_type_data {
         buffer_write(buffer_send, buffer_s8, 10)
         buffer_write(buffer_send, buffer_s8, Ready)
         buffer_write(buffer_send, buffer_string, GR.prevWord)
-          network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
+        network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
         //broadcast timer
         buffer_seek(buffer_send, buffer_seek_start, 0);
         buffer_write(buffer_send, buffer_s8, 12)
         buffer_write(buffer_send, buffer_s32, GR.Timer.Timer)
-        for (var i=1; i&lt;Players; i++)
-          network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+        serverBroadcastSocket()
         //send current game state &amp; score
         serverBroadcastLetters()          //todo: score socket?
         }
@@ -424,8 +419,7 @@ else if type = network_type_data {
         buffer_write(buffer_send, buffer_bool, false)   //unused tt
         buffer_write(buffer_send, buffer_bool, false)   //unused shift
         buffer_write(buffer_send, buffer_string, word)
-        for (var i=1; i&lt;Players; i++)
-          network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+        serverBroadcastSocket()
         }
       else if VoteScope &gt; 0 {          //word ok: init vote
         VoteP = eid;
@@ -455,8 +449,7 @@ else if type = network_type_data {
         buffer_write(buffer_send, buffer_s8, VoteP)
         buffer_write(buffer_send, buffer_string, Desc)
         //todo: optimize buffer
-        for (var i=1; i&lt;Players; i++)
-          network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+        serverBroadcastSocket()
         voteInit(GR, Desc)
         }
       break 
@@ -467,8 +460,7 @@ else if type = network_type_data {
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 20)
       buffer_write(buffer_send, buffer_string, Chat.GotStr)
-      for (var i=1; i&lt;Players; i++)
-        network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+      serverBroadcastSocket()
       with Chat {event_user(0)}
       break
       
@@ -485,8 +477,7 @@ else if type = network_type_data {
       buffer_write(buffer_send, buffer_s8, 22)
       buffer_write(buffer_send, buffer_s8, p)
       buffer_write(buffer_send, buffer_bool, answer)
-      for (var i=1; i&lt;Players; i++)
-        network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+      serverBroadcastSocket()
       //Vote result check
       var isResult = false;
       var Result = false;
@@ -503,8 +494,7 @@ else if type = network_type_data {
         buffer_seek(buffer_send, buffer_seek_start, 0);
         buffer_write(buffer_send, buffer_s8, 23)
         buffer_write(buffer_send, buffer_bool, Result)
-        for (var i=1; i&lt;Players; i++)
-          network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+        serverBroadcastSocket()
         //Post operations
         Vote = false
         if Result {
@@ -575,8 +565,7 @@ else if type = network_type_data {
       else {
         buffer_seek(buffer_send, buffer_seek_start, 0);
         buffer_write(buffer_send, buffer_s8, 28)
-        for (var i=1; i&lt;Players; i++)
-            network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+        serverBroadcastSocket()
         event_user(4)
         }
       break
@@ -666,8 +655,7 @@ else if type = network_type_disconnect {
       {
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 28)
-      for (var i=1; i&lt;Players; i++)
-        network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+      serverBroadcastSocket()
       event_user(4)
       }
     }
@@ -676,8 +664,7 @@ else if type = network_type_disconnect {
   buffer_seek(buffer_send, buffer_seek_start, 0);
   buffer_write(buffer_send, buffer_s8, 18)
   buffer_write(buffer_send, buffer_s8, eid)
-  for (var i=1; i&lt;Players; i++)
-    network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) ); 
+  serverBroadcastSocket()
     
   funcLogString('client ' + Plr[eid].IP + ' disconnected')  
       
@@ -864,8 +851,7 @@ else
   {
   buffer_seek(buffer_send, buffer_seek_start, 0);
   buffer_write(buffer_send, buffer_s8, 28)
-  for (var i=1; i&lt;Players; i++)
-      network_send_packet( PlsArrSock[i], buffer_send, buffer_tell(buffer_send) );
+  serverBroadcastSocket()
   event_user(4)
   with GR {event_user(3)}
   }
@@ -917,8 +903,7 @@ buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 22)
 buffer_write(buffer_send, buffer_s8, 0)
 buffer_write(buffer_send, buffer_bool, GR.VoteChoice)
-for (var i=1; i&lt;Players; i++)
-  network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+serverBroadcastSocket()
 //Vote result check
 var isResult = false;
 var Result = false;
@@ -935,8 +920,7 @@ if isResult {
   buffer_seek(buffer_send, buffer_seek_start, 0);
   buffer_write(buffer_send, buffer_s8, 23)
   buffer_write(buffer_send, buffer_bool, Result)
-  for (var i=1; i&lt;Players; i++)
-    network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+  serverBroadcastSocket()
   //Post operations
   Vote = false
   if Result {
@@ -1011,8 +995,7 @@ funcLogDetail('server event 6')
 buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 20)
 buffer_write(buffer_send, buffer_string, Chat.GotStr)
-for (var i=1; i&lt;Players; i++)
-      network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+serverBroadcastSocket()
 with Chat {event_user(0)}
 </string>
           </argument>
@@ -1136,8 +1119,7 @@ buffer_write(buffer_send, buffer_s8, 16)            //header
 buffer_write(buffer_send, buffer_s8, Players)       //pls
 for (var i=0; i&lt;Players; i++)
   buffer_write(buffer_send, buffer_s32, Plr[i].Score)
-for (var i=1; i&lt;Players; i++)
-  network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+serverBroadcastSocket()
   
 funcLogDetail('server event 3')
 </string>
@@ -1281,8 +1263,7 @@ else if !Vote {
   buffer_write(buffer_send, buffer_s8, VoteScope)
   buffer_write(buffer_send, buffer_s8, VoteP)
   buffer_write(buffer_send, buffer_string, Desc)
-  for (var i=1; i&lt;Players; i++)
-    network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+  serverBroadcastSocket()
   voteInit(GR, Desc)
   }
 //can't initialize vote: set fail state to client
@@ -1340,8 +1321,7 @@ buffer_write(buffer_send, buffer_bool, false)         //accept
 buffer_write(buffer_send, buffer_bool, false)         //shift
 buffer_write(buffer_send, buffer_bool, false)         //unban
 buffer_write(buffer_send, buffer_string, GR.currWord)
-for (var i=1; i&lt;Players; i++)
-  network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+serverBroadcastSocket()
 </string>
           </argument>
         </arguments>

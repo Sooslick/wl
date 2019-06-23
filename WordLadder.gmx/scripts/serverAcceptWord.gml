@@ -14,8 +14,7 @@ buffer_write(buffer_send, buffer_bool, true)
 buffer_write(buffer_send, buffer_bool, sh)       //using shift
 buffer_write(buffer_send, buffer_bool, tt)       //using unban
 buffer_write(buffer_send, buffer_string, GR.currWord)
-for (var i=1; i<Players; i++)
-  network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+serverBroadcastSocket()
 var sc = gameWordAcceptedMulti(GR, mw);
 Plr[p].Score+= sc
 //todo bad code!!! Refactor score updating

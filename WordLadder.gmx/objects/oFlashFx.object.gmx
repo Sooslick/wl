@@ -81,7 +81,8 @@ if op &lt;= thres
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_sprite_ext(sPixel,0,-global.DRAW_HOFF*2,-global.DRAW_VOFF*2,3200,2400,0,cl,op)
+            <string>draw_sprite_ext(sPixel,0,-global.G_HOFF,-global.G_VOFF,3200,2400,0,cl,op)
+//todo recalculate consts in createEvent
 </string>
           </argument>
         </arguments>

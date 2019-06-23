@@ -28,7 +28,8 @@
             <string>//Game Version 0.0.1.11         1*11 + 256*1 + *0 + *0   todo
 global.GameVersion = 267
 global.versionName = 'Demo 0.0.1.11: pre-alpha update'
-global.domain = 'http://sooslick.flaminggaming.ru/'
+global.domain = 'http://sooslick.mlbrony.ru/'
+//todo: REST config! custom directory + methods
 //init globals
 randomize()
 global.cfg = 'config.cfg'           //default config file

@@ -16,5 +16,4 @@ for (var i=0; i<G; i++)
 buffer_write(buffer_send, buffer_s8, B)             //Banned qty
 buffer_write(buffer_send, buffer_s8, G)             //Greens Qty
 buffer_write(buffer_send, buffer_string, S)         //Banned + Greens char sequence
-for (var i=1; i<Players; i++)
-  network_send_packet( Plr[i].Sock, buffer_send, buffer_tell(buffer_send) );
+serverBroadcastSocket()
