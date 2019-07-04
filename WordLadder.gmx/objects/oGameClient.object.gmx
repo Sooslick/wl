@@ -237,28 +237,23 @@ else if type == network_type_data {
     case 10:
       Ready = buffer_read(msg_buff, buffer_s8);
       if GR != -1 {
-        GR.prestart = true
-        GR.prevWord = buffer_read(msg_buff, buffer_string);
-        if GR.wl.Words == 0
-          GR.Cube.w1 = GR.prevWord
+        if Ready == Players
+          with GR event_user(4)     //trigger startgame   //todo: should replace prevword field?
+        //GR.prevWord = buffer_read(msg_buff, buffer_string);
+        //GR.Cube.w1 = GR.prevWord  - legacy?
         }
       break
       
     //sync prestart timer
     case 11:
-      if GR != -1 {
+      if GR != -1
         GR.preTimer = buffer_read(msg_buff, buffer_s32);
-        //GR.prestart = true
-        }
       break
       
     //sync game timer or game start signal
     case 12:
-      if GR != -1 {
-        if !GR.prepared &amp;&amp; GR.BStart &lt; 0          //if "begin" clicked but game not started yet
-          with GR event_user(4)                   //init startgame event                            
+      if GR != -1
         GR.Timer.Timer = buffer_read(msg_buff, buffer_s32);             //timer sync
-        }
       break
       
     //word checked by server
@@ -384,7 +379,7 @@ else if type == network_type_data {
     //full word history recv
     case 24:
       //get history
-      var tmp = buffer_read(msg_buff, buffer_s32);
+      var tmp = buffer_read(msg_buff, buffer_s32);   //tmp - words qty
       var w = GR.wl;
       w.Words = 0
       for (var i=0; i&lt;tmp; i++)
@@ -410,8 +405,13 @@ else if type == network_type_data {
       GR.Cube.w2 = buffer_read(msg_buff, buffer_string);
       GR.Cube.w3 = buffer_read(msg_buff, buffer_string);
       GR.Cube.w4 = buffer_read(msg_buff, buffer_string);
-      if GR.wl.Words &gt; 0
-        GR.Cube.w1 = string_char_at(GR.Cube.w2, string_length(GR.Cube.w2))
+      GR.prepared = buffer_read(msg_buff, buffer_bool)
+      GR.currWord = buffer_read(msg_buff, buffer_string)
+      GR.prevWord = buffer_read(msg_buff, buffer_string)
+      if GR.prepared
+        GR.Cube.w1 = GR.currWord
+      else
+        GR.Cube.w1 = GR.prevWord
       break
       
     //ptp: my state TODO: refactor
@@ -450,6 +450,28 @@ else if type == network_type_data {
     case 31:
       GR.Abil.Value[0] = buffer_read(msg_buff, buffer_s32)
       //todo other stat + reconnect check
+      break
+      
+    //game states socket
+    case 32:
+      GR.prestart = buffer_read(msg_buff, buffer_bool)
+      GR.prepared = buffer_read(msg_buff, buffer_bool)
+      if GR.prepared {
+        GR.prevWord = buffer_read(msg_buff, buffer_string)
+        GR.currWord = string_char_at(GR.prevWord, string_length(GR.prevWord))
+        GR.Cube.w2 = GR.prevWord
+        GR.Cube.w1 = GR.currWord                          //omg
+        buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 24)           //history request
+        network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
+        }
+      else {
+        GR.prevWord = buffer_read(msg_buff, buffer_string)
+        GR.Cube.w1 = GR.prevWord
+        buffer_seek(buffer_send, buffer_seek_start, 0);
+        buffer_write(buffer_send, buffer_s8, 33)           //first word request
+        network_send_packet( client, buffer_send, buffer_tell(buffer_send) )
+        }
       break
     }               
   }
@@ -851,7 +873,11 @@ network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>Chat.visible = true
+            <string>if GR.prepared
+  with GR event_user(4)   //just join the game after start
+else
+  GR.prestart = true      //wait for pre-timer
+Chat.visible = true
 buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 9)
 network_send_packet( client, buffer_send, buffer_tell(buffer_send) );

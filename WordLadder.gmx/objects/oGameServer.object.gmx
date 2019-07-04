@@ -300,14 +300,6 @@ else if type = network_type_data {
     //player clicked "begin" button  
     case 9:
       if GR.prepared {
-        //send word history socket 24
-        buffer_seek(buffer_hist, buffer_seek_start, 0);
-        buffer_write(buffer_hist, buffer_s8, 24)
-        var w = GR.wl;
-        buffer_write(buffer_hist, buffer_s32, w.Words)
-        for (var i=0; i&lt;w.Words; i++)
-          buffer_write(buffer_hist, buffer_string, w.Arr[i])
-        network_send_packet( Plr[eid].Sock, buffer_hist, buffer_tell(buffer_hist) );
         //send rdy signal
         buffer_seek(buffer_send, buffer_seek_start, 0);
         buffer_write(buffer_send, buffer_s8, 10)
@@ -524,6 +516,17 @@ else if type = network_type_data {
         }
       break
       
+    // word history request
+    case 24:                    
+      buffer_seek(buffer_hist, buffer_seek_start, 0);
+      buffer_write(buffer_hist, buffer_s8, 24)
+      var w = GR.wl;
+      buffer_write(buffer_hist, buffer_s32, w.Words)
+      for (var i = 0; i &lt; w.Words; i++)
+        buffer_write(buffer_hist, buffer_string, w.Arr[i])
+      network_send_packet( Plr[eid].Sock, buffer_hist, buffer_tell(buffer_hist) );  
+      break  
+      
       //ptp timer off
     case 27:
       Plr[eid].Playing = false
@@ -569,15 +572,15 @@ else if type = network_type_data {
         event_user(4)
         }
       break
+    
+    //game states request  
     case 30:
-      //send 25 cube state
-      //todo: first word check?
+      //MAIN STATES
       buffer_seek(buffer_send, buffer_seek_start, 0);
-      buffer_write(buffer_send, buffer_s8, 25)
-      buffer_write(buffer_send, buffer_s8, GR.MinLen)
-      buffer_write(buffer_send, buffer_string, GR.Cube.w2)
-      buffer_write(buffer_send, buffer_string, GR.Cube.w3)
-      buffer_write(buffer_send, buffer_string, GR.Cube.w4)
+      buffer_write(buffer_send, buffer_s8, 32)
+      buffer_write(buffer_send, buffer_bool, GR.prestart)
+      buffer_write(buffer_send, buffer_bool, GR.prepared)
+      buffer_write(buffer_send, buffer_string, GR.prevWord)
       network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
       //PROGBARS
       buffer_seek(buffer_send, buffer_seek_start, 0);         //refactor socket + join to socket 16
@@ -596,6 +599,15 @@ else if type = network_type_data {
       //todo: other stat synch + reconnect check
       network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
       break
+    
+    //first word request
+    case 33:         
+      buffer_seek(buffer_send, buffer_seek_start, 0);
+      buffer_write(buffer_send, buffer_s8, 10)
+      buffer_write(buffer_send, buffer_s8, Ready)
+      buffer_write(buffer_send, buffer_string, GR.prevWord)
+      network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
+      break  
     }
   }
 else if type = network_type_disconnect {

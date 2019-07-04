@@ -161,7 +161,7 @@ else if RuleTick == 1640
   
 //game start
 if loaded &amp;&amp; loadFading
-  if GR.prepared || !GR.drawRules
+  if !GR.drawRules
     {
     loadFade-= 0.025
     if loadFade &lt;= 0

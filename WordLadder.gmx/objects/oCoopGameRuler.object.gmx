@@ -148,8 +148,10 @@ if prepared {
 //Auto-start after lobby timeout
 else if prestart {
   preTimer-= Timer.Interval
-  if preTimer &lt;= 0
-    with Net event_user(0)     //on timeout - called every fuckin' tick. Todo: bugfix rdy+leave and begin button
+  if preTimer &lt;= 0 {
+    prepared = true
+    with Net event_user(0)  //Todo: bugfix rdy+leave and begin button
+    }
   }
 </string>
           </argument>
@@ -374,7 +376,7 @@ var tmpm, tmpl, tmp;
             <kind>1</kind>
             <string>prepared = true
 currWord = string_char_at(prevWord,string_length(prevWord))
-if wl.Words == 0
+if wl.Words == 0 &amp;&amp; string_length(Cube.w1) &gt; 1  //todo: refactor to startRot boolean -&gt; solve some problems w/ gamestart event
   Cube.Rot = true
 Timer.active = true
 Timer.LastTime = current_time

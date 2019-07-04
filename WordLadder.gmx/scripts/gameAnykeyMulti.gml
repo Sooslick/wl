@@ -24,6 +24,9 @@ if paused
 if !prepared
   exit
   
+if drawRules
+  exit  
+  
 if Cube.Rot
   exit
   

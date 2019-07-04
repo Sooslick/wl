@@ -5,7 +5,7 @@ Ready++
 ptpPlayers++
 Plr[pid].Ready = true
 //send start signal
-if Players == Ready {
+if (Players == Ready) || GR.prepared {
   with GR event_user(4)   //todo: refactor GR events to functions
   //send ready + firstword state
   buffer_seek(buffer_send, buffer_seek_start, 0);

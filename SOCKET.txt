@@ -24,14 +24,16 @@ SOCKET HEADERS
 21	server -> client	Vote Start
 22	client -> server	Voting
 23	server -> client	Vote result
-24	server -> client	Full word history
-25	server -> client	Current GameCube state		//Deprecated and unused
+24	<->			Client: History Request (only header) / Server: Full word history
+25	server -> client	Current GameCube state		//Deprecated and useless
 26	server -> client	Player's ptp fields
 27	client -> server	End of ptp timer
 28	server -> client	Endgame signal
 29	server -> client	Progbars sync
-30	client -> server	Pre-start sync event + local stat request
+30	client -> server	Pre-start sync event		//before: local stat request
 31	server -> client	Player's local stat
+32	server -> client	Game state
+33	client -> server	First word request
 _________________________________________
 
 Socket:
@@ -173,6 +175,9 @@ s8		MinLen
 string		Word 2
 string		Word 3
 string		Word 4
+bool		game is started
+string		currWord
+string		prevWord
 
 26:
 s8		Header
@@ -203,3 +208,12 @@ s8		Header
 s8		Header
 s32		Local Score
 ...		...
+
+32:
+s8		Header
+bool		prestart state
+bool		prepared state
+string		prevWord
+
+33:
+s8		Header
