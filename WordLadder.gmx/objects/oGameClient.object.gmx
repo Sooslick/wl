@@ -237,10 +237,10 @@ else if type == network_type_data {
     case 10:
       Ready = buffer_read(msg_buff, buffer_s8);
       if GR != -1 {
+        if Ready &gt; 0
+          GR.prestart = true
         if Ready == Players
-          with GR event_user(4)     //trigger startgame   //todo: should replace prevword field?
-        //GR.prevWord = buffer_read(msg_buff, buffer_string);
-        //GR.Cube.w1 = GR.prevWord  - legacy?
+          with GR event_user(4)     //trigger startgame //todo: another trigger 4 event_user
         }
       break
       
@@ -928,10 +928,6 @@ if GR != -1
     draw_set_halign(fa_center)
     draw_set_valign(fa_center)
     draw_text(800, 400, s)
-    if GR.prestart {
-      draw_set_font(fHint)
-      draw_text(800,900, 'Start in ' + string(GR.preTimer div 1000)) //todo move from draw event
-      }
     }
 </string>
           </argument>

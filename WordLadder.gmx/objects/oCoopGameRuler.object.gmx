@@ -148,8 +148,9 @@ if prepared {
 //Auto-start after lobby timeout
 else if prestart {
   preTimer-= Timer.Interval
+  Timer.Str = formatTimeString(preTimer)
   if preTimer &lt;= 0 {
-    prepared = true
+    prepared = true                     
     with Net event_user(0)  //Todo: bugfix rdy+leave and begin button
     }
   }
@@ -437,8 +438,6 @@ if paused {
     '#Letters typed: ' + string(Stat.letters) + 
     '#Greenletters: ' + string(Stat.targetsa))
   }
-
-//todo: pre-timer!
 
 if waiting
   drawLoading(loadRot)
