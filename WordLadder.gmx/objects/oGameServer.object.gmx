@@ -1057,6 +1057,7 @@ BRestart.parent = id
 
 //Stat passed from GameRuler in step event
 GR = -1
+PlrList.drawEnable = false
 with Stat event_user(0)
 var bestpl = -1;
 var bestsc = -1;
@@ -1068,7 +1069,7 @@ for (var i=0; i&lt;Players; i++)
 var s = 'BEST PLAYER:#';
 s+= Plr[bestpl].Name
 s+= '##SCORE:#'
-s+= string(Plr[bestpl].Name)
+s+= string(Plr[bestpl].Score)
 Stat.s = s
 Chat.visible = false
 

@@ -317,7 +317,8 @@ else if type == network_type_data {
     case 17:
       timeout = 9999
       connected = false
-      GR.Timer.Timer = 0        //force endgame by timer reset
+      if GR != -1
+        GR.Timer.Timer = 0        //force endgame by timer reset
       break
       
     //someone disconnected
@@ -474,9 +475,7 @@ else if type == network_type_data {
         }
       break
     }               
-  }
-if GR != -1
-  funcLogString('after socket: ' + GR.prevWord+'/'+GR.Cube.w1)  
+  } 
 </string>
           </argument>
         </arguments>
@@ -728,6 +727,8 @@ s+= '##SCORE: '
 s+= string(Plr[bestpl].Score)
 Stat.s = s
 Chat.visible = false
+GR = -1               //GR self-destoyed
+PlrList.drawEnable = false
 
 funcLogDetail('client event 4')
 
@@ -908,10 +909,10 @@ funcLogDetail('client +rdy')
   exit
   
 if Restarting {
-  drawTextPreset(fImpact96, c_white, 1, fa_center, fa_center)
+  drawTextPreset(fCube, c_white, 1, fa_right, fa_bottom)
   var s = 'Restarting in ';
   s+= string(RestartTimer div 60)
-  draw_text(800, 600, s)
+  draw_text(1595, 1195, s)
   }
   
 if Stat != -1

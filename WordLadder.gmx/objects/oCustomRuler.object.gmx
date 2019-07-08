@@ -358,9 +358,6 @@ else if bBack.clicked {
   
 else if bGo.clicked
   {
-  //fix defaults
-  if bStartLen.num == -1
-    bStartLen.num = 0
   //write config
   global.config[?'CustomStart'] = bStartLen.num
   global.config[?'CustomTimer'] = bStartTimer.num
@@ -372,6 +369,9 @@ else if bGo.clicked
   global.config[?'CustomBans'] = bBan.num
   global.config[?'CustomVowels'] = bVowel.currval
   global.config[?'CustomGreens'] = bGreen.num
+  //fix defaults
+  if bStartLen.num == -1
+    bStartLen.num = real(string_digits(bStartLen.val)) - 4
   //todo refactor
   funcFreeGameSettings()
   global.custom = ds_map_create()

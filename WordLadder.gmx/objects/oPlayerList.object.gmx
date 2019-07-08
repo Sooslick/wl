@@ -32,6 +32,7 @@ MyPos = 0
 MyPlr = -1
 
 vert = 575
+drawEnable = true
 </string>
           </argument>
         </arguments>
@@ -96,7 +97,10 @@ for (var i=0; i&lt;Players; i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>var textright1 = global.G_RIGHT - 5
+            <string>if !drawEnable
+  exit
+
+var textright1 = global.G_RIGHT - 5
 var textright2 = textright1 - 125
 var textright3 = textright2 - 415
 //todo: optimize calcs

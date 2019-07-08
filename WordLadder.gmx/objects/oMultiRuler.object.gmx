@@ -192,6 +192,7 @@ bType.dsc = 0.84
 bType.hintMsg = 'Game type'
 bType.depth = depth-1
 bType.StartDepth = depth-1
+bType.clickable = false
 ///////////////
 //bBack &amp; bGo//
 bBack = instance_create(300,800,oButton)
@@ -213,6 +214,9 @@ for (var i=0; i&lt;ds_list_size(alist); i++) {
   alist[|i].sx = alist[|i].x + 50
   alist[|i].sy = alist[|i].y + 180
   }
+//temp section: rm after ptp restore
+var ind = ds_list_find_index(alist, bType)
+ds_list_delete(alist, ind)
 //surface
 ds = surface_create(1500,900)
 </string>
@@ -394,6 +398,9 @@ else if bGo.clicked
   global.config[?'MultiVowels'] = bVowel.currval
   global.config[?'MultiGreens'] = bGreen.num
   global.config[?'MultiMode'] = bType.num
+  //fix defaults
+  if bStartLen.num == -1
+    bStartLen.num = real(string_digits(bStartLen.val)) - 4
   //todo refactor
   global.custom = ds_map_create()
   global.custom[?'StartLen'] = bStartLen.num + 4
