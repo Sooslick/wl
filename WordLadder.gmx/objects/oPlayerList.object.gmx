@@ -33,6 +33,11 @@ MyPlr = -1
 
 vert = 575
 drawEnable = true
+
+//todo: column widths
+WScore = 0
+WName = 0
+WWord = 0
 </string>
           </argument>
         </arguments>

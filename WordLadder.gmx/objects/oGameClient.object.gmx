@@ -50,7 +50,7 @@ PlrList.MyPlr = 0
 RestartTimer = 359
 Restarting = false
 
-Chat = instance_create(800,200,oGameChat)
+Chat = instance_create(800,36,oGameChat)
 Chat.parent = id
 Chat.visible = false
 

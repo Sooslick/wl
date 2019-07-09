@@ -31,11 +31,10 @@ for (i=0; i&lt;5; i++)     //messages on display
   cdArr[i] = 0
 CurrPos = 0
 PendingStr = ''
-DrawFrom = 0
 GotStr = ''
-image_xscale = 320      //chatbox size *2
-image_yscale = 145
-image_alpha = 0.15
+image_xscale = global.UPORTW / 2          //chatBox size
+image_yscale = 35
+image_alpha = 0.05
 Hover = false
 Active = false
 CursorTick = 0
@@ -64,15 +63,12 @@ CursorTick = 0
             <string>CursorTick++
 if CursorTick &gt; 20
   CursorTick = 0
-  
+
 for (i=0; i&lt;5; i++)
   if cdArr[i] &gt; 0
     cdArr[i]--
-    
-if funcCheckGuiHover(400,0,1200,300)
-  Hover = true
-else
-  Hover = false
+
+Hover = funcCheckGuiHover(0,0,1600,50)
 </string>
           </argument>
         </arguments>
@@ -95,10 +91,7 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if Hover
-  Active = true
-else
-  Active = false
+            <string>Active = Hover
 </string>
           </argument>
         </arguments>
@@ -144,7 +137,8 @@ else
             <string>//prepare miltiline array
 var lines;
 var l = 0;
-var sym = 15;                         //15 is min num of symbols can be placed on single line
+//todo: rm legacy. Now chat in full-line. Try to implement unlimited msg length
+var sym = 155;                         //15 is min num of symbols can be placed on single line
 draw_set_font(fChat)
 while sym &lt; string_length(GotStr)     //cycle for cut one string to multi substrs
   {                                   //sym will be incr while substr width &lt; chat window width
@@ -207,36 +201,35 @@ for (i=0; i &lt; l; i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//chatbox
+            <string>drawTextPreset(fChat, c_white, 1, fa_left, fa_top)
+//chatbox
 draw_self()
-//pending message line
-drawTextPreset(fChat, c_white, image_alpha, fa_left, fa_top)
-draw_rectangle(x-image_xscale, y-200,x+image_xscale, y-150, false)
-//outline &amp; pending message
+//chatbox outline
 if Active {
-  draw_set_alpha(1)
-  draw_rectangle(x-image_xscale, y-image_yscale,x+image_xscale, y+image_yscale, true)
+  draw_self()
+  draw_rectangle(x-image_xscale, y-34,x+image_xscale, y+34, true)
+  }
+//chatline message
+if Active {
   if (CursorTick &gt; 10)
-    draw_text(x-320, 0, '&gt;' + string_copy(PendingStr,DrawFrom+1,string_length(PendingStr) - DrawFrom) + '|')
+    draw_text(0, 3, '&gt;' + PendingStr + '|')
   else
-    draw_text(x-320, 0, '&gt;' + string_copy(PendingStr,DrawFrom+1,string_length(PendingStr) - DrawFrom))
+    draw_text(0, 3, '&gt;' + PendingStr)
   }
 else {
   draw_set_alpha(0.5)
-  draw_text(x-320,0, 'Click here to chat')
+  draw_text(0,0, 'Click here to chat')
   }
   
 //chat messages
 var cp = CurrPos;
 for (var i=0; i&lt;5; i++) {
   draw_set_alpha(clamp(cdArr[i] / 100, 0, 1))
-  draw_text(x-320,75+i*50,Arr[cp])
+  draw_text(0,75+i*50,Arr[cp])
   cp--;
   if cp &lt; 0
     cp = 255
   }
-  
-//todo: individual line 4 every message
 </string>
           </argument>
         </arguments>
@@ -277,23 +270,17 @@ if keyboard_check(vk_backspace) {
       PendingStr = string_copy(PendingStr,1,string_length(PendingStr)-2)
     else
       PendingStr = string_copy(PendingStr,1,string_length(PendingStr)-1)
-    if DrawFrom &gt; 0
-      DrawFrom--
     }
   exit
   }
 
 if (ord(keyboard_lastchar)&gt;=32) &amp;&amp; (string_length(PendingStr)&lt;54) {
   if keyboard_lastchar == '#'
-          PendingStr+= '\#'
+    PendingStr+= '\#'
   else
-          PendingStr+= keyboard_lastchar
-  if string_length(PendingStr) &gt; 15 {
-    draw_set_font(fChat)
-    while string_width(string_copy(PendingStr,DrawFrom+1,string_length(PendingStr) - DrawFrom)) &gt; image_xscale*1.92
-      DrawFrom++
-    }
+    PendingStr+= keyboard_lastchar
   }
+  
 keyboard_lastchar = ''
 </string>
           </argument>

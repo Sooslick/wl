@@ -50,6 +50,10 @@ Pos = 0
 Connected = true
 AllowChat = true
 AllowGame = true
+//todo: draw info
+WScore = 0
+WName = 0
+WWord = 0
 </string>
           </argument>
         </arguments>

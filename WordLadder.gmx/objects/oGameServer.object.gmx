@@ -57,7 +57,7 @@ PingTimestamp = 0
 PingTimer = 60
 BRestart = -1
 
-Chat = instance_create(800,200,oGameChat)
+Chat = instance_create(800,36,oGameChat)
 Chat.parent = id
 Chat.visible = false
 
