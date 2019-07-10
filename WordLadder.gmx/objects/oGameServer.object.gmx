@@ -51,6 +51,7 @@ PlrList = instance_create(0,0,oPlayerList)
 PlrList.Players = 1
 PlrList.PlsArr = Plr
 PlrList.MyPlr = Plr[0]
+playerScaleCalc(Plr[0], 1, PlrList.WName, Plr[0].Name)
 
 //general fields
 PingTimestamp = 0
@@ -239,6 +240,7 @@ else if type = network_type_data {
         }
       Plr[eid].ID = buffer_read(msg_buff, buffer_s32)
       Plr[eid].Name = buffer_read(msg_buff, buffer_string)
+      playerScaleCalc(Plr[eid], 1, PlrList.WName, Plr[eid].Name)
       //find player w/ same ID (check if reconnect)
       var rc = false;
       for (var i=0; i&lt;ds_list_size(Leavers); i++) {
@@ -335,6 +337,7 @@ else if type = network_type_data {
       if Shift
         VoteScope+= 4
       Plr[eid].Word = word
+      playerScaleCalc(Plr[eid], 2, 0, word)
       if enter &amp;&amp; ptp {
         var cnt = 0;
         for (var i=0; i&lt; ds_list_size(GR.l.TargetList); i++)
@@ -575,6 +578,8 @@ else if type = network_type_data {
     
     //game states request  
     case 30:
+      //Todo: if GR = -1 -&gt; put ticket in request queue // rdy while loading bugfix!
+      //Todo: if endgame state -&gt; send brand new socket
       //MAIN STATES
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 32)

@@ -213,6 +213,7 @@ else if type == network_type_data {
         Plr[i] = instance_create(0,0,oPlayer)
         Plr[i].ID = buffer_read(msg_buff, buffer_s32);
         Plr[i].Name = buffer_read(msg_buff, buffer_string);
+        playerScaleCalc(Plr[i], 1, PlrList.WName, Plr[i].Name)
         if Plr[i].ID == global.profile[?'PNETID']             //refresh plrlist
           PlrList.MyPlr = Plr[i]
         }
@@ -268,6 +269,7 @@ else if type == network_type_data {
         var bb = buffer_read(msg_buff, buffer_bool);
         var word = buffer_read(msg_buff, buffer_string);
         Plr[pid].Word = word
+        playerScaleCalc(Plr[pid], 2, 0, word)
         if success {
           if sh
             GR.Shift = true
@@ -308,8 +310,10 @@ else if type == network_type_data {
     //refresh scoretable
     case 16:
       Players = buffer_read(msg_buff, buffer_s8);
-      for (var i=0; i&lt;Players; i++) 
+      for (var i=0; i&lt;Players; i++) {
         Plr[i].Score = buffer_read(msg_buff, buffer_s32);
+        playerScaleCalc(Plr[i], 0, PlrList.WScore, string(Plr[i].Score))
+        }
       with PlrList event_user(0)
       break
       

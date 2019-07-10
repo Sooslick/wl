@@ -50,10 +50,10 @@ Pos = 0
 Connected = true
 AllowChat = true
 AllowGame = true
-//todo: draw info
-WScore = 0
-WName = 0
-WWord = 0
+//individual width scale
+ScScore = 1
+ScName = 1
+ScWord = 1
 </string>
           </argument>
         </arguments>

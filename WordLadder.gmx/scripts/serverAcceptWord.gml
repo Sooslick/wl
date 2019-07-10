@@ -17,6 +17,7 @@ buffer_write(buffer_send, buffer_string, GR.currWord)
 serverBroadcastSocket()
 var sc = gameWordAcceptedMulti(GR, mw);
 Plr[p].Score+= sc
+playerScaleCalc(Plr[p], 0, PlrList.WScore, Plr[p].Score)
 //todo bad code!!! Refactor score updating
 if p == 0 {               //personal score
   GR.Abil.Value[0]+= sc   //display score

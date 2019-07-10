@@ -31,13 +31,19 @@ PlsArr[0] = -1
 MyPos = 0
 MyPlr = -1
 
-vert = 575
+vert = 574
 drawEnable = true
 
-//todo: column widths
-WScore = 0
-WName = 0
-WWord = 0
+//column widths
+WScore = 100
+WName = 284 + global.DRAW_HOFF
+WWord = 0   //unlimited
+
+//column positions
+var ColGap = 8;
+XScore = global.G_RIGHT - ColGap
+XName = XScore - WScore - ColGap
+XWord = XName - WName - ColGap
 </string>
           </argument>
         </arguments>
@@ -105,21 +111,18 @@ for (var i=0; i&lt;Players; i++)
             <string>if !drawEnable
   exit
 
-var textright1 = global.G_RIGHT - 5
-var textright2 = textright1 - 125
-var textright3 = textright2 - 415
 //todo: optimize calcs
 drawTextPreset(fImpact64, c_white, 1, fa_right, fa_top)
 //fader      
-draw_sprite_ext(sSquareFaded,0,global.G_RIGHT-384,vert+13,1.5,0.28,0,c_white,0.75)
+draw_sprite_ext(sSquareFaded,0,global.G_RIGHT-384,vert+16,1.5,0.28,0,c_white,0.75)
 //lines
 if Players &gt; 0 {
   var pos = MyPos;
   for (var i=0; i&lt;5; i++) {
-    if pos != MyPos
-      draw_text(textright3, vert + i*70, PlsArr[pos].Word)          //move from cycle
-    draw_text(textright2, vert + i*70, PlsArr[pos].Name)
-    draw_text(textright1, vert + i*70, string(PlsArr[pos].Score))
+    if (pos != MyPos) &amp;&amp; (string_length(PlsArr[pos].Word) &gt; 1)
+      draw_text_transformed(XWord, vert + i*70, PlsArr[pos].Word, PlsArr[pos].ScWord,1,0)          //move mypos from cycle
+    draw_text_transformed(XName, vert + i*70, PlsArr[pos].Name, PlsArr[pos].ScName,1,0)
+    draw_text_transformed(XScore, vert + i*70, string(PlsArr[pos].Score), PlsArr[pos].ScScore,1,0)
     draw_set_alpha(draw_get_alpha()-0.2)
     pos++
     if pos == Players
@@ -129,9 +132,9 @@ if Players &gt; 0 {
   pos = MyPos-1
   if pos &gt;= 0
     for (var i=-1; i&gt;-5; i--) {
-      draw_text(textright3, vert + i*70, PlsArr[pos].Word)
-      draw_text(textright2, vert + i*70, PlsArr[pos].Name)
-      draw_text(textright1, vert + i*70, string(PlsArr[pos].Score))
+      draw_text_transformed(XWord, vert + i*70, PlsArr[pos].Word, PlsArr[pos].ScWord,1,0)
+      draw_text_transformed(XName, vert + i*70, PlsArr[pos].Name, PlsArr[pos].ScName,1,0)
+      draw_text_transformed(XScore, vert + i*70, string(PlsArr[pos].Score), PlsArr[pos].ScScore,1,0)
       draw_set_alpha(draw_get_alpha()-0.2)
       pos--
       if pos &lt;0
