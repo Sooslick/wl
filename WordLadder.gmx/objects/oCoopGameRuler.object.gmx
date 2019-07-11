@@ -36,8 +36,8 @@ gameSetFirstWord()
 Abil.vert = 950
 //other
 loadRot = 0
-preTimer = 10000
-waiting = false       //waiting for server accepts word
+preTimer = 30000
+waiting = false       //waiting for server's answer
 myWord = false        //should ruler to write accepted word to stat
 reconnect = false     //if false PSGAMES and PSSERVERS ++
 //Vote var  TODO refactor vote obj
@@ -198,12 +198,14 @@ else if prestart {
             <kind>1</kind>
             <string>if BStart &gt; 0 {
   if BStart.clicked {
-    instance_destroy(BStart,true)
-    BStart = -1
-    drawRules = false
-    with Net event_user(0)
-    //todo: profile games++ servers++ if not reconnected
-    exit
+    if !waiting {
+      instance_destroy(BStart,true)
+      BStart = -1
+      drawRules = false
+      with Net event_user(0)
+      //todo: profile games++ servers++ if not reconnected
+      exit
+      }
     }
   }
 if bBack != -1 {

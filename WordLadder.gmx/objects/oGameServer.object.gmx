@@ -71,6 +71,8 @@ VoteBan = false
 ServerRID = -1
 ServerRefreshTimer = 5000
 
+RequestQueue = ds_queue_create()    //delayed sockets queue
+
 var gmode;
 if ptp
   gmode = '1'
@@ -123,6 +125,7 @@ network_destroy(server)
 http_get(global.domain+'wl/delRoom.php?rid=' + string(ServerRID) + '&amp;access_token=' + global.userdata[?'AT'])
 
 //todo: destroy child objects
+ds_queue_destroy(RequestQueue)
 </string>
           </argument>
         </arguments>
@@ -213,12 +216,9 @@ if type = network_type_connect {
   Plr[p].Sock = sock;
   Plr[p].IP = ip; 
   Plr[p].Name = '[ connecting ]'
-  //if GR != -1                   //debug-costyl: ptp reconnect
-  //  if GR.prepared
-  //    PtpArrPos[Players] = 250    //wtffffffff
   Players++
   parent.tc.online = true
-  funcLogString('client ' + Plr[p].IP + ' connected')
+  funcLogString('server: ' + Plr[p].IP + ' connected')
   }
 else if type = network_type_data {  
   for (var i=0; i &lt; Players; i++)
@@ -273,7 +273,7 @@ else if type = network_type_data {
     case 3:
       var pong = buffer_read(msg_buff, buffer_s32)
       if pong != PingTimestamp
-        {}          //TODO Force disconnect plr
+        {}          //TODO Force disconnect plr AND write adequate timestamp
       pong = buffer_read(msg_buff, buffer_s32)
       PlsArrPing[eid] = current_time - PingTimestamp
       break
@@ -306,7 +306,7 @@ else if type = network_type_data {
         buffer_seek(buffer_send, buffer_seek_start, 0);
         buffer_write(buffer_send, buffer_s8, 10)
         buffer_write(buffer_send, buffer_s8, Ready)
-        buffer_write(buffer_send, buffer_string, GR.prevWord)
+        buffer_write(buffer_send, buffer_string, GR.prevWord) //todo - check this word (client skips it)
         network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
         //broadcast timer
         buffer_seek(buffer_send, buffer_seek_start, 0);
@@ -578,8 +578,21 @@ else if type = network_type_data {
     
     //game states request  
     case 30:
-      //Todo: if GR = -1 -&gt; put ticket in request queue // rdy while loading bugfix!
-      //Todo: if endgame state -&gt; send brand new socket
+      //CHECK IF LOADING
+      if GR == -1 {
+        if BRestart == -1 {
+          ds_queue_enqueue(RequestQueue, eid)
+          break
+          }
+        //CHECK IF ENDGAME
+        else {
+          buffer_seek(buffer_send, buffer_seek_start, 0);
+          buffer_write(buffer_send, buffer_s8, 17)  
+          buffer_write(buffer_send, buffer_string, 'Game is ended')
+          network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
+          break;
+          }
+        }
       //MAIN STATES
       buffer_seek(buffer_send, buffer_seek_start, 0);
       buffer_write(buffer_send, buffer_s8, 32)
@@ -615,21 +628,18 @@ else if type = network_type_data {
       break  
     }
   }
+  
 else if type = network_type_disconnect {
   for (var i=0; i&lt;Players; i++)
     if sock == Plr[i].Sock {
       eid = i
       break
       }
-   
-  //Pl count ?
-  if Plr[eid].Ready
-    Ready--    
-    
+
   //ptp operations  
   if Plr[eid].Playing
     ptpPlayers--
-    
+
   if ptp {
     if PtpPos == Plr[eid].Pos {
       Plr[eid].Playing = false
@@ -683,12 +693,12 @@ else if type = network_type_disconnect {
   buffer_write(buffer_send, buffer_s8, eid)
   serverBroadcastSocket()
     
-  funcLogString('client ' + Plr[eid].IP + ' disconnected')  
+  funcLogString('server: ' + Plr[eid].Name + '[' + Plr[eid].IP + '] disconnected')  
       
   //add Plr to Leavers if he isnt anonymous
   if Plr[eid].ID != 0
-    ds_list_add(Leavers, Plr[eid])  
-    
+    ds_list_add(Leavers, Plr[eid])    
+
   //shift array
   for (var i = eid; i &lt; Players-1; i++)
     Plr[i] = Plr[i+1]
@@ -696,7 +706,14 @@ else if type = network_type_disconnect {
   PlrList.PlsArr = Plr
   PlrList.Players = Players
   with PlrList event_user(0)
-  
+
+  //refresh rdy count
+  if Plr[eid].Ready
+    Ready--
+
+  //if all players are ready -&gt; startgame
+  serverClickReady(-1)
+
   //update room
   serverUpdRoom()
   }
@@ -788,6 +805,77 @@ if html != -1 {
           <argument>
             <kind>1</kind>
             <string>ui onclick event</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="18">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>//dequeue all sockets which recvd while loading
+while !ds_queue_empty(RequestQueue) {
+  var eid = ds_queue_dequeue(RequestQueue);
+  //PLEAZE REFACTOR ME !!!
+  //MAIN STATES
+  buffer_seek(buffer_send, buffer_seek_start, 0);
+  buffer_write(buffer_send, buffer_s8, 32)
+  buffer_write(buffer_send, buffer_bool, GR.prestart)
+  buffer_write(buffer_send, buffer_bool, GR.prepared)
+  buffer_write(buffer_send, buffer_string, GR.prevWord)
+  network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
+  //PROGBARS
+  buffer_seek(buffer_send, buffer_seek_start, 0);         //refactor socket + join to socket 16
+  buffer_write(buffer_send, buffer_s8, 29)            //header
+  buffer_write(buffer_send, buffer_s16, GR.ShiftPB.Prog)            //shift prog
+  buffer_write(buffer_send, buffer_s16, GR.ShiftPB.Req)            //shift req
+  buffer_write(buffer_send, buffer_s16, GR.TTPB.Prog)            //unban prog
+  buffer_write(buffer_send, buffer_s16, GR.TTPB.Req)            //unban req
+  buffer_write(buffer_send, buffer_s16, GR.DecPB.Prog)            //dec prog
+  buffer_write(buffer_send, buffer_s16, GR.DecPB.Req)            //dec req
+  network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
+  //LOCAL STAT
+  buffer_seek(buffer_send, buffer_seek_start, 0);
+  buffer_write(buffer_send, buffer_s8, 31)                  //header
+  buffer_write(buffer_send, buffer_s32, Plr[eid].Score)       //score
+  //todo: other stat synch + reconnect check
+  network_send_packet( Plr[eid].Sock, buffer_send, buffer_tell(buffer_send) );
+  funcLogString('Server delayed state socket')
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>605</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>0</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>dequeue sockets</string>
           </argument>
         </arguments>
       </action>

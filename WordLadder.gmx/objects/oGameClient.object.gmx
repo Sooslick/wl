@@ -35,6 +35,7 @@ GR = -1
 Stat = -1
 timeout = 600
 connected = false
+forceEndgame = false    //if recvd endgame socket while loading
 ptp = false
 
 Players = 0
@@ -113,13 +114,15 @@ if timeout &lt;= 0
     }
     
 if Restarting {
-  RestartTimer--
-  if RestartTimer &lt;= 0 {
-    global.GameType = 0
-    instance_destroy(self, true)
-    instance_destroy(GR, true)
-    instance_destroy(Stat, true)
-    room_goto(rGame)
+  if !forceEndgame {
+    RestartTimer--
+    if RestartTimer &lt;= 0 {
+      global.GameType = 0
+      instance_destroy(self, true)
+      instance_destroy(GR, true)
+      instance_destroy(Stat, true)
+      room_goto(rGame)
+      }
     }
   }
 </string>
@@ -323,6 +326,8 @@ else if type == network_type_data {
       connected = false
       if GR != -1
         GR.Timer.Timer = 0        //force endgame by timer reset
+      else
+        forceEndgame = true
       break
       
     //someone disconnected
@@ -341,6 +346,8 @@ else if type == network_type_data {
     case 19:
       RestartTimer = 359
       Restarting = true
+      if GR == -1
+        forceEndgame = true
       break
       
     //chat event
@@ -432,7 +439,7 @@ else if type == network_type_data {
         GR.waiting = true
         }
       GR.Abil.Value[1] = buffer_read(msg_buff, buffer_s8);      //shift
-       GR.Abil.Value[2] = buffer_read(msg_buff, buffer_s8);      //unban
+      GR.Abil.Value[2] = buffer_read(msg_buff, buffer_s8);      //unban
       break
       
     //ptp: endgame
@@ -459,6 +466,8 @@ else if type == network_type_data {
       
     //game states socket
     case 32:
+      GR.waiting = false
+      GR.BStart.clickable = true
       GR.prestart = buffer_read(msg_buff, buffer_bool)
       GR.prepared = buffer_read(msg_buff, buffer_bool)
       if GR.prepared {
@@ -502,10 +511,18 @@ else if type == network_type_data {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>buffer_seek(buffer_send, buffer_seek_start, 0);
+            <string>if forceEndgame {
+  forceEndgame = false      //debug-costyl?
+  timeout = 2               //forced step skip before disconnect
+  RestartTimer = 0          //or restart room on next stepevent
+  exit                      //very strange solution. Should refactor to functions. Todo?
+  }
+  
+buffer_seek(buffer_send, buffer_seek_start, 0);
 buffer_write(buffer_send, buffer_s8, 30)
 network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
-//todo: function?
+GR.waiting = true
+GR.BStart.clickable = false
 </string>
           </argument>
         </arguments>

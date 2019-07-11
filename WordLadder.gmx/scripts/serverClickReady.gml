@@ -1,9 +1,12 @@
 //arg0: player ID
 var pid = argument0;
 
-Ready++
-ptpPlayers++
-Plr[pid].Ready = true
+//just send sockets if plrid = -1 (aka null). For example after disconnect
+if pid != -1 {
+  Ready++
+  ptpPlayers++
+  Plr[pid].Ready = true
+  }
 //send start signal
 if (Players == Ready) || GR.prepared {
   with GR event_user(4)   //todo: refactor GR events to functions
