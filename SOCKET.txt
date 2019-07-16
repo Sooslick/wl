@@ -18,7 +18,7 @@ SOCKET HEADERS
 15	server -> client	New word info: len, banned, green, shifts, unbans
 16	server -> client	Score broadcast
 17	server -> client	Force disconnect
-18	server -> client	Disconnection broadcast
+18	server -> client	Disconnection broadcast		//Deprecated. Using socket 6 with non-existing initializer
 19	server -> client	Restart broadcast
 20	<->			Chat line
 21	server -> client	Vote Start

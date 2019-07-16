@@ -26,7 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>Timer = 0
-DefaultStr = '0:00:00:000'
+DefaultStr = '00:00:00'
 Str = DefaultStr
 LastTime = current_time
 Interval = 0
@@ -58,7 +58,7 @@ LastTime = current_time
 if active {
   Timer-= Interval
   if Timer &gt; 0
-    Str = formatTimeString(Timer)
+    Str = formatTimeString(Timer, 'm:s.2')
   else
     Str = DefaultStr
   }
@@ -85,7 +85,7 @@ if active {
           <argument>
             <kind>1</kind>
             <string>drawTextPreset(fTimer, c_white, 1, fa_center, fa_bottom)
-var tmp = 615;
+var tmp = 678;
 for (var i=1; i&lt;= string_length(Str); i++) {
   draw_text(tmp, global.G_DOWN, string_char_at(Str,i))
   tmp+=34

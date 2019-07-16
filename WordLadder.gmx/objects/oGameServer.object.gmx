@@ -687,10 +687,16 @@ else if type = network_type_disconnect {
       }
     }
     
-  //disconnect socket  
+  //disconnect socket
+  //socket 18 - deprecated, send plrList with non-existing initializer
   buffer_seek(buffer_send, buffer_seek_start, 0);
-  buffer_write(buffer_send, buffer_s8, 18)
-  buffer_write(buffer_send, buffer_s8, eid)
+  buffer_write(buffer_send, buffer_s8, 6)           //socket header - todo refactor!
+  buffer_write(buffer_send, buffer_s8, 0)           //initializer ID - 0
+  buffer_write(buffer_send, buffer_s8, Players)
+  for (var i=0; i&lt;Players; i++) {
+    buffer_write(buffer_send, buffer_s32, Plr[i].ID)
+    buffer_write(buffer_send, buffer_string, Plr[i].Name)
+    }
   serverBroadcastSocket()
     
   funcLogString('server: ' + Plr[eid].Name + '[' + Plr[eid].IP + '] disconnected')  
