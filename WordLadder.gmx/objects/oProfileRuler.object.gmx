@@ -39,11 +39,6 @@ ds_map_add(PLang.arr,0,'English')
 ds_map_add(PLang.arr,1,'Russian')
 PLang.num = global.profile[?'PLOCALE']
 PLang.val = PLang.arr[?global.profile[?'PLOCALE']]
-PLang.clickable = false
-PLang.parent = id
-PLang.useParentSurface = true
-PLang.sx = PLang.x + 50
-PLang.sy = PLang.y + 180
 //achievements menu
 PAch = instance_create(900,260,oButton)
 PAch.content = 'ACHIEVEMENTS'
@@ -54,7 +49,7 @@ PStat.content = 'STATISTICS'
 PStat.font = fImpact64
 //profile selector
 PSelector = instance_create(300,500,oButton)
-PSelector.content = 'LOG OUT'
+PSelector.content = 'LOG OUT'                 //todo: login if anonymous
 PSelector.font = fImpact64
 //back
 PBack = instance_create(300,800,oButton)
@@ -65,7 +60,7 @@ bYes = -1
 bNo = -1
 //clickables
 alist = ds_list_create()
-ds_list_add(alist, PNameForm,/*PLang,*/PAch,PStat,PSelector,PBack)
+ds_list_add(alist, PNameForm,PLang,PAch,PStat,PSelector,PBack)
 
 for (var i=0; i&lt;ds_list_size(alist); i++) {
   alist[|i].parent = id
@@ -73,6 +68,10 @@ for (var i=0; i&lt;ds_list_size(alist); i++) {
   alist[|i].sx = alist[|i].x + 50
   alist[|i].sy = alist[|i].y + 180
   }
+//TODO //TEMP SECTION //RM AFTER FEATURE IMPL
+var ind = ds_list_find_index(alist, PLang)
+ds_list_delete(alist, ind)
+PLang.clickable = false  
 //surface
 ds = surface_create(1500,900)
 //connected: db todo1

@@ -27,6 +27,7 @@
             <kind>1</kind>
             <string>ingame = false
 online = false
+debug = false
 
 last_time = current_time
 </string>
@@ -81,11 +82,37 @@ if online
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if global.config[?'DebugMode'] {
+            <string>if debug {
   drawTextPreset(fDebug, c_aqua, 1, fa_right, fa_top)
   draw_text(1600, 1, string(fps))
-  //draw_text(1600, 25, string()) memory???
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="88">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if global.config[?'DebugMode']
+  if keyboard_check(vk_control) &amp;&amp; keyboard_check(vk_shift) {
+    debug = !debug
+    show_debug_overlay(debug)
+    }
 </string>
           </argument>
         </arguments>

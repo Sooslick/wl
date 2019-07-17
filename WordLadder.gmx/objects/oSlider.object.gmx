@@ -215,7 +215,7 @@ drawTextPreset(font, c_white, 0.8, fa_center, fa_center)
 var posx = (currval-minval)/(maxval-minval) * (maxx-minx) + minx
 
 //DRAW SLIDER RECT
-draw_rectangle((x-256*dsc),(y-64*dsc),posx,(y+64*dsc),false)
+draw_rectangle((x-254*dsc),(y-62*dsc),posx,(y+62*dsc),false)
 
 //MAIN DRAW BUTTON  
 draw_set_alpha(1)
@@ -263,7 +263,7 @@ drawTextPreset(font, c_white, 0.8, fa_center, fa_center)
 var posx = (currval-minval)/(maxval-minval) * (maxx-minx) + minx
 
 //DRAW SLIDER RECT
-draw_rectangle((x-256*dsc),(y-64*dsc),posx,(y+64*dsc),false)
+draw_rectangle((x-254*dsc),(y-62*dsc),posx,(y+62*dsc),false)
 
 //MAIN DRAW BUTTON  
 draw_set_alpha(1)

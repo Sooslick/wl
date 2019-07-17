@@ -324,8 +324,12 @@ else if type == network_type_data {
     case 17:
       timeout = 9999
       connected = false
-      if GR != -1
-        GR.Timer.Timer = 0        //force endgame by timer reset
+      if GR != -1 {
+        if GR.prepared 
+          GR.Timer.Timer = 0        //force endgame by timer reset
+        else
+          timeout = 1               //nice try. Todo check this solution
+        }
       else
         forceEndgame = true
       break

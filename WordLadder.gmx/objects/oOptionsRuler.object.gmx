@@ -54,6 +54,7 @@ else
   if (DGW&gt;=1440)&amp;&amp;(DGH&gt;=1080) ds_map_add(bSelector.arr,5,'1440x1080') 
   if (DGW&gt;=1600)&amp;&amp;(DGH&gt;=1200) ds_map_add(bSelector.arr,6,'1600x1200') 
   }
+//todo: disable dropdown and checkbox if fullscreen
 //FULLSCREEN SWITCH
 bFull = instance_create(300,260,oCheckBox) 
 bFull.content = 'Fullscreen'
@@ -75,12 +76,6 @@ ds_map_add(bLang.arr,0,'English')
 ds_map_add(bLang.arr,1,'Russian')
 bLang.num = global.config[?'Localization']
 bLang.val = bLang.arr[?global.config[?'Localization']]
-bLang.clickable = false
-//todo clickable -&gt; list
-bLang.parent = id
-bLang.useParentSurface = true
-bLang.sx = 1000
-bLang.sy = 280
 //Sound &amp; music: MASTER SLIDER
 bMaster = instance_create(950,260,oSlider)
 bMaster.content = 'MASTER'
@@ -103,7 +98,7 @@ bReset.font = fImpact64
 with (bReset) {uiRescale(500)}
 //CLICKABLE LIST
 alist = ds_list_create()
-ds_list_add(alist, bSelector,bFull,bWide,bShowLogo,/*bLang,*/bMaster,bSound,bMusic,bBack,bReset)
+ds_list_add(alist, bSelector,bFull,bWide,bShowLogo,bLang,bMaster,bSound,bMusic,bBack,bReset)
 //CLICKABLES GENERAL FIELDS REINIT
 for (var i=0; i&lt;ds_list_size(alist); i++) {
   alist[|i].parent = id
@@ -111,6 +106,23 @@ for (var i=0; i&lt;ds_list_size(alist); i++) {
   alist[|i].sx = alist[|i].x+50
   alist[|i].sy = alist[|i].y+180
   }
+//TMP SECTION //TODO //RM THIS SECTION AFTER SETTINGS IMPL
+//LANG DROPDOWN
+var ind = ds_list_find_index(alist, bLang)
+ds_list_delete(alist, ind)
+bLang.clickable = false
+//MASTER SLIDER
+ind = ds_list_find_index(alist, bMaster)
+ds_list_delete(alist, ind)
+bMaster.clickable = false
+//SOUND SLIDER
+ind = ds_list_find_index(alist, bSound)
+ds_list_delete(alist, ind)
+bSound.clickable = false
+//MUSIC SLIDER
+ind = ds_list_find_index(alist, bMusic)
+ds_list_delete(alist, ind)
+bMusic.clickable = false
 //surface init
 ds = surface_create(1500,900)
 </string>
@@ -247,6 +259,7 @@ else if bWide.clicked {
 //RESET
 else if bReset.clicked {
   //TODO confirm button
+  //TODO: another cfg parameters include debug modes
   //Reset button properties
   bReset.checked = true
   bReset.content = 'RESTORED'

@@ -148,7 +148,7 @@ if prepared {
 //Auto-start after lobby timeout
 else if prestart {
   preTimer-= Timer.Interval
-  Timer.Str = formatTimeString(preTimer)
+  Timer.Str = formatTimeString(preTimer, 'm:s:2')
   if preTimer &lt;= 0 {
     prepared = true                     
     with Net event_user(0)  //Todo: bugfix rdy+leave and begin button
