@@ -25,24 +25,25 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//string array. TODO get from file!
-s[0] = ' SPECIAL '
-s[1] = ' THANKS: '
-s[2] = ' MORODER '
-s[3] = ' SOOSLICK'
-s[4] = '         '
-s[5] = ' 1234567 '
-//tech variables init
-scurr = 0
-smax = 5
-stick = 0
-spos = 1
+            <string>//tech variables init
+scurr = 0               //current word on cube
+smax = 40               //todo set value according to lv/xp values
+stick = 0               //current anim tick
+spos = 1                //current typing position
+
+ccurr = 0               //current cred
+cmax = 3                //max creds positions
+cdelay = 300            //creds animation delay
+coffset = 0             //animation offset
+
 parent = -1
 OnclickEvent = 0
 //cube object to draw strings
 Cube = instance_create(512,512,oAuthorsCube)
 Cube.parent = id
 Cube.w1 = ' '
+//credits variables
+
 //button init
 bBack = instance_create(300,800,oButton)
 bBack.content = 'BACK'
@@ -52,6 +53,55 @@ bBack.sx = 350
 bBack.sy = 980
 //surface init
 ds = surface_create(1500,900)
+
+//main credits array. TODO: load from file!
+cred[0] = 'Alexey Petrov#Project lead, dev'
+cred[1] = 'Nadezhda Balobanova#Dev, localization'
+cred[2] = 'Arthur Averin#QA, testing'
+cred[3] = 'Andrey Volkov#Meme director'
+
+//string array.  //TODO TEXTS, NAMES and commands access
+s[0] = ' SPECIAL '
+s[1] = ' THANKS  '
+s[2] = ' TO ALL  '
+s[3] = '         '
+s[4] = ' YA SOOS '
+s[5] = ' MORODER '
+s[6] = ' ARTUR98 '
+s[7] = ' STE1NES '
+s[8] = ' DESMOND '
+s[9] = '         '
+s[10] = ' REVERSE '
+s[11] = '  STOP   '
+s[12] = '  TURN   '
+s[13] = ' EASTER  '
+s[14] = '  START  '
+s[15] = '  QUIT   '
+s[16] = ' PREVED  '
+s[17] = '  SPIN   '
+s[18] = ' SPLASH  '
+s[19] = '   GAY   '
+s[20] = '  EXIT   '
+s[21] = '  BLUR   '
+s[22] = '  FLIP   '
+s[23] = '   EGG   '
+s[24] = ' SHUFFLE '
+s[25] = ' RESTART '
+s[26] = '  RESET  '
+s[27] = '  ALMI   '
+s[28] = '  FAST   '
+s[29] = ' CANCEL  '
+s[30] = ' CALLHIM '
+s[31] = '   BUG   '
+s[32] = '   FIX   '
+s[33] = ' DESIGN  '
+s[34] = '  CRASH  '
+s[35] = '  DICK   '
+s[36] = '  BLACK  '
+s[37] = '  WHITE  '
+s[38] = '  ACCEL  '
+s[39] = '  SLOW   '
+s[40] = ' SCREAM  '
 </string>
           </argument>
         </arguments>
@@ -103,25 +153,90 @@ if surface_exists(ds)
             <kind>1</kind>
             <string>//cube letter type effect. 
 stick++
-if stick&gt;=5
-  {
+if stick&gt;=5 {
   stick = 0
-  spos++
-  if spos &gt; 10
-    {
-    spos = 2
+  spos++          //type letter at specified positin every 5 ticks
+  if spos &gt; 10 {
+    spos = 2      //??? unreachable code?
     scurr++
-    if scurr &gt; smax
+    if scurr &gt; smax   //check strings oob
       scurr = 0
     }
-  if spos == 10
-    {
-    Cube.Rot = true
+  if spos == 10 {
+    Cube.Rot = true   //rotate if word is complete
     stick = -42
     }
   else
     Cube.w1+= string_char_at(s[scurr],spos)
   }
+  
+//creds anim
+if cdelay &gt; 0
+  cdelay--
+else {
+  coffset+= 6
+  if coffset &gt;= 215 {
+    coffset = 0
+    cdelay = 300
+    ccurr++
+    if ccurr &gt; cmax
+      ccurr = 0
+    }
+  }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="61">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>coffset = 0
+cdelay = 900
+ccurr++
+if ccurr &gt; cmax
+  ccurr = 0
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="60">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>coffset = 0
+cdelay = 900
+ccurr--
+if ccurr &lt; 0
+  ccurr = cmax
 </string>
           </argument>
         </arguments>
@@ -194,14 +309,39 @@ if !surface_exists(ds)
   ds = surface_create(1500,900)
 surface_set_target(ds)
 draw_clear_alpha(0,0)
-drawTextPreset(fHint, c_white, 1, fa_left, fa_top)
-//fader
+///draw creds
+drawTextPreset(fImpact64, c_white, 1, fa_left, fa_top)
+draw_sprite_ext(sSquareFaded,0,512,332,2,0.28,180,c_white,0.9)  //fader
+//todo new credits draw
+///////////badcode begin/////////
+var aof = coffset/430;
+var a;
+a[0] = 0.5 - aof;
+a[1] = 1 - aof
+a[2] = 0.5 + aof
+a[3] = aof
+var ypos;
+ypos[0] = 29-coffset
+ypos[1] = 245-coffset
+ypos[2] = 461-coffset
+ypos[3] = 677-coffset
+var ccurr2 = ccurr-1;
+if ccurr2 &lt; 0 
+  ccurr2 = cmax
+for (var i=0; i&lt;4; i++) {
+  draw_set_alpha(a[i])
+  draw_text_transformed(30,ypos[i],cred[ccurr2],0.84,1,0)
+  ccurr2++
+  if ccurr2 &gt; cmax
+    ccurr2 = 0
+  }
+  ////////////badcode end////////////
+//draw_text(15,400-coffset,cred[ccurr])
+//cube fader
 draw_sprite_ext(sFadedCircle,0,1068,450,15,15,0,0,1)
 //draw cube texture
 if surface_exists(Cube.ds)
   draw_surface_ext(Cube.ds,684,66,0.75,0.75,0,c_white,1)
-//draw main + BACK
-draw_sprite(sCreds,0,20,50)
   
 surface_reset_target()
 </string>

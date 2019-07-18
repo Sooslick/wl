@@ -71,7 +71,6 @@
     <sprite>sprites\sSquareCenter</sprite>
     <sprite>sprites\sSquareTabu</sprite>
     <sprite>sprites\sSquareFaded</sprite>
-    <sprite>sprites\sEnglish</sprite>
     <sprite>sprites\sPixel</sprite>
     <sprite>sprites\sPixel2</sprite>
     <sprites name="OldLogo">
@@ -89,7 +88,6 @@
     <sprite>sprites\sCallhim</sprite>
     <sprite>sprites\sScream</sprite>
     <sprite>sprites\sIcons</sprite>
-    <sprite>sprites\sCreds</sprite>
     <sprite>sprites\sLayer</sprite>
   </sprites>
   <backgrounds name="background"/>

@@ -140,13 +140,11 @@ else if Pos &gt; 0
             <kind>1</kind>
             <string>//variables
 drawTextPreset(fImpact64, c_white, 1, fa_left, fa_top)
-draw_set_halign(fa_left)
-draw_set_font(fImpact64)
 var j;
 var xsc;
 var cl;
 var textleft = global.G_LEFT + 5;
-//rescale long words. TODO: check screen resolution
+//rescale long words. TODO: check screen resolution. TODO: move calculations from drawevent
 if parent.MaxLen &gt;= 10
   xsc = 9 / parent.MaxLen - (parent.MaxLen%10)/100
 else
