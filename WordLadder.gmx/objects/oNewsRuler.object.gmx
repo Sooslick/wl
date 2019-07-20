@@ -73,7 +73,6 @@ while (dirs_total &gt;= 0) {
 bBack = instance_create(300,800,oButton);
 bBack.content = 'BACK'
 bBack.parent = id
-bBack.depth = depth - 1
 bBack.useParentSurface = true
 bBack.sx = 350
 bBack.sy = 980
@@ -132,8 +131,8 @@ for (var i=0; i&lt;Headlines; i++)
           <argument>
             <kind>1</kind>
             <string>ScrollPos+= 100
-if ScrollPos &gt; MaxPos - 750
-    ScrollPos = MaxPos - 750
+if ScrollPos &gt; MaxPos - 720
+    ScrollPos = MaxPos - 720
 </string>
           </argument>
         </arguments>
@@ -210,7 +209,7 @@ if ScrollPos &lt; 0
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -243,6 +242,10 @@ for (var i=0; i&lt;Headlines; i++) {
     if LinePos[i]-ScrollPos &gt; 0 &amp;&amp; LinePos[i]-ScrollPos &lt; 900
         draw_line_width(25,LinePos[i]-ScrollPos,1475,LinePos[i]-ScrollPos,5)
     }
+//draw fader
+draw_set_blend_mode_ext(bm_zero, bm_inv_src_alpha)
+draw_sprite_ext(sSquareFaded,0, 1500,600, 1.12,5.86, 270,c_white,1)
+draw_set_blend_mode(bm_normal)
 surface_reset_target()
 </string>
           </argument>

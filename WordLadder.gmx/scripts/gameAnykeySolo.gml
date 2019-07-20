@@ -1,7 +1,14 @@
 //esc button here
 if keyboard_check_pressed(vk_escape) {
-  paused = funcBoolSwitch(paused)
+  drawRules = false
+  paused = !paused
   if paused {
+    if BStart != -1 {
+      BStart.clickable = false
+      BStart.depth = 3
+      BStart.StartDepth = 3
+      }
+    //create pausemenu buttons
     bBack = instance_create(325,1075,oButton)
     bBack.content = 'QUIT'
     bBack.dsc = 0.75
@@ -14,6 +21,12 @@ if keyboard_check_pressed(vk_escape) {
     bEnd.parent = id
     }
   else {
+    if BStart != -1 {
+      BStart.clickable = true
+      BStart.depth = 0
+      BStart.StartDepth = 0
+      }
+    //destroy pausemenu buttons
     instance_destroy(bBack, true)
     bBack = -1
     instance_destroy(bEnd, true)

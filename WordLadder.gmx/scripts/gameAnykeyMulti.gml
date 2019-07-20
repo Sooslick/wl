@@ -3,8 +3,14 @@
 
 //esc button here
 if keyboard_check_pressed(vk_escape) {
-  paused = funcBoolSwitch(paused)
+  drawRules = false
+  paused = !paused
   if paused {
+    if BStart != -1 {
+      BStart.clickable = false
+      BStart.depth = 3
+      BStart.StartDepth = 3
+      }
     bBack = instance_create(325,1075,oButton)
     bBack.content = 'DISCONNECT'
     bBack.dsc = 0.75
@@ -12,6 +18,11 @@ if keyboard_check_pressed(vk_escape) {
     bBack.parent = id
     }
   else {
+    if BStart != -1 {
+      BStart.clickable = true
+      BStart.depth = 0
+      BStart.StartDepth = 0
+      }
     instance_destroy(bBack, true)
     bBack = -1
     }

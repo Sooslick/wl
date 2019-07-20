@@ -32,7 +32,7 @@ MyPos = 0
 MyPlr = -1
 
 vert = 574
-drawEnable = true
+drawEnable = false
 
 //column widths
 WScore = 100

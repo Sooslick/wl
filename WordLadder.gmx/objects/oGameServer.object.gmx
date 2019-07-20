@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>2</depth>
+  <depth>3</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -832,7 +832,8 @@ if html != -1 {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//dequeue all sockets which recvd while loading
+            <string>PlrList.drawEnable = true
+//dequeue all sockets which recvd while loading
 while !ds_queue_empty(RequestQueue) {
   var eid = ds_queue_dequeue(RequestQueue);
   //PLEAZE REFACTOR ME !!!

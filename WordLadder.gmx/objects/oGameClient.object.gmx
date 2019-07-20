@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>2</depth>
+  <depth>3</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -527,6 +527,7 @@ buffer_write(buffer_send, buffer_s8, 30)
 network_send_packet( client, buffer_send, buffer_tell(buffer_send) );
 GR.waiting = true
 GR.BStart.clickable = false
+PlrList.drawEnable = true
 </string>
           </argument>
         </arguments>

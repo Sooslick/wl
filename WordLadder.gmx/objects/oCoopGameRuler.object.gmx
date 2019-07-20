@@ -424,7 +424,7 @@ if paused {
   for (var i=0; i&lt;4; i++)
     draw_rectangle(50+i,50+i, 1150-i, 1150-i, true)
   //caption
-  draw_text(100,60, 'CUSTOM GAME')
+  draw_text(100,60, 'COOP GAME')
   //hint
   draw_set_font(fCube)
   draw_text(65, 180, 'Press Esc to continue game')
