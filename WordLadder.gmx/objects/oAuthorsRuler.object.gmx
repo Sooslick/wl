@@ -311,7 +311,7 @@ surface_set_target(ds)
 draw_clear_alpha(0,0)
 ///draw creds
 drawTextPreset(fImpact64, c_white, 1, fa_left, fa_top)
-draw_sprite_ext(sSquareFaded,0,512,332,2,0.28,180,c_white,0.9)  //fader
+draw_sprite_ext(sSquareFaded,0,524,435,2,0.68,180,c_white,0.9)  //fader
 //todo new credits draw
 ///////////badcode begin/////////
 var aof = coffset/430;

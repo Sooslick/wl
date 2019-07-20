@@ -50,11 +50,6 @@ VoteChoice = false  //false No; true Yes.
 //Vote buttons objs
 bVoteY = -1
 bVoteN = -1
-
-//debug
-DecPB.visible = true
-ShiftPB.visible = true
-TTPB.visible = true
 </string>
           </argument>
         </arguments>

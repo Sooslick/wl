@@ -8,7 +8,7 @@ if keyboard_check_pressed(vk_escape) {
     bBack = instance_create(325,1075,oButton)
     bBack.content = 'DISCONNECT'
     bBack.dsc = 0.75
-    bBack.tsc = 0.66
+    bBack.tsc = 0.6
     bBack.parent = id
     }
   else {

@@ -181,6 +181,7 @@
     <shader type="GLSLES">shaders\shLinear.shader</shader>
     <shader type="GLSLES">shaders\shBw.shader</shader>
     <shader type="GLSLES">shaders\shGauss.shader</shader>
+    <shader type="GLSLES">shaders\shInverse.shader</shader>
   </shaders>
   <fonts name="fonts">
     <font>fonts\fImpact96</font>

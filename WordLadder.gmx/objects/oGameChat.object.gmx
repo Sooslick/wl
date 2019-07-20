@@ -32,7 +32,7 @@ for (i=0; i&lt;5; i++)     //messages on display
 CurrPos = 0
 PendingStr = ''
 GotStr = ''
-image_xscale = global.UPORTW / 2          //chatBox size
+image_xscale = global.UPORTW / 2.02          //chatBox size
 image_yscale = 35
 image_alpha = 0.05
 Hover = false
@@ -92,6 +92,14 @@ Hover = funcCheckGuiHover(0,0,1600,50)
           <argument>
             <kind>1</kind>
             <string>Active = Hover
+if Active {
+  image_blend = 0
+  image_alpha = 0.5
+  }
+else {
+  image_blend = c_white
+  image_alpha = 0.05
+  }
 </string>
           </argument>
         </arguments>
@@ -225,7 +233,13 @@ else {
 var cp = CurrPos;
 for (var i=0; i&lt;5; i++) {
   draw_set_alpha(clamp(cdArr[i] / 100, 0, 1))
-  draw_text(0,75+i*50,Arr[cp])
+  if draw_get_alpha() &gt; 0 {
+    //shader_set(shInverse)    //doesn't work. todo debug required
+    //var sample = shader_get_sampler_index(shInverse, 'destination')   //plz, not every tick
+    //texture_set_stage(sample, application_surface)
+    draw_text(0,75+i*50,Arr[cp])
+    //shader_reset()
+    }
   cp--;
   if cp &lt; 0
     cp = 255
