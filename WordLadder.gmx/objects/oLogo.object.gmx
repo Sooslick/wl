@@ -27,9 +27,9 @@
             <kind>1</kind>
             <string>//Game Version 0.0.1.11         1*11 + 256*1 + *0 + *0   todo
 global.GameVersion = 267
-global.versionName = 'Demo 0.0.1.11: pre-alpha update'
+global.versionName = 'Demo v1.11: improved co-op'
 global.domain = 'http://sooslick.mlbrony.ru/'
-//todo: REST config! custom directory + methods
+//todo: REST functions calls! funcRestMethodName(args)
 //init globals
 randomize()
 global.cfg = 'config.cfg'           //default config file
@@ -70,6 +70,20 @@ if global.config[?'ShowLogo']
 //IF LOGO SKIPPED:     
 else
       instance_destroy(self, true)
+      
+//rest methods. Todo: replace domain to globalvar or implement rest calling methods
+global.restAuth = 'http://sooslick.mlbrony.ru/wl/api/authUser.php'
+global.restDeleteRoom = 'http://sooslick.mlbrony.ru/wl/api/delRoom.php'
+global.restGetNews = 'http://sooslick.mlbrony.ru/wl/api/getNews.php'
+global.restGetSave = 'http://sooslick.mlbrony.ru/wl/api/getSave.php'
+global.restGetSplash = 'http://sooslick.mlbrony.ru/wl/api/getSplash.php'
+global.restGetUser = 'http://sooslick.mlbrony.ru/wl/api/getUser.php'
+global.restGetVersion = 'http://sooslick.mlbrony.ru/wl/api/getVersion.php'
+global.restGetRandomRoom = 'http://sooslick.mlbrony.ru/wl/api/randRoom.php'
+global.restCreateRoom = 'http://sooslick.mlbrony.ru/wl/api/regRoom.php'
+global.restGetRoomList = 'http://sooslick.mlbrony.ru/wl/api/roomList.php'
+global.restSaveFile = 'http://sooslick.mlbrony.ru/wl/api/saveFile.php'
+global.restUpdateRoom = 'http://sooslick.mlbrony.ru/wl/api/updRoom.php'
 </string>
           </argument>
         </arguments>

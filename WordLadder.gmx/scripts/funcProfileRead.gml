@@ -25,8 +25,11 @@ if file_exists('profiles/' + global.config[?'ProfileFile'] + '.save')
         global.profile[?'SAVETS'] = funcReadLong(f)
         //PLAYER NET ID
         global.profile[?'PNETID'] = funcReadLong(f)
+        /* TODO: uncomment this section after new auth impl
         if global.userdata[?'PNETID'] != global.profile[?'PNETID']    //validation
             ok = false
+        */
+        global.userdata[?'PNETID'] = global.profile[?'PNETID']    //todo - rm this line after new auth impl
         }
     if ok
         {

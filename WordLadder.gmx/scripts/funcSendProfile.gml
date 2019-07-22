@@ -20,3 +20,4 @@ file_text_close(f)
 */
 bytes='bytes=' + bytes
 http_post_string(sendto, bytes)
+funcLogString('profile file was sent')

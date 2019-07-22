@@ -50,7 +50,7 @@ PStat.font = fImpact64
 //profile selector
 PSelector = instance_create(300,500,oButton)
 PSelector.content = 'LOG OUT'                 //todo: login if anonymous
-PSelector.font = fImpact64
+PSelector.font = fImpact64                  //todo refactor: rename button
 //back
 PBack = instance_create(300,800,oButton)
 PBack.content = 'BACK'
@@ -71,7 +71,10 @@ for (var i=0; i&lt;ds_list_size(alist); i++) {
 //TODO //TEMP SECTION //RM AFTER FEATURE IMPL
 var ind = ds_list_find_index(alist, PLang)
 ds_list_delete(alist, ind)
-PLang.clickable = false  
+PLang.clickable = false
+ind = ds_list_find_index(alist, PSelector)
+ds_list_delete(alist, ind)
+PSelector.clickable = false
 //surface
 ds = surface_create(1500,900)
 //connected: db todo1
@@ -142,8 +145,13 @@ if PSelector.clicked {
   uiSetClickable(alist, false)
   }
 //NAME FORM CLICKED
-else if PNameForm.clicked
+else if PNameForm.clicked {
   global.profile[?'PNAME'] = PNameForm.contentSaved
+  // TODO: REMOVE THIS SECTION AFTER NEW AUTH IMPL
+  global.config[?'ProfileFile'] = global.profile[?'PNAME']
+  funcProfileRead()
+  //END TODO SECTION
+  }
 //GAME LANGUAGE CHANGED
 else if PLang.clicked {
   if PLang.active

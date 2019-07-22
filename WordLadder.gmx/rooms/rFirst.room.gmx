@@ -12,6 +12,13 @@
   <showcolour>-1</showcolour>
   <code>ds_map_clear(global.uiObjects)
 
+//TODO: Remove this code section after new auth impl
+global.userdata[?'PNETID'] = irandom_range(1,4200000000)
+funcLastloginWrite();
+funcProfileRead()
+room_goto(rMenu)
+
+/* TODO: uncomment after new auth implementation
 //check forced offline
 if global.config[?'ForceOffline'] {
   global.config[?'ProfileFile'] = 'anonymous'
@@ -28,7 +35,8 @@ if global.config[?'ForceOffline'] {
 if global.userdata[?'AUTOLOG'] &gt; 0
   instance_create(0,0,oAutolog)
 else
-  instance_create(0,0,oProfileCreatorFirst)</code>
+  instance_create(0,0,oProfileCreatorFirst)
+*/</code>
   <enableViews>0</enableViews>
   <clearViewBackground>-1</clearViewBackground>
   <clearDisplayBuffer>-1</clearDisplayBuffer>
