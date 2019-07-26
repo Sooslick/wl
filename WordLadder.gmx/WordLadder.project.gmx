@@ -89,6 +89,7 @@
     <sprite>sprites\sScream</sprite>
     <sprite>sprites\sIcons</sprite>
     <sprite>sprites\sLayer</sprite>
+    <sprite>sprites\sCubeFader</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>

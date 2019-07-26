@@ -209,9 +209,13 @@ else
 var sqx = 160 + (string_length(w1)-1) * 64;
 var sqy = 96;
 
+var sqxf = 64 + MinLen*32;
+var sqyf = 128;
+
 //w1 minlen
-for (var i=1; i&lt;=MinLen; i++)
-  draw_sprite_ext(sSquareCenter,0, 64*i+32, sqy, ApproachScale,ApproachScale,0,c_white,1)
+//if ApproachScale != 1         todo: minlen squares
+  for (var i=1; i&lt;=MinLen; i++)
+    draw_sprite_ext(sSquareCenter,0, 64*i+32, sqy, ApproachScale,ApproachScale,0,c_white,1)
 //w1 faded sq
 if (string_length(w1) &gt;= MinLen) &amp;&amp; !Rot
   draw_sprite_ext(sSquareCenter,2, sqx, sqy, 1,1,0,c_white,1) 
@@ -221,30 +225,37 @@ for (var i=string_length(w1); i&gt;0; i--) {
   draw_sprite_ext(sSquareCenter,0, sqx, sqy, ApproachScale,ApproachScale,0,c_white,1)       
   draw_text_transformed(sqx,sqy,string_char_at(w1,i), 1,1,0)
   }
-//error 
+//length or dict error 
 if LengthErr {
   var a = (0.52 - (LengthErrTick*0.015));
+  var l;
+  if string_length(w1) &gt; parent.MinLen    //todo move all calculations from drawevent
+    l = string_length(w1) * 64
+  else
+    l = MinLen*64;
   draw_set_blend_mode(bm_add)
-  draw_sprite_ext(sPixel,0,sqx-32,sqy-32,parent.MinLen*64,64,0,c_red,a)
+  draw_sprite_ext(sPixel,0,sqx-32,sqy-32,l,64,0,c_red,a)
   draw_set_blend_mode(bm_normal)
   }
 //newword fading
 if !Rot &amp;&amp; !Approach &amp;&amp; NewWord {
+  draw_set_blend_mode_ext(bm_zero, bm_inv_src_alpha)
   draw_sprite_ext(sSquareFaded,0,sqx+NewWordX-32,sqy-32,0.25,0.25,0,c_black,1) 
   var fsc = parent.MinLen*64-NewWordX;
   if fsc &gt; 0
     draw_sprite_ext(sPixel,0,sqx+NewWordX+32,sqy-32,fsc,64,0,c_black,1)
+  draw_set_blend_mode(bm_normal)
   }
 //w2
 if w2 != '' {
-  draw_set_alpha(1)
+  //draw_set_alpha(1)
   if Shifted {
     draw_sprite_ext(sSquareCenter,0, sqx, sqy-64, ApproachScale,ApproachScale,0,c_white,1)       
     draw_text_transformed(sqx,sqy-64,string_char_at(w2,string_length(w2)), 1,1,90)
     }
   for (var i = string_length(w2)-1-shoff; i&gt;0; i--) {
     sqy+= 64
-    draw_set_alpha(draw_get_alpha()-aps)
+    //draw_set_alpha(draw_get_alpha()-aps)
     draw_sprite_ext(sSquareCenter,0, sqx, sqy, ApproachScale,ApproachScale,0,c_white,draw_get_alpha())       
     draw_text_transformed(sqx,sqy,string_char_at(w2,i), 1,1,90)
     }
@@ -253,22 +264,25 @@ if w2 != '' {
 if w3 != '' {
   for (var i = string_length(w3)-1; i&gt;0; i--) {
     sqx+= 64
-    draw_set_alpha(draw_get_alpha()-aps)
+    //draw_set_alpha(draw_get_alpha()-aps)
     draw_sprite_ext(sSquareCenter,0, sqx, sqy, ApproachScale,ApproachScale,0,c_white,draw_get_alpha())       
     draw_text_transformed(sqx,sqy,string_char_at(w3,i), 1,1,180)
     }
   }
 //w4
 if w4 != '' {
-  for (var i = string_length(w4)-1; i&gt;0; i--) {
+  for (var i = string_length(w4)-1; i&gt;shoff+1; i--) {
     sqy-= 64
-    draw_set_alpha(draw_get_alpha()-aps)
-    if draw_get_alpha() &lt;= 0
-      break
+    //draw_set_alpha(draw_get_alpha()-aps)
+    //if draw_get_alpha() &lt;= 0
+    //  break
     draw_sprite_ext(sSquareCenter,0, sqx, sqy, ApproachScale,ApproachScale,0,c_white,draw_get_alpha())       
     draw_text_transformed(sqx,sqy,string_char_at(w4,i), 1,1,270)
     }
   }
+draw_set_blend_mode_ext(bm_zero,bm_src_alpha)
+draw_sprite_ext(sCubeFader,0,sqxf,sqyf,MinLen*0.4,MinLen*0.25,0,c_white,1) //todo first word fading while rot
+draw_set_blend_mode(bm_normal)
 surface_reset_target()
 
 var j = MinLen*32 -32;
