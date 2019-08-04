@@ -75,6 +75,9 @@ PLang.clickable = false
 ind = ds_list_find_index(alist, PSelector)
 ds_list_delete(alist, ind)
 PSelector.clickable = false
+ind = ds_list_find_index(alist, PAch)
+ds_list_delete(alist, ind)
+PAch.clickable = false
 //surface
 ds = surface_create(1500,900)
 //connected: db todo1

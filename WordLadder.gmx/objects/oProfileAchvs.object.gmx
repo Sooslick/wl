@@ -32,7 +32,6 @@ ScrollPos = 0
 for (i=0; i&lt;36; i++) {
   icon[i] = chr(funcChrDecode(i))
   head[i] = 'Achv' + string(i+1)
-  capt[i] = 'TODO! Load captions'
   if irandom(1)==0
     pass[i] =  false
   else
@@ -60,6 +59,79 @@ ds = surface_create(1500,900)
 //scrollable surface    todo: realize w/o extra surface
 //dsa = surface_create(1280,720)
 
+//achievements
+head[0] = 'The Meaning of Words'
+capt[0] = 'Enter 42 words'
+head[1] = 'Game addict'
+capt[1] = 'Enter 228 words'
+head[2] = 'Learning l33tspeak'
+capt[2] = 'Enter 1337 words'
+head[3] = "IT'S OVER 9000!!!"
+capt[3] = 'Enter 9000 words'
+//head[4] = ''
+capt[4] = 'Enter word with a length of 10 letters'
+head[5] = "Devil's Letter Dosen"
+capt[5] = 'Enter word with a length of 13 letters'
+head[6] = "My word's so big, it's behind you"
+capt[6] = 'Enter word with a length of 15 letters'
+//head[7] = ''
+capt[7] = 'Enter 42 words with a length of 10 or more letters in single game'
+//head[8] = ''
+capt[8] = 'Enter 15 words with a length of 15 or more letters in single game'
+head[9] = 'Time is words'
+capt[9] = 'Gain 5 minutes of additional time'
+head[10] = "IT'S TIME TO STOP"
+capt[10] = 'Gain 10 minutes of additional time'
+head[11] = 'Please turn off cheats'
+capt[11] = 'Gain 15 minutes of additional time'
+//head[12] = ''
+capt[12] = 'Just in time'
+head[13] = 'Demo-version'
+capt[13] = 'Beat Simple gamemode'
+head[14] = 'Way to grow, son'
+capt[14] = 'Beat Simple+ gamemode'
+head[15] = 'Cybercutlet'
+capt[15] = 'Beat Advanced gamemode'
+head[16] = 'Real Real ending'
+capt[16] = 'Beat Advanced+ gamemode'
+head[17] = 'Bans no threat'
+capt[17] = 'Enter word under 6 banned letters'
+head[18] = 'What'
+capt[18] = 'Enter word under 7 banned letters'
+//head[19] = ''
+capt[19] = 'Get 42 Green letters'
+//head[20] = ''
+capt[20] = 'Get 228 Green letters'
+head[21] = 'KK, wh47 4B0u7 L1m3 9R33N?'
+capt[21] = 'Get 1337 Green letters'
+//head[22] = ''
+capt[22] = 'Get 9000 Green letters'
+head[23] = "Cyberpunk we've deserved"
+capt[23] = 'Apply the first interactive command in main menu'
+head[24] = "Game's Too Lame"
+capt[24] = 'Try all interactive commands'
+head[25] = 'I clicked somewhere'
+capt[25] = 'And it is all gone'
+//head[26] = ''
+capt[26] = 'Join the first Cooperative game'
+//head[27] = ''
+capt[27] = 'Earn the highest score in Cooperative game'
+head[28] = 'Pretty good job so far!'
+capt[28] = 'Play the first Competitive game'
+head[29] = 'And Stanley... Was happy!'
+capt[29] = 'Win the first Competitive game'
+head[30] = 'I cut off my leg... Accidentally'
+capt[30] = 'Use the first word length decreasing'
+//head[31] = ''
+capt[31] = 'Use 10 word length decreasings'
+head[32] = 'Endings are for Losers'
+capt[32] = 'Use 100 word length decreasings'
+//head[33] = ''
+capt[33] = 'Slowburn'
+//head[34] = ''
+capt[34] = 'Watch How to play until the end'
+head[35] = 'Best clicker ever'
+capt[35] = 'Checkmate'
 </string>
           </argument>
         </arguments>

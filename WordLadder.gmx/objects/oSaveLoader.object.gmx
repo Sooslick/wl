@@ -93,7 +93,7 @@ if async_load[? "status"] &gt; 0
   exit
 
 //error
-if async_load[? "status"] &lt; 0 {
+if async_load[? "status"] &lt;= 0 {    // T O D O : status &lt; 0 (revert auth check)
   instance_destroy(self, true)      //smth wrong
   exit
   }

@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>100</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,27 +25,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//Lines on screen array
-Line[0] = instance_create(800,1500,oBgline)
-Line[0].Content = 'RANDOMTEXT OH HELLO THERE'
-Line[0].MoveLeft = false
-Line[0].parent = id
-Line[0].LineId = 0
-Lines = 1
-MaxLines = 8
-
-for (var i=1; i&lt;MaxLines; i++)
-  Line[i] = -1
-
-//last line ptr
-LastLine = Line[0]
-
-//direction switch
-MoveLeft = true
-
-Strings[0] = "SOMEONE GIFT ME A BLUE SHARK FROM IKEA"
+            <string>Strings[0] = "SOMEONE GIFT ME A BLUE SHARK FROM IKEA!"
 Strings[1] = 'THE END IS NEVER THE END IS NEVER THE END IS NEVER TH'
-Strings[2] = 'YOU WOULD BE A GOOD DANCER EXCEPT FOR TWO THINGS'
+Strings[2] = 'YOU WOULD BE A GOOD DANCER EXCEPT FOR TWO THINGS.'
 Strings[3] = "I KNOW WHAT'S WRONG WITH YOU - YOU'VE BROKEN YOUR FINGER!"
 Strings[4] = '&lt;SCRIPT&gt;ALERT("OH HELLO THERE!!!");&lt;/SCRIPT&gt;'
 Strings[5] = 'TAKE THE SPOON OUT OF THE MUG BEFORE YOU DRINK.'
@@ -54,9 +36,30 @@ Strings[7] = "YOU SEE, IT PAYS TO BE BILINGUAL!"
 Strings[8] = "HOW WOULD WE KNOW THEY WERE LATE, IF WE DIDN'T HAVE A SCHEDULE?"
 Strings[9] = 'ANYTHING THAT CAN POSSIBLY GO WRONG, DOES.'
 Strings[10] = 'THE PERVERSITY OF THE UNIVERSE TENDS TOWARDS A MAXIMUM.'
+Strings[11] = 'MOZART BREAKS OUT OF THE GRAVE TO KNOCK OUT SOME MONEY FROM THIS GUY.'
+Strings[12] = "IF YOU ZOOM IN, YOU'LL SEE A CLOWN."
+Strings[13] = 'THE BEST WAY TO GET THE RIGHT ANSWER IS NOT TO ASK A QUESTION.'
+Strings[14] = "I PRESSED THE HOME BUTTON AND I'M STILL AT WORK!"
+StrMax = 15
 
-currStr = 0
-StrMax = 11
+//direction switch
+MoveLeft = true
+
+LastLine = -1
+LastRandom = -1
+MaxLines = 6
+Lines = 0
+LineHeight = 0
+for (var i=0; i&lt;MaxLines; i++) {
+  event_user(0)
+  LineHeight+= 260
+  }
+LineHeight = 1460
+
+Sf = surface_create(1600,1200)
+SfSc = 1.5 + max(global.G_LEFT/380, global.G_UP/285)
+Sfx = -200+global.G_LEFT
+Sfy = 30+global.G_UP
 </string>
           </argument>
         </arguments>
@@ -106,42 +109,98 @@ StrMax = 11
           <argument>
             <kind>1</kind>
             <string>if LastLine.y &lt; 1200 {
-  //padding generator
-  var spaces = ''
-  var a = irandom(16)
-  for (var i=0; i&lt;a; i++)
-    spaces+= ' '
-    
-  //string generator
-  var cline = irandom(StrMax);
-  if cline == currStr
-    cline+= 1
-  if cline == StrMax
-    cline = 0
-    
   //line constructor
-  Line[Lines] = instance_create(800,1460,oBgline)
-  if (irandom(2))
-    Line[Lines].Content = Strings[cline] + spaces
-  else
-    Line[Lines].Content = spaces + Strings[cline] 
-  Line[Lines].MoveLeft = MoveLeft
-  Line[Lines].parent = id
-  Line[Lines].LineId = Lines
-  
-  //pointers and counters
-  LastLine = Line[Lines]
-  Lines++
-  if Lines &gt;= MaxLines 
-    Lines = 0
-  currStr = cline
-  
-  //direction switch
-  if MoveLeft
-    MoveLeft = false
-  else
-    MoveLeft = true
+  event_user(0)
   }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>var r = irandom_range(0,StrMax-1);
+if r = LastRandom {
+  r++
+  if r == StrMax
+    r = 0
+  }
+var s = Strings[r];
+if MoveLeft
+  string_copy(s, irandom_range(0, string_length(s)-40), 20)
+else
+  string_copy(s, irandom_range(20, string_length(s)-20), 20)
+
+Line[Lines] = instance_create(800,LineHeight,oBgline)
+Line[Lines].Content = s
+Line[Lines].MoveLeft = MoveLeft
+Line[Lines].parent = id
+Line[Lines].LineId = Lines
+MoveLeft = !MoveLeft
+
+LastLine = Line[Lines]
+Lines++
+if Lines &gt;= MaxLines
+  Lines = 0
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if !surface_exists(Sf)
+  Sf = surface_create(1600,1200)
+
+surface_set_target(Sf)
+draw_clear_alpha(0,0)
+
+drawTextPreset(fImpact96, c_white, 0.1, fa_center, fa_center)
+
+for (var i=0; i&lt;MaxLines; i++) {
+  draw_text_transformed(Line[i].xoff,Line[i].y,Line[i].Content,2.04,2.04,0)
+  draw_text_transformed(Line[i].x,Line[i].y,Line[i].Content,2,2,0)
+  }
+  
+surface_reset_target()
+
+//shader_set(shLinear)
+//var shader_params = shader_get_uniform(shLinear, "tense");
+//shader_set_uniform_f(shader_params, 1.25);
+draw_set_blend_mode_ext(bm_src_colour, bm_dest_colour)
+draw_surface_ext(Sf,Sfx,Sfy,SfSc,SfSc,10,c_white,1)
+draw_set_blend_mode(bm_normal)
+//shader_reset()
 </string>
           </argument>
         </arguments>

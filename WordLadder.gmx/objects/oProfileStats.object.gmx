@@ -113,6 +113,10 @@ for (var i=0; i&lt;ds_list_size(alist); i++) {
   alist[|i].sx = alist[|i].x + 50
   alist[|i].sy = alist[|i].y + 180
   }
+//TODO: REMOVE THIS SECTION AFTER ACHV IMPL
+var ind = ds_list_find_index(alist, bAch)
+ds_list_delete(alist, ind)
+bAch.clickable = false
 //main surface
 ds = surface_create(1500,900)
 </string>
