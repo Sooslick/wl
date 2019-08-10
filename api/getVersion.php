@@ -3,9 +3,9 @@
 //ini_set('display_errors', 1);
 
 //todo: get versions from config
-$v = "265";
+$v = "267";
 $e = "1";
-$p = "http://sooslick.flaminggaming.ru/wl/dict/EN_extra.dat";
+$p = "http://sooslick.mlbrony.ru/wl/dict/EN_extra.dat";
 
 //return json
 $answer = array("VERSION" => $v, "EXTRA" => $e, "EXTRA_PATH" => $p);

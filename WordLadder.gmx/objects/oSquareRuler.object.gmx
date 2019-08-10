@@ -548,7 +548,7 @@ else if cheat == 'DESIGN' {                       //colorise all letters
   cheat = ''
   exit
   }
-else if cheat == 'CRUSH'                          //exit game by nullpointer error
+else if cheat == 'CRASH'                          //exit game by nullpointer error
   crush++
 else if string_count('DICK',cheat) &gt; 0
   {} //todo sound

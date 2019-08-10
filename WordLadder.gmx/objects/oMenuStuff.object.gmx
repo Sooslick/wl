@@ -30,7 +30,7 @@ timeout = 900
 motd = ''                           //splash
 motd_ready = false                //is http-request completed and content passed
 stat[0] = global.versionName       //version caption
-stat[1] = 'Branch: Dev'           //version branch
+stat[1] = 'Branch: Release'           //version branch
 stat[2] = global.versionName      //version status, loaded in http event
 stat[3] = 'Profile: ' + global.config[?'ProfileFile'] 
 if global.profile[?'PNETID'] &lt; 1  

@@ -26,6 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>//Game Version 0.0.1.11         1*11 + 256*1 + *0 + *0   todo
+gml_release_mode(true);
 global.GameVersion = 267
 global.versionName = 'Demo v1.11: improved co-op'
 global.domain = 'http://sooslick.mlbrony.ru/'

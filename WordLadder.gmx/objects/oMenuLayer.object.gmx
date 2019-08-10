@@ -218,9 +218,9 @@ if Child != -1
 draw_sprite(sLayer,0,0,0)
 //post-operations    
 surface_reset_target()
-draw_set_blend_mode_ext(bm_one, bm_zero)                //real opacity stolen todo
+//draw_set_blend_mode_ext(bm_one, bm_zero)                //real opacity stolen todo
 draw_surface_ext(sf,sfx,sfy,sfsc,sfsc,sfr,c_white,sfa)
-draw_set_blend_mode(bm_normal)
+//draw_set_blend_mode(bm_normal)
 </string>
           </argument>
         </arguments>

@@ -80,7 +80,7 @@ BrandingText "${APP_NAME}"
 OutFile "${INSTALLER_FILENAME}"
 
 ; The default installation directory
-InstallDir "$PROFILE\${APP_NAME}"
+InstallDir "$PROGRAMFILES\${APP_NAME}"
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
@@ -111,7 +111,7 @@ VIAddVersionKey /LANG=1033 "FileDescription" "${FILE_DESC}"
 ;--------------------------------
 
 ; Pages
-!insertmacro MUI_PAGE_LICENSE "${LICENSE_NAME}"
+; !insertmacro MUI_PAGE_LICENSE "${LICENSE_NAME}"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES

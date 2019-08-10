@@ -3,7 +3,7 @@ https://drive.google.com/drive/u/0/folders/12BQ7ib-7UCPuKizuMXgTjhkJSyzv9MUJ
 
 WordLadder Changelog:
 
-Full Demo v0.0.1.11
+Improved Co-op Demo v0.0.1.11
 - Реализован внутриигровой браузер серверов
 - Добавлен новый анимированный фон в меню авторизации и в игру
 - Добавлен параметр ForceOffline в конфиг
